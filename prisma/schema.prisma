@@ -1,0 +1,189 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User model for NextAuth and application
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  // SQLite doesn't support enums, using String for Role (PARTICIPANT, MENTOR, EXECUTIVE, ADMIN)
+  role          String    @default("PARTICIPANT")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // NextAuth relations
+  accounts      Account[]
+  sessions      Session[]
+
+  // Application relations
+  projectApplications ProjectApplication[]
+  mentoredProjects    Project[]            @relation("ProjectMentor")
+  uploadedResources   Resource[]           @relation("UploadedResources")
+  announcements       Announcement[]       @relation("AnnouncementAuthor")
+  notifications       Notification[]
+}
+
+// NextAuth standard models
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// App specific models
+model Project {
+  id           String   @id @default(cuid())
+  title        String
+  titleFa      String?
+  description  String
+  category     String
+  difficulty   String
+  maxCapacity  Int
+  thumbnailUrl String?
+  duration     String
+  // Status (OPEN, FULL, IN_PROGRESS, COMPLETED)
+  status       String   @default("OPEN")
+  techStack    String   // JSON or comma separated string
+  prerequisites String?
+  objectives   String?
+
+  mentorId     String
+  mentor       User     @relation("ProjectMentor", fields: [mentorId], references: [id])
+
+  applications ProjectApplication[]
+  resources    Resource[]
+}
+
+model ProjectApplication {
+  id         String   @id @default(cuid())
+  userId     String
+  projectId  String
+  // Status (NOT_APPLIED, APPLIED, UNDER_REVIEW, ACCEPTED, REJECTED, WAITLISTED)
+  status     String   @default("APPLIED")
+  appliedAt  DateTime @default(now())
+  reviewedAt DateTime?
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, projectId])
+}
+
+model Course {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  category    String
+  createdAt   DateTime @default(now())
+
+  lessons     Lesson[]
+}
+
+model Lesson {
+  id         String   @id @default(cuid())
+  courseId   String
+  title      String
+  content    String
+  videoUrl   String?
+  order      Int
+  tags       String?
+  // Level (BEGINNER, INTERMEDIATE, ADVANCED)
+  level      String   @default("BEGINNER")
+
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  resources  Resource[]
+}
+
+model Resource {
+  id           String   @id @default(cuid())
+  title        String
+  description  String?
+  fileType     String
+  fileSize     Int
+  url          String
+  uploadedById String
+  projectId    String?
+  lessonId     String?
+  createdAt    DateTime @default(now())
+
+  uploadedBy   User     @relation("UploadedResources", fields: [uploadedById], references: [id])
+  project      Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  lesson       Lesson?  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+}
+
+model Announcement {
+  id         String   @id @default(cuid())
+  title      String
+  content    String
+  // Priority (LOW, MEDIUM, HIGH, URGENT)
+  priority   String   @default("MEDIUM")
+  authorId   String
+  // Audience (EVERYONE, PARTICIPANTS, MENTORS, EXECUTIVES)
+  audience   String   @default("EVERYONE")
+  expiresAt  DateTime?
+
+  author     User     @relation("AnnouncementAuthor", fields: [authorId], references: [id])
+}
+
+model ScheduleEvent {
+  id          String   @id @default(cuid())
+  title       String
+  // Type (WORKSHOP, DEADLINE, PRESENTATION, MEETING, EVENT)
+  type        String
+  date        DateTime
+  location    String?
+  description String?
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  content   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

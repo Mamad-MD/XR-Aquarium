@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# XR Aquarium
 
-## Getting Started
+XR Aquarium is a production-grade web application for managing XR and interactive environments. 
 
-First, run the development server:
+## Architecture
+- **Framework**: Next.js 14 (App Router)
+- **Rendering**: Server Components
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Tech Stack
+- TypeScript
+- Tailwind CSS
+- Prisma (ORM)
+- SQLite / PostgreSQL
+- NextAuth v5 (beta)
+- Framer Motion
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Roles & Permissions
+The system uses role-based access control with the following levels:
+- **PARTICIPANT**
+- **MENTOR**
+- **EXECUTIVE**
+- **ADMIN**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Local Development Setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Follow these steps to run the project locally:
 
-## Learn More
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+2. Configure environment variables:
+   Create a `.env` file from the example template:
+   ```bash
+   cp .env.example .env
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. Sync database schema:
+   ```bash
+   npx prisma db push
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+4. Seed the database with initial data:
+   ```bash
+   npx tsx scripts/seed.ts
+   ```
 
-## Deploy on Vercel
+5. Start the development server:
+   ```bash
+   npm run dev
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Seed Data Included
+The database seed script provides default users to help you get started:
+- `admin@example.com`
+- `student@example.com`
+- `mentor@example.com`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deployment
+This project follows the standard Next.js deployment process (e.g., deploying to Vercel or building a Docker container). 
+
+For a production environment, ensure you configure your `.env` to point the `DATABASE_URL` to a production PostgreSQL database.
