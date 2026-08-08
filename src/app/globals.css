@@ -23,7 +23,7 @@
   --radius-md: 0.75rem;
   --radius-lg: 1rem;
   --radius-xl: 1.5rem;
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-vazirmatn), var(--font-geist-sans), sans-serif;
   --font-mono: var(--font-geist-mono);
 }
 
@@ -35,7 +35,7 @@
 body {
   background: var(--color-background);
   color: var(--color-foreground);
-  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  font-family: var(--font-vazirmatn), var(--font-geist-sans), sans-serif;
   min-height: 100vh;
   overflow-x: hidden;
 }

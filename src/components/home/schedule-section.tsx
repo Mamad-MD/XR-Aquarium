@@ -79,10 +79,10 @@ export function ScheduleSection({ scheduleItems }: { scheduleItems: ScheduleEven
                 <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
                   {/* Date/Time Block */}
                   <div className="min-w-[180px] flex flex-col">
-                    <span className="text-white font-bold text-lg">{new Date(item.date).toLocaleDateString()}</span>
+                    <span className="text-white font-bold text-lg">{new Date(item.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
                     <span className="text-gray-400 text-sm flex items-center gap-2 mt-1">
                       <CalendarClock className="w-4 h-4" />
-                      {new Date(item.date).toLocaleTimeString()}
+                      {new Date(item.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
 
