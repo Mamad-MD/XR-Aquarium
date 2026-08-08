@@ -66,10 +66,10 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
         transition={{ duration: 0.5, delay: 0.3 }}
       >
         <div className="relative w-full md:w-96">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+          <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
           <Input 
             placeholder="Search projects..." 
-            className="pl-9 bg-white/5 border-white/10"
+            className="ps-9 bg-white/5 border-white/10"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />

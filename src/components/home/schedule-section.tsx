@@ -74,7 +74,7 @@ export function ScheduleSection({ scheduleItems }: { scheduleItems: ScheduleEven
               <motion.div
                 key={item.id}
                 variants={itemVariants}
-                className={`glass rounded-xl p-6 transition-all duration-300 hover:scale-[1.01] border-l-4 ${config.border.replace('border-', 'border-l-')}`}
+                className={`glass rounded-xl p-6 transition-all duration-300 hover:scale-[1.01] border-s-4 ${config.border.replace('border-', 'border-l-')}`}
               >
                 <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
                   {/* Date/Time Block */}

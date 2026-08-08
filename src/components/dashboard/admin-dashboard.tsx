@@ -108,27 +108,27 @@ export function AdminDashboard({ user, data }: {
         <Tabs defaultValue="overview" className="w-full">
           <TabsList className="grid grid-cols-5 w-full md:w-auto md:inline-flex bg-slate-900/50 border border-slate-800 p-1 mb-8">
             <TabsTrigger value="overview" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
-              <LayoutDashboard className="w-4 h-4 md:mr-2" />
+              <LayoutDashboard className="w-4 h-4 md:me-2" />
               <span className="hidden md:inline">Overview</span>
             </TabsTrigger>
             <TabsTrigger value="students" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
-              <Users className="w-4 h-4 md:mr-2" />
+              <Users className="w-4 h-4 md:me-2" />
               <span className="hidden md:inline">Students</span>
             </TabsTrigger>
             <TabsTrigger value="projects" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
-              <Boxes className="w-4 h-4 md:mr-2" />
+              <Boxes className="w-4 h-4 md:me-2" />
               <span className="hidden md:inline">Projects</span>
             </TabsTrigger>
             <TabsTrigger value="announcements" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
-              <Bell className="w-4 h-4 md:mr-2" />
+              <Bell className="w-4 h-4 md:me-2" />
               <span className="hidden md:inline">Comms</span>
             </TabsTrigger>
             <TabsTrigger value="settings" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
-              <Settings className="w-4 h-4 md:mr-2" />
+              <Settings className="w-4 h-4 md:me-2" />
               <span className="hidden md:inline">Settings</span>
             </TabsTrigger>
             <TabsTrigger value="applications" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
-              <FileText className="w-4 h-4 md:mr-2" />
+              <FileText className="w-4 h-4 md:me-2" />
               <span className="hidden md:inline">Applications</span>
             </TabsTrigger>
           </TabsList>
@@ -186,10 +186,10 @@ export function AdminDashboard({ user, data }: {
                 <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <CardTitle>Student Directory</CardTitle>
                   <div className="relative w-full md:w-64">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-500" />
+                    <Search className="absolute start-2.5 top-2.5 h-4 w-4 text-slate-500" />
                     <Input
                       placeholder="Search students..."
-                      className="pl-9 bg-slate-900/50 border-slate-800 focus-visible:ring-purple-500"
+                      className="ps-9 bg-slate-900/50 border-slate-800 focus-visible:ring-purple-500"
                     />
                   </div>
                 </CardHeader>
@@ -199,7 +199,7 @@ export function AdminDashboard({ user, data }: {
                       <div className="col-span-4">Name</div>
                       <div className="col-span-3">Project</div>
                       <div className="col-span-3">Status</div>
-                      <div className="col-span-2 text-right">Actions</div>
+                      <div className="col-span-2 text-end">Actions</div>
                     </div>
                     {/* Mock Table Rows */}
                     {[1, 2, 3, 4, 5].map((i) => (
@@ -223,7 +223,7 @@ export function AdminDashboard({ user, data }: {
                             {i % 2 === 0 ? "Active" : "Pending Project"}
                           </span>
                         </div>
-                        <div className="col-span-2 text-right">
+                        <div className="col-span-2 text-end">
                           <Button variant="ghost" size="sm" className="h-8 text-slate-400 hover:text-purple-400">
                             Manage
                           </Button>
@@ -295,7 +295,7 @@ export function AdminDashboard({ user, data }: {
                       </div>
                     </div>
                     <Button type="submit" disabled={isSubmitting} className="w-full bg-purple-600 hover:bg-purple-700 text-white">
-                      <Mail className="w-4 h-4 mr-2" /> {isSubmitting ? "Posting..." : "Post Announcement"}
+                      <Mail className="w-4 h-4 me-2" /> {isSubmitting ? "Posting..." : "Post Announcement"}
                     </Button>
                   </form>
                 </CardContent>
@@ -304,7 +304,7 @@ export function AdminDashboard({ user, data }: {
               <div className="space-y-4">
                 <h3 className="font-medium text-slate-300">Recent Broadcasts</h3>
                 <ScrollArea className="h-[500px]">
-                  <div className="space-y-3 pr-4">
+                  <div className="space-y-3 pe-4">
                     {announcements.map((a: { id: string, title: string, content: string, priority: string, createdAt: string }) => (
                       <div key={a.id} className={`p-4 rounded-lg border ${
                         a.priority === 'URGENT' || a.priority === 'HIGH' ? 'bg-red-500/5 border-red-500/20' : 'bg-slate-900/40 border-slate-800'
@@ -374,7 +374,7 @@ export function AdminDashboard({ user, data }: {
                     <CardDescription>Manage cohort projects and teams</CardDescription>
                   </div>
                   <Button className="bg-purple-600 hover:bg-purple-700">
-                    <Plus className="w-4 h-4 mr-2" /> New Project
+                    <Plus className="w-4 h-4 me-2" /> New Project
                   </Button>
                 </CardHeader>
                 <CardContent>
@@ -424,7 +424,7 @@ export function AdminDashboard({ user, data }: {
                       <div className="col-span-3">Project</div>
                       <div className="col-span-2">Date Applied</div>
                       <div className="col-span-2">Status</div>
-                      <div className="col-span-2 text-right">Actions</div>
+                      <div className="col-span-2 text-end">Actions</div>
                     </div>
                     {applications.length === 0 ? (
                       <div className="p-8 text-center text-slate-500">No applications found.</div>
@@ -449,7 +449,7 @@ export function AdminDashboard({ user, data }: {
                               {app.status}
                             </span>
                           </div>
-                          <div className="col-span-2 text-right flex justify-end gap-2">
+                          <div className="col-span-2 text-end flex justify-end gap-2">
                             {app.status === 'PENDING' && (
                               <>
                                 <Button

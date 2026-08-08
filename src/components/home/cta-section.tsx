@@ -1,16 +1,18 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 import { ArrowRight, Terminal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function CTASection() {
+  const t = useTranslations('CTA');
   return (
     <section className="py-32 relative overflow-hidden">
       {/* Dynamic Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-cyan-900/10 to-background" />
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-[400px] bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute start-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-[400px] bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="container mx-auto px-4 relative z-10">
         <motion.div
@@ -41,7 +43,7 @@ export function CTASection() {
               transition={{ delay: 0.3 }}
               className="text-4xl md:text-6xl font-bold mb-4 text-white"
             >
-              Ready to Enter the Aquarium?
+              {t('title')}
             </motion.h2>
 
             <motion.h3
@@ -52,7 +54,7 @@ export function CTASection() {
               className="text-2xl md:text-3xl font-medium text-cyan-400 mb-6 font-sans"
               dir="rtl"
             >
-              آماده ورود به آکواریوم هستید؟
+              {t('subtitle')}
             </motion.h3>
 
             <motion.p
@@ -62,8 +64,7 @@ export function CTASection() {
               transition={{ delay: 0.5 }}
               className="text-lg text-gray-400 mb-10 max-w-2xl mx-auto"
             >
-              Join the next cohort of spatial computing innovators. Spaces are limited
-              and highly competitive. Apply now to secure your spot in the lab.
+              {t('description')}
             </motion.p>
 
             <motion.div
@@ -75,13 +76,13 @@ export function CTASection() {
             >
               <Button asChild size="lg" className="neon-purple bg-gradient-to-r from-purple-600 to-cyan-600 border-none px-10 py-6 text-lg hover:from-purple-500 hover:to-cyan-500">
                 <Link href="/auth/register">
-                  Apply Now
+                  {t('applyNow')}
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="px-10 py-6 text-lg bg-background/50 backdrop-blur-sm border-white/20 hover:bg-white/10">
                 <Link href="/projects">
-                  View Projects
-                  <ArrowRight className="ml-2 w-5 h-5" />
+                  {t('viewProjects')}
+                  <ArrowRight className="ms-2 w-5 h-5" />
                 </Link>
               </Button>
             </motion.div>

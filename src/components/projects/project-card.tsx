@@ -67,13 +67,13 @@ export function ProjectCard({ project, onViewDetails }: ProjectCardProps) {
           alt={project.title}
           className="w-full h-full object-cover opacity-60"
         />
-        <div className="absolute top-4 right-4 z-20 flex gap-2">
+        <div className="absolute top-4 end-4 z-20 flex gap-2">
           <div className={`w-3 h-3 rounded-full ${statusColor} shadow-lg shadow-black`} title={project.status} />
         </div>
-        <div className="absolute top-4 left-4 z-20">
+        <div className="absolute top-4 start-4 z-20">
           <Badge variant={categoryVariant}>{project.category}</Badge>
         </div>
-        <div className="absolute bottom-4 left-4 right-4 z-20">
+        <div className="absolute bottom-4 start-4 end-4 z-20">
           <h3 className="text-lg font-bold text-white leading-tight">{project.title}</h3>
           <p className="text-sm text-zinc-400 font-medium" dir="rtl">{project.titleFa}</p>
         </div>
@@ -85,7 +85,7 @@ export function ProjectCard({ project, onViewDetails }: ProjectCardProps) {
             {project.difficulty}
           </Badge>
           <div className="flex items-center text-zinc-400 text-sm">
-            <Clock className="w-4 h-4 mr-1" />
+            <Clock className="w-4 h-4 me-1" />
             {project.duration}
           </div>
         </div>
@@ -96,7 +96,7 @@ export function ProjectCard({ project, onViewDetails }: ProjectCardProps) {
 
         <div className="mb-4">
           <div className="flex items-center mb-2">
-            <Layers className="w-4 h-4 mr-2 text-zinc-400" />
+            <Layers className="w-4 h-4 me-2 text-zinc-400" />
             <span className="text-xs text-zinc-400 font-medium">Tech Stack</span>
           </div>
           <div className="flex flex-wrap gap-1.5">
@@ -115,7 +115,7 @@ export function ProjectCard({ project, onViewDetails }: ProjectCardProps) {
 
         <div className="mb-6">
           <div className="flex justify-between text-xs text-zinc-400 mb-2">
-            <span className="flex items-center"><Users className="w-3 h-3 mr-1" /> Capacity</span>
+            <span className="flex items-center"><Users className="w-3 h-3 me-1" /> Capacity</span>
             <span>{enrolledCount} / {project.maxCapacity}</span>
           </div>
           <Progress value={progress} className="h-1.5" />
@@ -139,7 +139,7 @@ export function ProjectCard({ project, onViewDetails }: ProjectCardProps) {
               }}
             >
               Select
-              <ArrowRight className="w-4 h-4 ml-2" />
+              <ArrowRight className="w-4 h-4 ms-2" />
             </Button>
           )}
         </div>

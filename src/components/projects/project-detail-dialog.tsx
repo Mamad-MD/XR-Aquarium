@@ -125,7 +125,7 @@ export function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailD
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[50vh] mt-4 pr-4">
+        <ScrollArea className="max-h-[50vh] mt-4 pe-4">
           <div className="space-y-6">
             <div>
               <h4 className="text-lg font-semibold text-cyan-400 mb-3 flex items-center gap-2">

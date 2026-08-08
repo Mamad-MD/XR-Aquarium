@@ -1,0 +1,97 @@
+{
+  "Common": {
+    "login": "Login",
+    "register": "Register",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "search": "Search...",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Operation successful",
+    "logout": "Logout",
+    "settings": "Settings",
+    "profile": "User Profile",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "close": "Close",
+    "confirm": "Confirm",
+    "viewMore": "View More",
+    "readMore": "Read More",
+    "noResults": "No results found",
+    "required": "This field is required"
+  },
+  "Navbar": {
+    "home": "Home",
+    "about": "About Us",
+    "projects": "Projects",
+    "team": "Our Team",
+    "dashboard": "Dashboard",
+    "learn": "Learn",
+    "admin": "Admin",
+    "language": "Language",
+    "theme": "Theme",
+    "darkMode": "Dark Mode",
+    "lightMode": "Light Mode"
+  },
+  "Hero": {
+    "title": "Extended Reality Aquarium",
+    "subtitle": "A novel underwater experience using immersive technologies",
+    "getStarted": "Get Started",
+    "learnMore": "Learn More"
+  },
+  "About": {
+    "title": "About the Project",
+    "description": "An innovative system for simulating aquatic ecosystems using extended reality technology",
+    "mission": "Our Mission",
+    "vision": "Vision",
+    "technologies": "Technologies Used"
+  },
+  "Team": {
+    "title": "Development Team",
+    "subtitle": "The experts and researchers behind this project",
+    "roles": {
+      "manager": "Project Manager",
+      "developer": "Senior Developer",
+      "researcher": "Researcher",
+      "designer": "UI/UX Designer"
+    }
+  },
+  "Projects": {
+    "title": "Projects",
+    "subtitle": "Recent Achievements",
+    "ongoing": "Ongoing",
+    "completed": "Completed",
+    "details": "Project Details",
+    "viewProject": "View Project"
+  },
+  "Dashboard": {
+    "title": "Dashboard",
+    "overview": "Overview",
+    "statistics": "Statistics",
+    "activity": "Recent Activity",
+    "reports": "Reports",
+    "users": "Users",
+    "activeUsers": "Active Users",
+    "systemStatus": "System Status",
+    "metrics": {
+      "views": "Views",
+      "interactions": "Interactions",
+      "timeSpent": "Time Spent"
+    }
+  },
+  "Admin": {
+    "title": "Admin Panel",
+    "usersList": "Users List",
+    "contentManagement": "Content Management",
+    "systemSettings": "System Settings",
+    "roles": "Roles and Permissions",
+    "logs": "System Logs",
+    "addContent": "Add Content",
+    "editContent": "Edit Content",
+    "deleteConfirm": "Are you sure you want to delete this item?"
+  }
+}

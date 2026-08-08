@@ -75,8 +75,8 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-background py-10">
       {/* Decorative Orbs */}
-      <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-[128px] animate-pulse-glow" />
-      <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-[128px] animate-pulse-glow" style={{ animationDelay: "1s" }} />
+      <div className="absolute top-1/4 end-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-[128px] animate-pulse-glow" />
+      <div className="absolute bottom-1/4 start-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-[128px] animate-pulse-glow" style={{ animationDelay: "1s" }} />
 
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
@@ -98,12 +98,12 @@ export default function RegisterPage() {
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
                 <div className="relative">
-                  <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <UserIcon className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="name"
                     type="text"
                     placeholder="Enter your full name"
-                    className="pl-10 bg-input/50 border-white/10 focus-visible:ring-purple-500"
+                    className="ps-10 bg-input/50 border-white/10 focus-visible:ring-purple-500"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
@@ -114,12 +114,12 @@ export default function RegisterPage() {
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Mail className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="email"
                     type="email"
                     placeholder="Enter your email"
-                    className="pl-10 bg-input/50 border-white/10 focus-visible:ring-purple-500"
+                    className="ps-10 bg-input/50 border-white/10 focus-visible:ring-purple-500"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -130,12 +130,12 @@ export default function RegisterPage() {
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Lock className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
-                    className="pl-10 pr-10 bg-input/50 border-white/10 focus-visible:ring-purple-500"
+                    className="ps-10 pe-10 bg-input/50 border-white/10 focus-visible:ring-purple-500"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -143,7 +143,7 @@ export default function RegisterPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -157,12 +157,12 @@ export default function RegisterPage() {
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword">Confirm Password</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Lock className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="confirmPassword"
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
-                    className="pl-10 bg-input/50 border-white/10 focus-visible:ring-purple-500"
+                    className="ps-10 bg-input/50 border-white/10 focus-visible:ring-purple-500"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required

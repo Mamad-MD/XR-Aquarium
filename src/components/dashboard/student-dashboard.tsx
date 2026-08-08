@@ -79,19 +79,19 @@ export function StudentDashboard({ user, data }: { user: { name?: string | null,
         <Tabs defaultValue="overview" className="w-full">
           <TabsList className="grid grid-cols-4 w-full md:w-auto md:inline-flex bg-slate-900/50 border border-slate-800 p-1 mb-8">
             <TabsTrigger value="overview" className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400">
-              <LayoutDashboard className="w-4 h-4 md:mr-2" />
+              <LayoutDashboard className="w-4 h-4 md:me-2" />
               <span className="hidden md:inline">Overview</span>
             </TabsTrigger>
             <TabsTrigger value="project" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
-              <Boxes className="w-4 h-4 md:mr-2" />
+              <Boxes className="w-4 h-4 md:me-2" />
               <span className="hidden md:inline">My Project</span>
             </TabsTrigger>
             <TabsTrigger value="schedule" className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400">
-              <Calendar className="w-4 h-4 md:mr-2" />
+              <Calendar className="w-4 h-4 md:me-2" />
               <span className="hidden md:inline">Schedule</span>
             </TabsTrigger>
             <TabsTrigger value="downloads" className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400">
-              <FileText className="w-4 h-4 md:mr-2" />
+              <FileText className="w-4 h-4 md:me-2" />
               <span className="hidden md:inline">Downloads</span>
             </TabsTrigger>
           </TabsList>
@@ -187,7 +187,7 @@ export function StudentDashboard({ user, data }: { user: { name?: string | null,
             <motion.div variants={containerVariants} initial="hidden" animate="visible">
               {selectedProject ? (
                 <Card className="glass-strong border-purple-500/30 overflow-hidden relative">
-                  <div className="absolute top-0 right-0 p-32 bg-purple-500/10 blur-3xl -z-10 rounded-full"></div>
+                  <div className="absolute top-0 end-0 p-32 bg-purple-500/10 blur-3xl -z-10 rounded-full"></div>
                   <CardHeader>
                     <CardTitle className="text-2xl neon-purple">{String(selectedProject.title)}</CardTitle>
                     <CardDescription className="text-slate-400">
@@ -251,15 +251,15 @@ export function StudentDashboard({ user, data }: { user: { name?: string | null,
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="relative border-l-2 border-slate-800 ml-3 space-y-8 pb-4">
+                  <div className="relative border-s-2 border-slate-800 ms-3 space-y-8 pb-4">
                     {/* Mock Schedule Items */}
                     {[
                       { title: "Intro to WebXR API", date: "Today, 2:00 PM", type: "Lecture", speaker: "Alex Vance" },
                       { title: "Three.js Fundamentals Lab", date: "Tomorrow, 10:00 AM", type: "Lab", speaker: "Sarah Chen" },
                       { title: "Project Proposal Review", date: "Friday, 1:00 PM", type: "Review", speaker: "Cohort Mentors" }
                     ].map((item, i) => (
-                      <div key={i} className="relative pl-6">
-                        <div className="absolute w-3 h-3 bg-cyan-500 rounded-full -left-[7px] top-1.5 shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
+                      <div key={i} className="relative ps-6">
+                        <div className="absolute w-3 h-3 bg-cyan-500 rounded-full -start-[7px] top-1.5 shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
                         <div className="glass p-4 rounded-lg border border-slate-800 hover:border-cyan-500/30 transition-colors">
                           <div className="flex justify-between items-start mb-2">
                             <h4 className="font-semibold text-white">{item.title}</h4>

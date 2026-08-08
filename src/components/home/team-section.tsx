@@ -28,7 +28,7 @@ export function TeamSection({ team }: { team: User[] }) {
   return (
     <section className="py-24 relative overflow-hidden bg-gradient-to-b from-background via-purple-900/10 to-background">
       {/* Background elements */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute top-0 end-0 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="container mx-auto px-4 relative z-10">
         <motion.div

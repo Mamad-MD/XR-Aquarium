@@ -1,0 +1,97 @@
+{
+  "Common": {
+    "login": "ورود",
+    "register": "ثبت‌نام",
+    "submit": "ارسال",
+    "cancel": "انصراف",
+    "save": "ذخیره",
+    "edit": "ویرایش",
+    "delete": "حذف",
+    "search": "جستجو...",
+    "loading": "در حال بارگذاری...",
+    "error": "خطایی رخ داده است",
+    "success": "با موفقیت انجام شد",
+    "logout": "خروج",
+    "settings": "تنظیمات",
+    "profile": "نمایه کاربری",
+    "back": "بازگشت",
+    "next": "بعدی",
+    "previous": "قبلی",
+    "close": "بستن",
+    "confirm": "تایید",
+    "viewMore": "مشاهده بیشتر",
+    "readMore": "بیشتر بخوانید",
+    "noResults": "نتیجه‌ای یافت نشد",
+    "required": "این فیلد الزامی است"
+  },
+  "Navbar": {
+    "home": "خانه",
+    "about": "درباره ما",
+    "projects": "پروژه‌ها",
+    "team": "تیم ما",
+    "dashboard": "داشبورد",
+    "learn": "آموزش",
+    "admin": "مدیریت",
+    "language": "زبان",
+    "theme": "پوسته",
+    "darkMode": "حالت تاریک",
+    "lightMode": "حالت روشن"
+  },
+  "Hero": {
+    "title": "آکواریوم واقعیت توسعه‌یافته",
+    "subtitle": "تجربه‌ای نوین در دنیای زیر آب با فناوری‌های فراگیر",
+    "getStarted": "شروع کنید",
+    "learnMore": "اطلاعات بیشتر"
+  },
+  "About": {
+    "title": "درباره پروژه",
+    "description": "یک سیستم نوین برای شبیه‌سازی زیست‌بوم‌های آبی با استفاده از فناوری واقعیت توسعه‌یافته",
+    "mission": "ماموریت ما",
+    "vision": "چشم‌انداز",
+    "technologies": "فناوری‌های مورد استفاده"
+  },
+  "Team": {
+    "title": "تیم توسعه‌دهندگان",
+    "subtitle": "متخصصان و پژوهشگران پشت این پروژه",
+    "roles": {
+      "manager": "مدیر پروژه",
+      "developer": "توسعه‌دهنده ارشد",
+      "researcher": "پژوهشگر",
+      "designer": "طراح رابط کاربری"
+    }
+  },
+  "Projects": {
+    "title": "پروژه‌ها",
+    "subtitle": "دستاوردهای اخیر",
+    "ongoing": "در حال انجام",
+    "completed": "پایان‌یافته",
+    "details": "جزئیات پروژه",
+    "viewProject": "مشاهده پروژه"
+  },
+  "Dashboard": {
+    "title": "داشبورد",
+    "overview": "نمای کلی",
+    "statistics": "آمار",
+    "activity": "فعالیت‌های اخیر",
+    "reports": "گزارش‌ها",
+    "users": "کاربران",
+    "activeUsers": "کاربران فعال",
+    "systemStatus": "وضعیت سیستم",
+    "metrics": {
+      "views": "بازدیدها",
+      "interactions": "تعاملات",
+      "timeSpent": "زمان سپری‌شده"
+    }
+  },
+  "Admin": {
+    "title": "پنل مدیریت",
+    "usersList": "لیست کاربران",
+    "contentManagement": "مدیریت محتوا",
+    "systemSettings": "تنظیمات سیستم",
+    "roles": "نقش‌ها و دسترسی‌ها",
+    "logs": "گزارش سیستم",
+    "addContent": "افزودن محتوا",
+    "editContent": "ویرایش محتوا",
+    "deleteConfirm": "آیا از حذف این مورد اطمینان دارید؟"
+  }
+}
