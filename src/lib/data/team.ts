@@ -67,5 +67,41 @@ export const team: TeamMember[] = [
       linkedin: 'https://linkedin.com/in/amirshirazi',
       github: 'https://github.com/amir-haptics'
     }
+  },
+  {
+    id: 't6',
+    name: 'Parsa Golboo',
+    nameFa: 'پارسا گل بو',
+    role: 'Head of Aquarium',
+    roleFa: 'مسئول آکواریوم',
+    bio: 'Visionary leader of the XR Aquarium project, orchestrating the intersection of marine biology and spatial computing.',
+    avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026705d',
+    socials: {
+      linkedin: 'https://linkedin.com/in/parsagolboo'
+    }
+  },
+  {
+    id: 't7',
+    name: 'Ali Najjarzadegan',
+    nameFa: 'علی نجارزادگان',
+    role: 'Head of XR Lab',
+    roleFa: 'مسئول آزمایشگاه XR',
+    bio: 'Directing research and development in the XR Lab, pushing the boundaries of what is possible in extended reality.',
+    avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026706d',
+    socials: {
+      linkedin: 'https://linkedin.com/in/alinajjarzadegan'
+    }
+  },
+  {
+    id: 't8',
+    name: 'Mohammad Mosayebi',
+    nameFa: 'محمد مسیبی',
+    role: 'Mentor & Web Lead',
+    roleFa: 'منتور و طراح سایت',
+    bio: 'Guiding teams through web and XR integration, ensuring seamless user experiences across platforms.',
+    avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026707d',
+    socials: {
+      linkedin: 'https://linkedin.com/in/mohammadmosayebi'
+    }
   }
 ];

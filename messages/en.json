@@ -35,20 +35,60 @@
     "language": "Language",
     "theme": "Theme",
     "darkMode": "Dark Mode",
-    "lightMode": "Light Mode"
+    "lightMode": "Light Mode",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout"
   },
   "Hero": {
     "title": "Extended Reality Aquarium",
     "subtitle": "A novel underwater experience using immersive technologies",
+    "description": "Join our cohort to build amazing XR experiences.",
     "getStarted": "Get Started",
-    "learnMore": "Learn More"
+    "learnMore": "Learn More",
+    "badge": "2026 XR Cohort Open",
+    "stats": {
+      "projects": "Projects",
+      "students": "Students",
+      "mentors": "Mentors",
+      "duration": "Months"
+    },
+    "exploreProjects": "Explore Projects",
+    "joinCohort": "Join Cohort"
   },
   "About": {
     "title": "About the Project",
     "description": "An innovative system for simulating aquatic ecosystems using extended reality technology",
     "mission": "Our Mission",
     "vision": "Vision",
-    "technologies": "Technologies Used"
+    "technologies": "Technologies Used",
+    "timeline": {
+      "w1": {
+        "week": "Week 1-2",
+        "title": "Orientation & Team Formation",
+        "desc": "Get introduced to the lab environment, meet mentors, and form multidisciplinary teams based on project interests."
+      },
+      "w2": {
+        "week": "Week 3-4",
+        "title": "Core Training & Workshops",
+        "desc": "Intensive deep dives into Unity/Unreal, spatial design patterns, and platform-specific XR SDKs."
+      },
+      "w3": {
+        "week": "Week 5-6",
+        "title": "Project Development",
+        "desc": "Hands-on building phase. Architect and implement the core mechanics of your XR experience."
+      },
+      "w4": {
+        "week": "Week 7-8",
+        "title": "Testing & Iteration",
+        "desc": "User testing, performance optimization on target hardware, and refining the user experience."
+      },
+      "w5": {
+        "week": "Week 8-9",
+        "title": "Final Presentations & Demo Day",
+        "desc": "Showcase your polished XR application to industry partners, peers, and sponsors."
+      }
+    }
   },
   "Team": {
     "title": "Development Team",
@@ -67,6 +107,13 @@
     "completed": "Completed",
     "details": "Project Details",
     "viewProject": "View Project"
+  },
+  "CTA": {
+    "title": "Ready to Dive In?",
+    "subtitle": "Join our next cohort",
+    "description": "Start your journey in XR development today.",
+    "applyNow": "Apply Now",
+    "viewProjects": "View Projects"
   },
   "Dashboard": {
     "title": "Dashboard",
