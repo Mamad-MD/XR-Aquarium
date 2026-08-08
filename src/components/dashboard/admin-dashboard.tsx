@@ -134,7 +134,7 @@ export function AdminDashboard({ user, data }: {
           </TabsList>
 
           <TabsContent value="overview">
-            <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
+            <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-">
               <h1 className="text-3xl font-bold tracking-tight mb-6">
                 System <span className="text-purple-400">Overview</span>
               </h1>
@@ -163,7 +163,7 @@ export function AdminDashboard({ user, data }: {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
+                  <div className="flex flex-col gap-">
                     {[
                       { msg: "Sarah Jenkins joined project 'Neural Interfaces'", time: "10 mins ago" },
                       { msg: "Project 'VR Training Sim' reached capacity", time: "1 hour ago" },
@@ -244,8 +244,8 @@ export function AdminDashboard({ user, data }: {
                   <CardDescription>Broadcast a message to all cohort members.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <form onSubmit={handlePostAnnouncement} className="space-y-4">
-                    <div className="space-y-2">
+                  <form onSubmit={handlePostAnnouncement} className="flex flex-col gap-">
+                    <div className="flex flex-col gap-">
                       <Label htmlFor="title">Title</Label>
                       <Input
                         id="title"
@@ -256,7 +256,7 @@ export function AdminDashboard({ user, data }: {
                         disabled={isSubmitting}
                       />
                     </div>
-                    <div className="space-y-2">
+                    <div className="flex flex-col gap-">
                       <Label htmlFor="content">Message Content</Label>
                       <textarea
                         id="content"
@@ -267,7 +267,7 @@ export function AdminDashboard({ user, data }: {
                         disabled={isSubmitting}
                       />
                     </div>
-                    <div className="space-y-2">
+                    <div className="flex flex-col gap-">
                       <Label>Priority</Label>
                       <div className="flex gap-4">
                         <label className="flex items-center gap-2 text-sm">
@@ -301,10 +301,10 @@ export function AdminDashboard({ user, data }: {
                 </CardContent>
               </Card>
 
-              <div className="space-y-4">
+              <div className="flex flex-col gap-">
                 <h3 className="font-medium text-slate-300">Recent Broadcasts</h3>
                 <ScrollArea className="h-[500px]">
-                  <div className="space-y-3 pe-4">
+                  <div className="flex flex-col gap- pe-4">
                     {announcements.map((a: { id: string, title: string, content: string, priority: string, createdAt: string }) => (
                       <div key={a.id} className={`p-4 rounded-lg border ${
                         a.priority === 'URGENT' || a.priority === 'HIGH' ? 'bg-red-500/5 border-red-500/20' : 'bg-slate-900/40 border-slate-800'
@@ -313,7 +313,7 @@ export function AdminDashboard({ user, data }: {
                           <h4 className={`font-medium ${a.priority === 'URGENT' || a.priority === 'HIGH' ? 'text-red-400' : 'text-slate-200'}`}>
                             {a.title}
                           </h4>
-                          <span className="text-xs text-slate-500">
+                          <span className="text-xs text-slate-500" dir="ltr">
                             {format(new Date(a.createdAt), 'MMM d, h:mm a')}
                           </span>
                         </div>
@@ -336,9 +336,9 @@ export function AdminDashboard({ user, data }: {
                   <CardTitle>System Configuration</CardTitle>
                   <CardDescription>Manage global cohort settings and access controls.</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent className="flex flex-col gap-">
                   <div className="flex items-center justify-between py-2">
-                    <div className="space-y-0.5">
+                    <div className="flex flex-col gap-.5">
                       <Label className="text-base font-medium">Student Registration</Label>
                       <p className="text-sm text-slate-400">Allow new students to create accounts</p>
                     </div>
@@ -346,7 +346,7 @@ export function AdminDashboard({ user, data }: {
                   </div>
                   <div className="h-px bg-slate-800 w-full" />
                   <div className="flex items-center justify-between py-2">
-                    <div className="space-y-0.5">
+                    <div className="flex flex-col gap-.5">
                       <Label className="text-base font-medium">Project Selection</Label>
                       <p className="text-sm text-slate-400">Allow students to join or leave projects</p>
                     </div>
@@ -354,7 +354,7 @@ export function AdminDashboard({ user, data }: {
                   </div>
                   <div className="h-px bg-slate-800 w-full" />
                   <div className="flex items-center justify-between py-2">
-                    <div className="space-y-0.5">
+                    <div className="flex flex-col gap-.5">
                       <Label className="text-base font-medium">Maintenance Mode</Label>
                       <p className="text-sm text-slate-400">Lock down the system for updates</p>
                     </div>
@@ -437,7 +437,7 @@ export function AdminDashboard({ user, data }: {
                           <div className="col-span-3 text-sm text-slate-300">
                             {app.project.title}
                           </div>
-                          <div className="col-span-2 text-xs text-slate-400">
+                          <div className="col-span-2 text-xs text-slate-400" dir="ltr">
                             {format(new Date(app.appliedAt), 'MMM d, yyyy')}
                           </div>
                           <div className="col-span-2">

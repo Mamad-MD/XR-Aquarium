@@ -7,7 +7,7 @@ export function Footer() {
           <p className="text-xs text-gray-500 mt-1">آزمایشگاه واقعیت توسعه‌یافته - فضای آموزشی آکواریوم</p>
         </div>
 
-        <div className="flex space-x-6">
+        <div className="flex gap-">
           <a href="#" className="hover:text-white transition-colors">About</a>
           <a href="#" className="hover:text-white transition-colors">Contact</a>
           <a href="#" className="hover:text-white transition-colors">Privacy</a>

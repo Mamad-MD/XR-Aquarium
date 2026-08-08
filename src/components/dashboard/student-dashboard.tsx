@@ -97,7 +97,7 @@ export function StudentDashboard({ user, data }: { user: { name?: string | null,
           </TabsList>
 
           <TabsContent value="overview">
-            <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
+            <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-">
               <div>
                 <h1 className="text-3xl font-bold tracking-tight mb-2">
                   Welcome back, <span className="gradient-text">{user.name?.split(' ')[0] || 'Student'}</span>
@@ -147,7 +147,7 @@ export function StudentDashboard({ user, data }: { user: { name?: string | null,
                   <Bell className="w-5 h-5 text-cyan-400" /> Recent Announcements
                 </h3>
                 <ScrollArea className="h-[400px] rounded-xl border border-slate-800 bg-slate-950/50 p-4">
-                  <div className="space-y-4">
+                  <div className="flex flex-col gap-">
                     {announcements.map((announcement: { id: string, title: string, content: string, priority: string, createdAt: string }) => (
                       <motion.div
                         key={announcement.id}
@@ -165,7 +165,7 @@ export function StudentDashboard({ user, data }: { user: { name?: string | null,
                             {(announcement.priority === 'HIGH' || announcement.priority === 'URGENT') && <AlertCircle className="w-4 h-4" />}
                             {announcement.title}
                           </h4>
-                          <span className="text-xs text-slate-500">
+                          <span className="text-xs text-slate-500" dir="ltr">
                             {announcement.createdAt ? format(new Date(announcement.createdAt), 'MMM d, h:mm a') : ''}
                           </span>
                         </div>
@@ -194,7 +194,7 @@ export function StudentDashboard({ user, data }: { user: { name?: string | null,
                       {String(selectedProject.description)}
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-6">
+                  <CardContent className="flex flex-col gap-">
                     <div>
                       <div className="flex justify-between text-sm mb-2">
                         <span className="text-slate-400">Project Progress</span>
@@ -251,7 +251,7 @@ export function StudentDashboard({ user, data }: { user: { name?: string | null,
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="relative border-s-2 border-slate-800 ms-3 space-y-8 pb-4">
+                  <div className="relative border-s-2 border-slate-800 ms-3 flex flex-col gap- pb-4">
                     {/* Mock Schedule Items */}
                     {[
                       { title: "Intro to WebXR API", date: "Today, 2:00 PM", type: "Lecture", speaker: "Alex Vance" },

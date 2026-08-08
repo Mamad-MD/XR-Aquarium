@@ -34,8 +34,8 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} dir={locale === 'fa' ? 'rtl' : 'ltr'} className="dark">
-      <body className={`${geist.variable} ${vazirmatn.variable} font-sans leading-relaxed antialiased bg-black text-white min-h-screen flex flex-col`}>
+    <html lang={locale} dir={locale === 'fa' ? 'rtl' : 'ltr'} className="dark" suppressHydrationWarning>
+      <body className={`${geist.variable} ${vazirmatn.variable} font-sans leading-relaxed antialiased bg-black text-white min-h-screen flex flex-col`} suppressHydrationWarning>
         <NextIntlClientProvider messages={messages}>
           <SessionProvider>
             <Navbar />

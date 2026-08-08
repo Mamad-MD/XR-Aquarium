@@ -100,14 +100,14 @@ export function ProjectCard({ project, onViewDetails }: ProjectCardProps) {
             <span className="text-xs text-zinc-400 font-medium">Tech Stack</span>
           </div>
           <div className="flex flex-wrap gap-1.5">
-            {parsedTechStack.slice(0, 3).map(tech => (
-              <span key={tech} className="text-xs px-2 py-1 rounded-md bg-white/5 border border-white/10 text-zinc-300">
-                {tech}
+            {parsedTechStack.slice(0, 3).map((tech, index) => (
+              <span key={index} className="text-xs px-2 py-1 rounded-md bg-white/5 border border-white/10 text-zinc-300">
+                <span dir="ltr" className="inline-block">{tech}</span>
               </span>
             ))}
             {parsedTechStack.length > 3 && (
               <span className="text-xs px-2 py-1 rounded-md bg-white/5 border border-white/10 text-zinc-400">
-                +{parsedTechStack.length - 3}
+                <span dir="ltr" className="inline-block">+{parsedTechStack.length - 3}</span>
               </span>
             )}
           </div>

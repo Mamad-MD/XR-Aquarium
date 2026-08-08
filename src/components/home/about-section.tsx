@@ -96,7 +96,7 @@ export function AboutSection() {
             <div className="absolute start-[27px] md:start-1/2 top-4 bottom-4 w-[2px] bg-gradient-to-b from-cyan-500/50 via-purple-500/50 to-transparent -translate-x-1/2 rounded-full hidden md:block" />
             <div className="absolute start-[27px] top-4 bottom-4 w-[2px] bg-gradient-to-b from-cyan-500/50 via-purple-500/50 to-transparent rounded-full md:hidden" />
 
-            <div className="space-y-12">
+            <div className="flex flex-col gap-">
               {timelineItems.map((item, index) => {
                 const isEven = index % 2 === 0;
 

@@ -12,7 +12,7 @@ interface LearnClientProps {
 
 export function LearnClient({ courses, resources }: LearnClientProps) {
   return (
-    <div className="container py-8 max-w-6xl mx-auto space-y-8">
+    <div className="container py-8 max-w-6xl mx-auto flex flex-col gap-">
       <div>
         <h1 className="text-4xl font-bold tracking-tight mb-2 text-primary drop-shadow-[0_0_15px_rgba(0,255,255,0.5)]">
           Learning Center
@@ -22,7 +22,7 @@ export function LearnClient({ courses, resources }: LearnClientProps) {
         </p>
       </div>
 
-      <Tabs defaultValue="tutorials" className="w-full space-y-6">
+      <Tabs defaultValue="tutorials" className="w-full flex flex-col gap-">
         <TabsList className="bg-secondary/20 border-secondary/50">
           <TabsTrigger value="tutorials" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
             Tutorials
@@ -32,7 +32,7 @@ export function LearnClient({ courses, resources }: LearnClientProps) {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="tutorials" className="space-y-4">
+        <TabsContent value="tutorials" className="flex flex-col gap-">
           {courses.map(course => (
             <div key={course.id} className="mb-8">
               <h2 className="text-2xl font-semibold mb-4 text-cyan-400">{course.title}</h2>
@@ -80,7 +80,7 @@ export function LearnClient({ courses, resources }: LearnClientProps) {
           )}
         </TabsContent>
 
-        <TabsContent value="downloads" className="space-y-4">
+        <TabsContent value="downloads" className="flex flex-col gap-">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {resources.map(resource => (
               <DownloadCard

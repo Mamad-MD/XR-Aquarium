@@ -118,20 +118,20 @@ export function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailD
               {project.difficulty}
             </Badge>
           </div>
-          <DialogTitle className="text-2xl font-bold gradient-text">{project.title}</DialogTitle>
+          <DialogTitle className="text-2xl font-bold gradient-text"><span dir="ltr" className="inline-block">{project.title}</span></DialogTitle>
           <p className="text-sm text-gray-400 font-medium">{project.titleFa}</p>
-          <DialogDescription className="text-base text-gray-300 mt-4 leading-relaxed">
+          <div className="text-base text-gray-300 mt-4 leading-relaxed">
             {project.description}
-          </DialogDescription>
+          </div>
         </DialogHeader>
 
         <ScrollArea className="max-h-[50vh] mt-4 pe-4">
-          <div className="space-y-6">
+          <div className="flex flex-col gap-">
             <div>
               <h4 className="text-lg font-semibold text-cyan-400 mb-3 flex items-center gap-2">
                 <CheckCircle className="w-5 h-5" /> Objectives
               </h4>
-              <ul className="space-y-2">
+              <ul className="flex flex-col gap-">
                 {parsedObjectives.map((obj, i) => (
                   <li key={i} className="flex items-start gap-2 text-gray-300 text-sm">
                     <ArrowRight className="w-4 h-4 text-purple-500 mt-0.5 shrink-0" />
@@ -145,7 +145,7 @@ export function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailD
               <h4 className="text-lg font-semibold text-cyan-400 mb-3 flex items-center gap-2">
                 <Users className="w-5 h-5" /> Capacity & Mentor
               </h4>
-              <div className="bg-white/5 border border-white/10 rounded-lg p-4 space-y-4">
+              <div className="bg-white/5 border border-white/10 rounded-lg p-4 flex flex-col gap-">
                 <div>
                   <div className="flex justify-between text-sm mb-2">
                     <span className="text-gray-400">Enrolled ({enrolledCount}/{project.maxCapacity})</span>
@@ -168,8 +168,8 @@ export function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailD
             <div>
               <h4 className="text-lg font-semibold text-cyan-400 mb-3">Tech Stack</h4>
               <div className="flex flex-wrap gap-2">
-                {parsedTechStack.map(tech => (
-                  <Badge key={tech} variant="outline" className="bg-black/50">{tech}</Badge>
+                {parsedTechStack.map((tech, i) => (
+                  <Badge key={i} variant="outline" className="bg-black/50"><span dir="ltr" className="inline-block">{tech}</span></Badge>
                 ))}
               </div>
             </div>

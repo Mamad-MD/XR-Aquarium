@@ -20,12 +20,12 @@ export function Navbar() {
   return (
     <nav className="sticky top-0 z-50 glass border-b border-white/10 px-6 py-4 bg-black/50 backdrop-blur-md text-white">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <div className="flex items-center space-x-reverse space-x-8">
+        <div className="flex items-center  gap-8">
           <Link href="/" className="text-xl font-bold tracking-tighter">
             XR Aquarium
           </Link>
 
-          <div className="hidden md:flex items-center space-x-reverse space-x-6 text-sm font-medium">
+          <div className="hidden md:flex items-center gap-6 text-sm font-medium">
             <Link href="/" className="hover:text-blue-400 transition-colors">{t('home')}</Link>
             <Link href="/projects" className="hover:text-blue-400 transition-colors">{t('projects')}</Link>
             <Link href="/learn" className="hover:text-blue-400 transition-colors">{t('learn')}</Link>
@@ -33,7 +33,7 @@ export function Navbar() {
           </div>
         </div>
 
-        <div className="flex items-center space-x-reverse space-x-4 text-sm font-medium">
+        <div className="flex items-center gap-4 text-sm font-medium">
           <button 
             onClick={toggleLocale}
             className="px-3 py-1 rounded-md bg-white/5 hover:bg-white/10 transition-colors border border-white/10 text-xs font-bold"
@@ -43,7 +43,7 @@ export function Navbar() {
           
           {!isLoading && (
             session ? (
-              <div className="flex items-center space-x-reverse space-x-4">
+              <div className="flex items-center gap-4">
                 <Link
                   href="/dashboard"
                   className="hidden sm:block text-gray-300 hover:text-white transition-colors"
@@ -58,7 +58,7 @@ export function Navbar() {
                 </button>
               </div>
             ) : (
-              <div className="flex items-center space-x-reverse space-x-3">
+              <div className="flex items-center gap-3">
                 <Link
                   href="/auth/login"
                   className="px-4 py-2 text-gray-300 hover:text-white transition-colors"
