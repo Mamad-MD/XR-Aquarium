@@ -12,7 +12,7 @@ export function CTASection() {
     <section className="py-32 relative overflow-hidden">
       {/* Dynamic Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-cyan-900/10 to-background" />
-      <div className="absolute start-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-[400px] bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-[400px] bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="container mx-auto px-4 relative z-10">
         <motion.div
@@ -52,7 +52,6 @@ export function CTASection() {
               viewport={{ once: true }}
               transition={{ delay: 0.4 }}
               className="text-2xl md:text-3xl font-medium text-cyan-400 mb-6 font-sans"
-              dir="rtl"
             >
               {t('subtitle')}
             </motion.h3>
@@ -64,7 +63,7 @@ export function CTASection() {
               transition={{ delay: 0.5 }}
               className="text-lg text-gray-400 mb-10 max-w-2xl mx-auto"
             >
-              {t('description')}
+              {t.rich('description', { ltr: (chunks) => <span dir="ltr">{chunks}</span> })}
             </motion.p>
 
             <motion.div
@@ -79,10 +78,10 @@ export function CTASection() {
                   {t('applyNow')}
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="px-10 py-6 text-lg bg-background/50 backdrop-blur-sm border-white/20 hover:bg-white/10">
+              <Button asChild size="lg" variant="outline" className="px-10 py-6 text-lg bg-background/50 backdrop-blur-sm border-white/20 hover:bg-white/10 group flex items-center">
                 <Link href="/projects">
                   {t('viewProjects')}
-                  <ArrowRight className="ms-2 w-5 h-5" />
+                  <ArrowRight className="ms-2 w-5 h-5 rtl:rotate-180 transition-transform group-hover:rtl:-translate-x-1 group-hover:ltr:translate-x-1" />
                 </Link>
               </Button>
             </motion.div>

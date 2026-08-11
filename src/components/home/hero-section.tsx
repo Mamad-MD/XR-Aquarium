@@ -22,7 +22,7 @@ const itemVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: "easeOut" as any },
+    transition: { duration: 0.6 },
   },
 };
 
@@ -55,28 +55,28 @@ export function HeroSection() {
           animate="visible"
           className="max-w-4xl mx-auto text-center flex flex-col items-center"
         >
-          <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8 border-cyan-500/30 text-cyan-400 text-sm font-medium">
+          <motion.div variants={itemVariants} className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-cyan-500/10 mb-10 border border-cyan-500/30 text-cyan-400 text-sm font-medium z-30 relative backdrop-blur-md mt-6">
             <Sparkles className="w-4 h-4" />
-            <span>{t('badge')}</span>
+            <span>{t.rich('badge', { ltr: (chunks) => <span dir="ltr">{chunks}</span> })}</span>
           </motion.div>
 
-          <motion.h1 variants={itemVariants} className="text-5xl md:text-7xl font-bold mb-4 tracking-tight">
+          <motion.h1 variants={itemVariants} className="text-5xl md:text-7xl font-bold mb-4 tracking-tight z-10 relative">
             <span className="gradient-text neon-text-cyan block pb-2">{t('title')}</span>
           </motion.h1>
 
-          <motion.h2 variants={itemVariants} className="text-2xl md:text-4xl font-medium text-gray-300 mb-6 font-sans" dir="rtl">
+          <motion.h2 variants={itemVariants} className="text-2xl md:text-4xl font-medium text-gray-300 mb-6 font-sans">
             {t('subtitle')}
           </motion.h2>
 
           <motion.p variants={itemVariants} className="text-lg text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-            {t('description')}
+            {t.rich('description', { ltr: (chunks) => <span dir="ltr">{chunks}</span> })}
           </motion.p>
 
           <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 mb-20 w-full justify-center">
-            <Button asChild size="lg" className="neon-cyan px-8 py-6 text-lg">
+            <Button asChild size="lg" className="neon-cyan px-8 py-6 text-lg group">
               <Link href="/projects">
                 {t('exploreProjects')}
-                <ArrowRight className="ms-2 w-5 h-5" />
+                <ArrowRight className="ms-2 w-5 h-5 rtl:rotate-180 transition-transform group-hover:rtl:-translate-x-1 group-hover:ltr:translate-x-1" />
               </Link>
             </Button>
             <Button asChild size="lg" variant="secondary" className="px-8 py-6 text-lg glass-strong border-white/20">
@@ -94,7 +94,14 @@ export function HeroSection() {
             {stats.map((stat, i) => (
               <div key={i} className="glass rounded-xl p-6 flex flex-col items-center justify-center border-t-white/10 border-b-transparent border-s-transparent border-e-transparent shadow-lg transition-transform hover:-translate-y-1 hover:neon-purple">
                 <stat.icon className="w-8 h-8 text-cyan-400 mb-3" />
-                <span className="text-2xl font-bold text-white mb-1">{stat.value}</span>
+                <span className="text-2xl font-bold text-white mb-1">
+                  <span dir="ltr">
+                    {stat.label === t('stats.projects') ? '+20' :
+                     stat.label === t('stats.students') ? '50' :
+                     stat.label === t('stats.mentors') ? '8' :
+                     stat.label === t('stats.duration') ? '2' : stat.value}
+                  </span>
+                </span>
                 <span className="text-sm text-gray-400 uppercase tracking-wider block text-center">{stat.label}</span>
               </div>
             ))}

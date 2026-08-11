@@ -91,5 +91,7 @@ export interface ScheduleItem {
   time: string;
   type: 'workshop' | 'deadline' | 'presentation' | 'meeting' | 'event';
   description: string;
+  descriptionFa?: string;
   location?: string;
+  locationFa?: string;
 }

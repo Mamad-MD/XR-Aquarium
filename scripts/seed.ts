@@ -176,10 +176,13 @@ async function main() {
       data: {
         id: s.id,
         title: s.title,
+        titleFa: s.titleFa,
         type: s.type.toUpperCase(),
         date: dateObj,
         location: s.location || "",
+        locationFa: s.locationFa || "",
         description: s.description,
+        descriptionFa: s.descriptionFa,
       }
     });
   }

@@ -16,10 +16,12 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 
 export function AdminDashboard({ user, data }: {
+
   user: { name?: string | null, image?: string | null, id?: string | null },
   data: {
     studentsCount?: number,
@@ -35,6 +37,8 @@ export function AdminDashboard({ user, data }: {
     }>
   }
 }) {
+  const t = useTranslations("Dashboard");
+  const tCommon = useTranslations("Common");
   const router = useRouter();
   const announcements = data?.announcements || [];
   const applications = data?.applications || [];
@@ -134,7 +138,7 @@ export function AdminDashboard({ user, data }: {
           </TabsList>
 
           <TabsContent value="overview">
-            <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-">
+            <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-6">
               <h1 className="text-3xl font-bold tracking-tight mb-6">
                 System <span className="text-purple-400">Overview</span>
               </h1>
@@ -163,7 +167,7 @@ export function AdminDashboard({ user, data }: {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex flex-col gap-">
+                  <div className="flex flex-col gap-4">
                     {[
                       { msg: "Sarah Jenkins joined project 'Neural Interfaces'", time: "10 mins ago" },
                       { msg: "Project 'VR Training Sim' reached capacity", time: "1 hour ago" },
@@ -184,11 +188,11 @@ export function AdminDashboard({ user, data }: {
             <motion.div variants={containerVariants} initial="hidden" animate="visible">
               <Card className="glass border-slate-800">
                 <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                  <CardTitle>Student Directory</CardTitle>
+                  <CardTitle>{t("studentDirectory")}</CardTitle>
                   <div className="relative w-full md:w-64">
                     <Search className="absolute start-2.5 top-2.5 h-4 w-4 text-slate-500" />
                     <Input
-                      placeholder="Search students..."
+                      placeholder={t("searchStudents")}
                       className="ps-9 bg-slate-900/50 border-slate-800 focus-visible:ring-purple-500"
                     />
                   </div>
@@ -240,13 +244,13 @@ export function AdminDashboard({ user, data }: {
             <motion.div variants={containerVariants} initial="hidden" animate="visible" className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card className="glass border-slate-800 h-fit">
                 <CardHeader>
-                  <CardTitle>Post Announcement</CardTitle>
-                  <CardDescription>Broadcast a message to all cohort members.</CardDescription>
+                  <CardTitle>{t("postAnnouncement")}</CardTitle>
+                  <CardDescription>{t("broadcastMessage")}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <form onSubmit={handlePostAnnouncement} className="flex flex-col gap-">
-                    <div className="flex flex-col gap-">
-                      <Label htmlFor="title">Title</Label>
+                  <form onSubmit={handlePostAnnouncement} className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-2">
+                      <Label htmlFor="title">{t("titleLabel")}</Label>
                       <Input
                         id="title"
                         value={newAnnouncement.title}
@@ -256,8 +260,8 @@ export function AdminDashboard({ user, data }: {
                         disabled={isSubmitting}
                       />
                     </div>
-                    <div className="flex flex-col gap-">
-                      <Label htmlFor="content">Message Content</Label>
+                    <div className="flex flex-col gap-2">
+                      <Label htmlFor="content">{t("messageContent")}</Label>
                       <textarea
                         id="content"
                         value={newAnnouncement.content}
@@ -267,8 +271,8 @@ export function AdminDashboard({ user, data }: {
                         disabled={isSubmitting}
                       />
                     </div>
-                    <div className="flex flex-col gap-">
-                      <Label>Priority</Label>
+                    <div className="flex flex-col gap-2">
+                      <Label>{t("priority")}</Label>
                       <div className="flex gap-4">
                         <label className="flex items-center gap-2 text-sm">
                           <input
@@ -279,7 +283,7 @@ export function AdminDashboard({ user, data }: {
                             className="text-purple-500 bg-slate-900 border-slate-800 focus:ring-purple-500"
                             disabled={isSubmitting}
                           />
-                          Normal
+                          {t("normal")}
                         </label>
                         <label className="flex items-center gap-2 text-sm">
                           <input
@@ -290,7 +294,7 @@ export function AdminDashboard({ user, data }: {
                             className="text-red-500 bg-slate-900 border-slate-800 focus:ring-red-500"
                             disabled={isSubmitting}
                           />
-                          <span className="text-red-400">High Priority</span>
+                          <span className="text-red-400">{t("highPriority")}</span>
                         </label>
                       </div>
                     </div>
@@ -301,10 +305,10 @@ export function AdminDashboard({ user, data }: {
                 </CardContent>
               </Card>
 
-              <div className="flex flex-col gap-">
+              <div className="flex flex-col gap-4">
                 <h3 className="font-medium text-slate-300">Recent Broadcasts</h3>
                 <ScrollArea className="h-[500px]">
-                  <div className="flex flex-col gap- pe-4">
+                  <div className="flex flex-col gap-4 pe-4">
                     {announcements.map((a: { id: string, title: string, content: string, priority: string, createdAt: string }) => (
                       <div key={a.id} className={`p-4 rounded-lg border ${
                         a.priority === 'URGENT' || a.priority === 'HIGH' ? 'bg-red-500/5 border-red-500/20' : 'bg-slate-900/40 border-slate-800'
@@ -333,30 +337,30 @@ export function AdminDashboard({ user, data }: {
             <motion.div variants={containerVariants} initial="hidden" animate="visible" className="max-w-2xl">
               <Card className="glass border-slate-800">
                 <CardHeader>
-                  <CardTitle>System Configuration</CardTitle>
+                  <CardTitle>{t("systemConfig")}</CardTitle>
                   <CardDescription>Manage global cohort settings and access controls.</CardDescription>
                 </CardHeader>
-                <CardContent className="flex flex-col gap-">
+                <CardContent className="flex flex-col gap-4">
                   <div className="flex items-center justify-between py-2">
-                    <div className="flex flex-col gap-.5">
-                      <Label className="text-base font-medium">Student Registration</Label>
-                      <p className="text-sm text-slate-400">Allow new students to create accounts</p>
+                    <div className="flex flex-col gap-1">
+                      <Label className="text-base font-medium">{t("studentReg")}</Label>
+                      <p className="text-sm text-slate-400">{t("studentRegDesc")}</p>
                     </div>
                     <Switch defaultChecked />
                   </div>
                   <div className="h-px bg-slate-800 w-full" />
                   <div className="flex items-center justify-between py-2">
-                    <div className="flex flex-col gap-.5">
-                      <Label className="text-base font-medium">Project Selection</Label>
-                      <p className="text-sm text-slate-400">Allow students to join or leave projects</p>
+                    <div className="flex flex-col gap-1">
+                      <Label className="text-base font-medium">{t("projectSel")}</Label>
+                      <p className="text-sm text-slate-400">{t("projectSelDesc")}</p>
                     </div>
                     <Switch defaultChecked />
                   </div>
                   <div className="h-px bg-slate-800 w-full" />
                   <div className="flex items-center justify-between py-2">
-                    <div className="flex flex-col gap-.5">
-                      <Label className="text-base font-medium">Maintenance Mode</Label>
-                      <p className="text-sm text-slate-400">Lock down the system for updates</p>
+                    <div className="flex flex-col gap-1">
+                      <Label className="text-base font-medium">{t("maintenance")}</Label>
+                      <p className="text-sm text-slate-400">{t("maintenanceDesc")}</p>
                     </div>
                     <Switch />
                   </div>
@@ -370,11 +374,11 @@ export function AdminDashboard({ user, data }: {
                <Card className="glass border-slate-800">
                 <CardHeader className="flex flex-row items-center justify-between">
                   <div>
-                    <CardTitle>Active Projects</CardTitle>
-                    <CardDescription>Manage cohort projects and teams</CardDescription>
+                    <CardTitle>{t("activeProjects")}</CardTitle>
+                    <CardDescription>{t("manageProjects")}</CardDescription>
                   </div>
                   <Button className="bg-purple-600 hover:bg-purple-700">
-                    <Plus className="w-4 h-4 me-2" /> New Project
+                    <Plus className="w-4 h-4 me-2" /> {t("newProject")}
                   </Button>
                 </CardHeader>
                 <CardContent>
@@ -414,8 +418,8 @@ export function AdminDashboard({ user, data }: {
             <motion.div variants={containerVariants} initial="hidden" animate="visible">
               <Card className="glass border-slate-800">
                 <CardHeader>
-                  <CardTitle>Project Applications</CardTitle>
-                  <CardDescription>Review and manage student applications for projects</CardDescription>
+                  <CardTitle>{t("projectApps")}</CardTitle>
+                  <CardDescription>{t("reviewApps")}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="rounded-md border border-slate-800">
@@ -427,7 +431,7 @@ export function AdminDashboard({ user, data }: {
                       <div className="col-span-2 text-end">Actions</div>
                     </div>
                     {applications.length === 0 ? (
-                      <div className="p-8 text-center text-slate-500">No applications found.</div>
+                      <div className="p-8 text-center text-slate-500">{t("noApps")}</div>
                     ) : (
                       applications.map((app) => (
                         <div key={app.id} className="grid grid-cols-12 gap-4 p-4 items-center border-b border-slate-800/50 last:border-0 hover:bg-slate-900/30 transition-colors">

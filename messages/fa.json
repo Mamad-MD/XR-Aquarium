@@ -42,11 +42,11 @@
   },
   "Hero": {
     "title": "آکواریوم واقعیت توسعه‌یافته",
-    "subtitle": "تجربه‌ای نوین در دنیای زیر آب با فناوری‌های فراگیر",
-    "description": "برای ساخت تجربه‌های شگفت‌انگیز <span dir=\"ltr\">XR</span> به دوره ما بپیوندید.",
+    "subtitle": "رویداد پیشگام در صنعت ۴ و فناوری‌های فضایی",
+    "description": "به هسته <ltr>XR</ltr> بپیوندید تا در مرزهای فناوری واقعیت مجازی و افزوده، ایده‌های نوآورانه را تجاری‌سازی کنید.",
     "getStarted": "شروع کنید",
     "learnMore": "اطلاعات بیشتر",
-    "badge": "ثبت‌نام دوره ۲۰۲۶ <span dir=\"ltr\">XR</span> باز است",
+    "badge": "ثبت‌نام رویداد ۲۰۲۶ <ltr>XR</ltr> آغاز شد",
     "stats": {
       "projects": "پروژه",
       "students": "دانشجو",
@@ -54,7 +54,7 @@
       "duration": "ماه"
     },
     "exploreProjects": "بررسی پروژه‌ها",
-    "joinCohort": "عضویت در دوره"
+    "joinCohort": "ثبت‌نام در رویداد"
   },
   "About": {
     "title": "درباره پروژه",
@@ -71,12 +71,12 @@
       "w2": {
         "week": "هفته ۳-۴",
         "title": "آموزش‌های پایه و کارگاه‌ها",
-        "desc": "آموزش‌های فشرده و عمیق در <span dir=\"ltr\">Unity/Unreal</span>، الگوهای طراحی فضایی و ابزارهای توسعه (<span dir=\"ltr\">SDK</span>) پلتفرم‌های مختلف <span dir=\"ltr\">XR</span>."
+        "desc": "آموزش‌های فشرده و عمیق در <ltr>Unity/Unreal</ltr>، الگوهای طراحی فضایی و ابزارهای توسعه (<ltr>SDK</ltr>) پلتفرم‌های مختلف <ltr>XR</ltr>."
       },
       "w3": {
         "week": "هفته ۵-۶",
         "title": "توسعه پروژه",
-        "desc": "مرحله ساخت عملی. معماری و پیاده‌سازی مکانیزم‌های اصلی تجربه <span dir=\"ltr\">XR</span> شما."
+        "desc": "مرحله ساخت عملی. معماری و پیاده‌سازی مکانیزم‌های اصلی تجربه <ltr>XR</ltr> شما."
       },
       "w4": {
         "week": "هفته ۷-۸",
@@ -86,7 +86,7 @@
       "w5": {
         "week": "هفته ۸-۹",
         "title": "ارائه‌های نهایی و روز نمایش",
-        "desc": "نمایش برنامه نهایی و صیقل‌یافته <span dir=\"ltr\">XR</span> شما به شرکای صنعتی، همتایان و حامیان."
+        "desc": "نمایش برنامه نهایی و صیقل‌یافته <ltr>XR</ltr> شما به شرکای صنعتی، همتایان و حامیان."
       }
     }
   },
@@ -106,14 +106,34 @@
     "ongoing": "در حال انجام",
     "completed": "پایان‌یافته",
     "details": "جزئیات پروژه",
-    "viewProject": "مشاهده پروژه"
+    "viewProject": "مشاهده پروژه",
+    "projectHub": "مرکز پروژه‌ها",
+    "exploreProjects": "بیش از ۲۰ پروژه پیشرفته XR را بررسی کنید",
+    "searchProjects": "جستجوی پروژه‌ها...",
+    "allLevels": "همه سطوح",
+    "beginner": "مبتدی",
+    "intermediate": "متوسط",
+    "advanced": "پیشرفته",
+    "noProjects": "پروژه‌ای مطابق با معیارهای شما یافت نشد.",
+    "objectives": "اهداف",
+    "capacityAndMentor": "ظرفیت و منتور",
+    "enrolled": "ثبت‌نام شده",
+    "spotsLeft": "ظرفیت باقیمانده",
+    "full": "تکمیل",
+    "duration": "مدت زمان",
+    "techStack": "فناوری‌ها",
+    "projectIsFull": "ظرفیت پروژه تکمیل است",
+    "applyForProject": "درخواست برای پروژه",
+    "applying": "در حال ثبت درخواست...",
+    "viewDetails": "مشاهده جزئیات",
+    "select": "انتخاب"
   },
   "CTA": {
-    "title": "آماده شیرجه زدن هستید؟",
-    "subtitle": "به دوره بعدی ما بپیوندید",
-    "description": "امروز سفر خود را در توسعه <span dir=\"ltr\">XR</span> آغاز کنید.",
-    "applyNow": "همین الان درخواست دهید",
-    "viewProjects": "مشاهده پروژه‌ها"
+    "title": "آماده‌ی خلق شگفتی هستید؟",
+    "subtitle": "فصل جدیدی از آفرینش در انتظار شماست",
+    "description": "همین امروز قدم به دنیای بی‌نهایت <ltr>XR</ltr> بگذارید و رویاهای ذهنی‌تان را به واقعیت‌های ملموس تبدیل کنید. دوره جدید ظرفیت محدودی دارد.",
+    "applyNow": "ثبت‌نام در دوره جدید",
+    "viewProjects": "مرور پروژه‌ها"
   },
   "Dashboard": {
     "title": "داشبورد",
@@ -128,7 +148,62 @@
       "views": "بازدیدها",
       "interactions": "تعاملات",
       "timeSpent": "زمان سپری‌شده"
-    }
+    },
+    "welcomeBack": "خوش آمدید",
+    "whatsHappening": "آنچه امروز در دوره XR می‌گذرد.",
+    "myProject": "پروژه من",
+    "schedule": "برنامه زمان‌بندی",
+    "downloads": "دانلودها",
+    "status": "وضعیت",
+    "active": "فعال",
+    "cohortProgress": "پیشرفت دوره",
+    "nextDeadline": "موعد بعدی",
+    "recentAnnouncements": "اطلاعیه‌های اخیر",
+    "noAnnouncements": "در حال حاضر اطلاعیه‌ای وجود ندارد.",
+    "projectProgress": "پیشرفت پروژه",
+    "category": "دسته‌بندی",
+    "statusLabel": "وضعیت",
+    "activeTeamMember": "عضو فعال تیم",
+    "applicationPending": "درخواست در انتظار تایید",
+    "viewProjectDetails": "مشاهده جزئیات پروژه",
+    "submitUpdate": "ثبت به‌روزرسانی",
+    "noProjectSelected": "پروژه‌ای انتخاب نشده است",
+    "noProjectDesc": "شما هنوز به پروژه‌ای نپیوسته‌اید. پروژه‌های موجود را بررسی کنید و تیمی برای این دوره پیدا کنید.",
+    "browseProjects": "بررسی پروژه‌ها",
+    "upcomingSessions": "جلسات پیش‌رو",
+    "adminOverview": "نمای کلی سیستم",
+    "totalStudents": "کل دانشجویان",
+    "mentors": "منتورها",
+    "projectsOpen": "پروژه‌های باز",
+    "activeNow": "هم‌اکنون فعال",
+    "studentDirectory": "لیست دانشجویان",
+    "searchStudents": "جستجوی دانشجویان...",
+    "name": "نام",
+    "project": "پروژه",
+    "actions": "عملیات",
+    "postAnnouncement": "ثبت اطلاعیه",
+    "broadcastMessage": "ارسال پیام برای تمام اعضای دوره.",
+    "titleLabel": "عنوان",
+    "messageContent": "محتوای پیام",
+    "priority": "اولویت",
+    "normal": "عادی",
+    "highPriority": "اولویت بالا",
+    "recentBroadcasts": "پیام‌های اخیر",
+    "systemConfig": "پیکربندی سیستم",
+    "studentReg": "ثبت‌نام دانشجو",
+    "studentRegDesc": "اجازه ایجاد حساب کاربری به دانشجویان جدید",
+    "projectSel": "انتخاب پروژه",
+    "projectSelDesc": "اجازه پیوستن یا ترک پروژه‌ها به دانشجویان",
+    "maintenance": "حالت تعمیر و نگهداری",
+    "maintenanceDesc": "قفل کردن سیستم برای به‌روزرسانی",
+    "activeProjects": "پروژه‌های فعال",
+    "manageProjects": "مدیریت پروژه‌ها و تیم‌های دوره",
+    "newProject": "پروژه جدید",
+    "capacity": "ظرفیت",
+    "projectApps": "درخواست‌های پروژه",
+    "reviewApps": "بررسی و مدیریت درخواست‌های دانشجویان برای پروژه‌ها",
+    "dateApplied": "تاریخ درخواست",
+    "noApps": "درخواستی یافت نشد."
   },
   "Admin": {
     "title": "پنل مدیریت",
@@ -140,5 +215,20 @@
     "addContent": "افزودن محتوا",
     "editContent": "ویرایش محتوا",
     "deleteConfirm": "آیا از حذف این مورد اطمینان دارید؟"
+  },
+  "Footer": {
+    "rights": "تمامی حقوق محفوظ است.",
+    "about": "درباره ما",
+    "contact": "تماس با ما",
+    "privacy": "حریم خصوصی"
+  },
+  "Schedule": {
+    "title": "برنامه زمان‌بندی و دستورالعمل‌ها",
+    "description": "نقاط عطف کلیدی و رویدادهای الزامی دوره. تمام زمان‌ها به وقت محلی (IRST) هستند.",
+    "workshop": "کارگاه آموزشی",
+    "deadline": "مهلت نهایی",
+    "presentation": "ارائه",
+    "meeting": "جلسه",
+    "event": "رویداد"
   }
 }

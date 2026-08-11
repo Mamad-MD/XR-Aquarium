@@ -5,6 +5,8 @@ import { Link as LinkIcon } from "lucide-react";
 import Image from "next/image";
 import { User } from "@prisma/client";
 
+import { useTranslations, useLocale } from "next-intl";
+
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -25,6 +27,13 @@ const cardVariants = {
 };
 
 export function TeamSection({ team }: { team: User[] }) {
+  const t = useTranslations('Team');
+  const locale = useLocale();
+
+  if (!team || team.length === 0) {
+    return null;
+  }
+
   return (
     <section className="py-24 relative overflow-hidden bg-gradient-to-b from-background via-purple-900/10 to-background">
       {/* Background elements */}
@@ -39,10 +48,10 @@ export function TeamSection({ team }: { team: User[] }) {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-6 gradient-text inline-block pb-2">
-            Executive & Mentor Team
+            {t('title')}
           </h2>
           <p className="text-gray-400 max-w-2xl mx-auto text-lg">
-            Guided by industry veterans and academic experts shaping the future of spatial computing.
+            {t('subtitle')}
           </p>
         </motion.div>
 
@@ -74,12 +83,14 @@ export function TeamSection({ team }: { team: User[] }) {
               </div>
 
               <h3 className="text-xl font-bold text-white mb-1 group-hover:text-cyan-300 transition-colors">
-                {member.name}
+                {locale === 'fa' && (member as any).nameFa ? (member as any).nameFa : member.name}
               </h3>
 
               <div className="h-px w-12 bg-gradient-to-r from-transparent via-purple-500 to-transparent my-3 opacity-50" />
 
-              <p className="text-cyan-400 text-sm font-medium mb-1">{member.role}</p>
+              <p className="text-cyan-400 text-sm font-medium mb-1">
+                {locale === 'fa' && (member as any).roleFa ? (member as any).roleFa : member.role}
+              </p>
 
               <div className="flex gap-4 mt-auto">
               </div>

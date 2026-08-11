@@ -50,13 +50,13 @@ export function AboutSection() {
     {
       week: t('timeline.w2.week'),
       title: t('timeline.w2.title'),
-      description: t('timeline.w2.desc'),
+      description: t.rich('timeline.w2.desc', { ltr: (chunks) => <span dir="ltr">{chunks}</span> }),
       icon: Code,
     },
     {
       week: t('timeline.w3.week'),
       title: t('timeline.w3.title'),
-      description: t('timeline.w3.desc'),
+      description: t.rich('timeline.w3.desc', { ltr: (chunks) => <span dir="ltr">{chunks}</span> }),
       icon: Calendar,
     },
     {
@@ -68,7 +68,7 @@ export function AboutSection() {
     {
       week: t('timeline.w5.week'),
       title: t('timeline.w5.title'),
-      description: t('timeline.w5.desc'),
+      description: t.rich('timeline.w5.desc', { ltr: (chunks) => <span dir="ltr">{chunks}</span> }),
       icon: Trophy,
     },
   ];
@@ -90,46 +90,34 @@ export function AboutSection() {
           </p>
         </motion.div>
 
-        <div className="max-w-4xl mx-auto glass-strong rounded-3xl p-8 md:p-12 border-gradient">
-          <div className="relative">
-            {/* Vertical timeline line */}
-            <div className="absolute start-[27px] md:start-1/2 top-4 bottom-4 w-[2px] bg-gradient-to-b from-cyan-500/50 via-purple-500/50 to-transparent -translate-x-1/2 rounded-full hidden md:block" />
-            <div className="absolute start-[27px] top-4 bottom-4 w-[2px] bg-gradient-to-b from-cyan-500/50 via-purple-500/50 to-transparent rounded-full md:hidden" />
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {timelineItems.map((item, index) => {
+              // Create a distinct look by using cards instead of a timeline
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="glass p-8 rounded-3xl hover:neon-cyan transition-all duration-300 flex flex-col items-start border-t-4 border-t-cyan-500/50 bg-gradient-to-b from-white/[0.03] to-transparent relative group overflow-hidden"
+                >
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-[40px] -mr-10 -mt-10 group-hover:bg-cyan-500/20 transition-all duration-500" />
 
-            <div className="flex flex-col gap-">
-              {timelineItems.map((item, index) => {
-                const isEven = index % 2 === 0;
+                  <div className="w-12 h-12 rounded-2xl glass-strong border border-cyan-500/30 flex items-center justify-center mb-6 relative z-10 group-hover:scale-110 transition-transform duration-300">
+                    <item.icon className="w-6 h-6 text-cyan-400" />
+                  </div>
 
-                return (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-50px" }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className={`relative flex items-start md:items-center ${
-                      isEven ? "md:flex-row-reverse" : "md:flex-row"
-                    } flex-row`}
-                  >
-                    {/* Timeline Node Content */}
-                    <div className={`w-full md:w-1/2 ps-16 md:ps-0 ${isEven ? "md:pe-16 text-start md:text-end" : "md:ps-16 text-start"}`}>
-                      <div className="glass p-6 rounded-2xl hover:neon-cyan transition-all duration-300">
-                        <span className="text-cyan-400 font-mono text-sm tracking-wider font-semibold mb-2 block">
-                          {item.week}
-                        </span>
-                        <h3 className="text-xl font-bold text-white mb-3">{item.title}</h3>
-                        <p className="text-gray-400 text-sm leading-relaxed">{item.description}</p>
-                      </div>
-                    </div>
+                  <span className="inline-block px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 text-xs font-bold mb-4 relative z-10">
+                    {item.week}
+                  </span>
 
-                    {/* Glowing Dot & Icon */}
-                    <div className="absolute start-0 md:start-1/2 -translate-x-1/2 flex items-center justify-center w-14 h-14 rounded-full glass-strong border border-cyan-500/30 neon-cyan bg-background z-10 shadow-[0_0_20px_rgba(6,182,212,0.2)]">
-                      <item.icon className="w-6 h-6 text-cyan-400" />
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
+                  <h3 className="text-xl font-bold text-white mb-3 relative z-10">{item.title}</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed relative z-10">{item.description}</p>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </div>

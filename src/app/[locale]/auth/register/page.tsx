@@ -86,7 +86,7 @@ export default function RegisterPage() {
         dir="ltr"
       >
         <Card className="glass-strong border-gradient relative overflow-hidden">
-          <CardHeader className="flex flex-col gap- text-center pb-6">
+          <CardHeader className="flex flex-col gap-4 text-center pb-6">
             <CardTitle className="text-3xl font-bold tracking-tight gradient-text">Join the Aquarium</CardTitle>
             <CardDescription className="text-muted-foreground text-sm" dir="rtl">
               عضویت در فضای آموزشی آکواریوم
@@ -94,8 +94,8 @@ export default function RegisterPage() {
           </CardHeader>
 
           <CardContent>
-            <form onSubmit={handleSubmit} className="flex flex-col gap-">
-              <div className="flex flex-col gap-">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              <div className="flex flex-col gap-4">
                 <Label htmlFor="name">Full Name</Label>
                 <div className="relative">
                   <UserIcon className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -111,7 +111,7 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-">
+              <div className="flex flex-col gap-4">
                 <Label htmlFor="email">Email</Label>
                 <div className="relative">
                   <Mail className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -127,7 +127,7 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-">
+              <div className="flex flex-col gap-4">
                 <Label htmlFor="password">Password</Label>
                 <div className="relative">
                   <Lock className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -154,7 +154,7 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-">
+              <div className="flex flex-col gap-4">
                 <Label htmlFor="confirmPassword">Confirm Password</Label>
                 <div className="relative">
                   <Lock className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -170,10 +170,10 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              <div className="flex flex-col gap- pt-1">
+              <div className="flex flex-col gap-4 pt-1">
                 <Label>Role</Label>
-                <div className="flex gap-4">
-                  <label className="flex items-center gap-2 cursor-pointer">
+                <div className="flex gap-44">
+                  <label className="flex items-center gap-42 cursor-pointer">
                     <input
                       type="radio"
                       name="role"
@@ -184,7 +184,7 @@ export default function RegisterPage() {
                     />
                     <span className="text-sm">Student</span>
                   </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
+                  <label className="flex items-center gap-42 cursor-pointer">
                     <input
                       type="radio"
                       name="role"

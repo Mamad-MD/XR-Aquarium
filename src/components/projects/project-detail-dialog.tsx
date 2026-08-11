@@ -18,6 +18,8 @@ import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "next/navigation";
 
+import { useTranslations } from "next-intl";
+
 interface ProjectDetailDialogProps {
   project: (PrismaProject & { mentor: User }) | null;
   isOpen: boolean;
@@ -25,6 +27,7 @@ interface ProjectDetailDialogProps {
 }
 
 export function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogProps) {
+  const t = useTranslations('Projects');
   const { data: session, status } = useSession();
   const [isApplying, setIsApplying] = useState(false);
   const router = useRouter();
@@ -105,10 +108,10 @@ export function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailD
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[700px] bg-gray-950/90 border-white/10 backdrop-blur-xl">
+      <DialogContent className="max-w-full sm:max-w-[700px] bg-gray-950/90 border-white/10 backdrop-blur-xl overflow-hidden">
         <DialogHeader>
           <div className="flex items-center justify-between mb-2">
-            <Badge variant={categoryColorMap[project.category] as any || "default"}>
+            <Badge variant={(categoryColorMap[project.category]  || "default") as any}>
               {project.category}
             </Badge>
             <Badge variant={
@@ -126,12 +129,12 @@ export function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailD
         </DialogHeader>
 
         <ScrollArea className="max-h-[50vh] mt-4 pe-4">
-          <div className="flex flex-col gap-">
+          <div className="flex flex-col gap-6">
             <div>
               <h4 className="text-lg font-semibold text-cyan-400 mb-3 flex items-center gap-2">
-                <CheckCircle className="w-5 h-5" /> Objectives
+                <CheckCircle className="w-5 h-5" /> {t('objectives')}
               </h4>
-              <ul className="flex flex-col gap-">
+              <ul className="flex flex-col gap-2">
                 {parsedObjectives.map((obj, i) => (
                   <li key={i} className="flex items-start gap-2 text-gray-300 text-sm">
                     <ArrowRight className="w-4 h-4 text-purple-500 mt-0.5 shrink-0" />
@@ -143,21 +146,21 @@ export function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailD
 
             <div>
               <h4 className="text-lg font-semibold text-cyan-400 mb-3 flex items-center gap-2">
-                <Users className="w-5 h-5" /> Capacity & Mentor
+                <Users className="w-5 h-5" /> {t('capacityAndMentor')}
               </h4>
-              <div className="bg-white/5 border border-white/10 rounded-lg p-4 flex flex-col gap-">
+              <div className="bg-white/5 border border-white/10 rounded-lg p-4 flex flex-col gap-4">
                 <div>
                   <div className="flex justify-between text-sm mb-2">
-                    <span className="text-gray-400">Enrolled ({enrolledCount}/{project.maxCapacity})</span>
+                    <span className="text-gray-400">{t('enrolled')} ({enrolledCount}/{project.maxCapacity})</span>
                     <span className={isFull ? "text-red-400 font-medium" : "text-green-400 font-medium"}>
-                      {isFull ? 'Full' : `${project.maxCapacity - enrolledCount} spots left`}
+                      {isFull ? t('full') : `${project.maxCapacity - enrolledCount} ${t('spotsLeft')}`}
                     </span>
                   </div>
                   <Progress value={(enrolledCount / project.maxCapacity) * 100} className="h-2" />
                 </div>
 
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-gray-400">Duration:</span>
+                  <span className="text-gray-400">{t('duration')}:</span>
                   <span className="flex items-center gap-1 text-gray-200">
                     <Clock className="w-4 h-4" /> {project.duration}
                   </span>
@@ -166,7 +169,7 @@ export function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailD
             </div>
 
             <div>
-              <h4 className="text-lg font-semibold text-cyan-400 mb-3">Tech Stack</h4>
+              <h4 className="text-lg font-semibold text-cyan-400 mb-3">{t('techStack')}</h4>
               <div className="flex flex-wrap gap-2">
                 {parsedTechStack.map((tech, i) => (
                   <Badge key={i} variant="outline" className="bg-black/50"><span dir="ltr" className="inline-block">{tech}</span></Badge>
@@ -179,7 +182,7 @@ export function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailD
         <div className="mt-6 flex justify-end">
           {isFull ? (
             <Button disabled variant="destructive">
-              Project is Full
+              {t('projectIsFull')}
             </Button>
           ) : (
             <Button
@@ -187,7 +190,7 @@ export function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailD
               disabled={isApplying}
               className="bg-cyan-600 hover:bg-cyan-500 text-white neon-cyan"
             >
-              {isApplying ? "Applying..." : "Apply for Project"}
+              {isApplying ? t("applying") : t("applyForProject")}
             </Button>
           )}
         </div>

@@ -14,12 +14,13 @@ datasource db {
 model User {
   id            String    @id @default(cuid())
   name          String?
+  nameFa        String?
   email         String?   @unique
   emailVerified DateTime?
   image         String?
   password      String?
-  // SQLite doesn't support enums, using String for Role (PARTICIPANT, MENTOR, EXECUTIVE, ADMIN)
   role          String    @default("PARTICIPANT")
+  roleFa        String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -170,11 +171,14 @@ model Announcement {
 model ScheduleEvent {
   id          String   @id @default(cuid())
   title       String
+  titleFa     String?
   // Type (WORKSHOP, DEADLINE, PRESENTATION, MEETING, EVENT)
   type        String
   date        DateTime
   location    String?
+  locationFa  String?
   description String?
+  descriptionFa String?
 }
 
 model Notification {

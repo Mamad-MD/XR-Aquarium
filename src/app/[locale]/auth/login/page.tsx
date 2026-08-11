@@ -49,7 +49,7 @@ export default function LoginPage() {
         dir="ltr"
       >
         <Card className="glass-strong border-gradient relative overflow-hidden">
-          <CardHeader className="flex flex-col gap- text-center pb-6">
+          <CardHeader className="flex flex-col gap-4 text-center pb-6">
             <CardTitle className="text-3xl font-bold tracking-tight gradient-text">Welcome Back</CardTitle>
             <CardDescription className="text-muted-foreground text-sm" dir="rtl">
               ورود به آزمایشگاه XR
@@ -57,8 +57,8 @@ export default function LoginPage() {
           </CardHeader>
 
           <CardContent>
-            <form onSubmit={handleSubmit} className="flex flex-col gap-">
-              <div className="flex flex-col gap-">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              <div className="flex flex-col gap-4">
                 <Label htmlFor="email">Email</Label>
                 <div className="relative">
                   <Mail className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -74,7 +74,7 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-">
+              <div className="flex flex-col gap-4">
                 <Label htmlFor="password">Password</Label>
                 <div className="relative">
                   <Lock className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -120,7 +120,7 @@ export default function LoginPage() {
             </form>
           </CardContent>
 
-          <CardFooter className="flex flex-col gap- pt-2">
+          <CardFooter className="flex flex-col gap-4 pt-2">
             <div className="text-xs text-muted-foreground text-center bg-white/5 p-3 rounded-md w-full border border-white/5">
               <p>Demo credentials:</p>
               <p className="font-mono mt-1">admin@xrlab.com / admin123</p>

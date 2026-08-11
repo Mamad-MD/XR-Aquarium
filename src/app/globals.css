@@ -35,9 +35,22 @@
 body {
   background: var(--color-background);
   color: var(--color-foreground);
-  font-family: var(--font-vazirmatn), var(--font-geist-sans), sans-serif;
   min-height: 100vh;
   overflow-x: hidden;
+}
+
+/* وقتی زبان فارسی (راست‌چین) است */
+[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+  font-family: var(--font-vazirmatn), sans-serif;
+}
+
+/* وقتی زبان انگلیسی (چپ‌چین) است */
+[dir="ltr"] {
+  direction: ltr;
+  text-align: left;
+  font-family: var(--font-geist-sans), sans-serif;
 }
 
 /* Animated background gradient */

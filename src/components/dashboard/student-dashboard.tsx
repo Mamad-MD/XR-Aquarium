@@ -13,10 +13,14 @@ import {
   Bell, Clock, AlertCircle
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { format } from "date-fns";
 
-export function StudentDashboard({ user, data }: { user: { name?: string | null, email?: string | null, image?: string | null, id?: string | null }, data: { announcements?: Array<{ id: string, title: string, content: string, priority: string, createdAt: string }>, projectApplications?: Array<{ status: string, project: Record<string, unknown> }> } }) {
+export function StudentDashboard({ user, data }: {
+ user: { name?: string | null, email?: string | null, image?: string | null, id?: string | null }, data: { announcements?: Array<{ id: string, title: string, content: string, priority: string, createdAt: string }>, projectApplications?: Array<{ status: string, project: Record<string, unknown> }> } }) {
+  const t = useTranslations("Dashboard");
+  const tCommon = useTranslations("Common");
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -97,10 +101,10 @@ export function StudentDashboard({ user, data }: { user: { name?: string | null,
           </TabsList>
 
           <TabsContent value="overview">
-            <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-">
+            <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-6">
               <div>
                 <h1 className="text-3xl font-bold tracking-tight mb-2">
-                  Welcome back, <span className="gradient-text">{user.name?.split(' ')[0] || 'Student'}</span>
+                  {t("welcomeBack")}, <span className="gradient-text">{user.name?.split(' ')[0] || 'Student'}</span>
                 </h1>
                 <p className="text-slate-400">Here&apos;s what&apos;s happening in the XR Cohort today.</p>
               </div>
@@ -109,19 +113,19 @@ export function StudentDashboard({ user, data }: { user: { name?: string | null,
                 <Card className="glass-strong border-cyan-500/20">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-medium text-slate-400 flex items-center justify-between">
-                      Status
+                      {t('status')}
                       <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)] animate-pulse" />
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-white">Active</div>
+                    <div className="text-2xl font-bold text-white">{t('active')}</div>
                     <p className="text-xs text-slate-500 mt-1">XR Development Cohort 4</p>
                   </CardContent>
                 </Card>
 
                 <Card className="glass-strong border-purple-500/20">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-slate-400">Cohort Progress</CardTitle>
+                    <CardTitle className="text-sm font-medium text-slate-400">{t('cohortProgress')}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold text-white mb-2">Week 4 of 12</div>
@@ -132,7 +136,7 @@ export function StudentDashboard({ user, data }: { user: { name?: string | null,
                 <Card className="glass-strong border-cyan-500/20">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-medium text-slate-400 flex items-center gap-2">
-                      <Clock className="w-4 h-4" /> Next Deadline
+                      <Clock className="w-4 h-4" /> {t('nextDeadline')}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -147,7 +151,7 @@ export function StudentDashboard({ user, data }: { user: { name?: string | null,
                   <Bell className="w-5 h-5 text-cyan-400" /> Recent Announcements
                 </h3>
                 <ScrollArea className="h-[400px] rounded-xl border border-slate-800 bg-slate-950/50 p-4">
-                  <div className="flex flex-col gap-">
+                  <div className="flex flex-col gap-4">
                     {announcements.map((announcement: { id: string, title: string, content: string, priority: string, createdAt: string }) => (
                       <motion.div
                         key={announcement.id}
@@ -174,7 +178,7 @@ export function StudentDashboard({ user, data }: { user: { name?: string | null,
                     ))}
                     {announcements.length === 0 && (
                       <div className="text-center text-slate-500 py-10">
-                        No announcements at this time.
+                        {t("noAnnouncements")}
                       </div>
                     )}
                   </div>
@@ -194,7 +198,7 @@ export function StudentDashboard({ user, data }: { user: { name?: string | null,
                       {String(selectedProject.description)}
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="flex flex-col gap-">
+                  <CardContent className="flex flex-col gap-4">
                     <div>
                       <div className="flex justify-between text-sm mb-2">
                         <span className="text-slate-400">Project Progress</span>
@@ -205,24 +209,24 @@ export function StudentDashboard({ user, data }: { user: { name?: string | null,
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="p-4 rounded-lg bg-slate-900/50 border border-slate-800">
-                        <p className="text-sm text-slate-400">Category</p>
+                        <p className="text-sm text-slate-400">{t('category')}</p>
                         <p className="text-lg font-medium">{String(selectedProject.category)}</p>
                       </div>
                       <div className="p-4 rounded-lg bg-slate-900/50 border border-slate-800">
-                        <p className="text-sm text-slate-400">Status</p>
+                        <p className="text-sm text-slate-400">{t('status')}</p>
                         <p className="text-lg font-medium text-green-400">
-                          {projectApp.status === "ACCEPTED" ? "Active Team Member" : "Application Pending"}
+                          {projectApp.status === "ACCEPTED" ? "{t('active')} Team Member" : "{t('applicationPending')}"}
                         </p>
                       </div>
                     </div>
                   </CardContent>
                   <CardFooter className="flex justify-between border-t border-slate-800/50 pt-6">
                     <Button variant="outline" asChild className="border-purple-500/30 hover:bg-purple-500/10 hover:text-purple-300">
-                      <Link href={`/projects/${selectedProject.id}`}>View Project Details</Link>
+                      <Link href={`/projects/${selectedProject.id}`}>{t('viewProjectDetails')}</Link>
                     </Button>
                     {projectApp.status === "ACCEPTED" && (
                       <Button className="bg-purple-600 hover:bg-purple-700 text-white shadow-[0_0_15px_rgba(147,51,234,0.3)]">
-                        Submit Update
+                        {t('submitUpdate')}
                       </Button>
                     )}
                   </CardFooter>
@@ -230,12 +234,12 @@ export function StudentDashboard({ user, data }: { user: { name?: string | null,
               ) : (
                 <div className="text-center py-20 glass rounded-xl border-dashed border-2 border-slate-800">
                   <Boxes className="w-16 h-16 text-slate-600 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">No Project Selected</h3>
+                  <h3 className="text-xl font-semibold mb-2">{t('noProjectSelected')}</h3>
                   <p className="text-slate-400 mb-6 max-w-md mx-auto">
                     You haven&apos;t joined a project yet. Browse the available projects and find a team to join for this cohort.
                   </p>
                   <Button asChild className="bg-cyan-600 hover:bg-cyan-700 text-white shadow-[0_0_15px_rgba(8,145,178,0.4)]">
-                    <Link href="/projects">Browse Projects</Link>
+                    <Link href="/projects">{t('browseProjects')}</Link>
                   </Button>
                 </div>
               )}
@@ -247,11 +251,11 @@ export function StudentDashboard({ user, data }: { user: { name?: string | null,
               <Card className="glass border-cyan-500/20">
                 <CardHeader>
                   <CardTitle className="text-xl flex items-center gap-2">
-                    <Calendar className="w-5 h-5 text-cyan-400" /> Upcoming Sessions
+                    <Calendar className="w-5 h-5 text-cyan-400" /> {t('upcomingSessions')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="relative border-s-2 border-slate-800 ms-3 flex flex-col gap- pb-4">
+                  <div className="relative border-s-2 border-slate-800 ms-3 flex flex-col gap-4 pb-4">
                     {/* Mock Schedule Items */}
                     {[
                       { title: "Intro to WebXR API", date: "Today, 2:00 PM", type: "Lecture", speaker: "Alex Vance" },

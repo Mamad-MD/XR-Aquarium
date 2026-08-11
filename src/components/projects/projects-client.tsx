@@ -10,12 +10,15 @@ import { ProjectCard } from "@/components/projects/project-card";
 import { ProjectDetailDialog } from "@/components/projects/project-detail-dialog";
 import { Project as PrismaProject, User } from "@prisma/client";
 
+import { useTranslations } from "next-intl";
+
 // Update the props interface to match what Prisma returns
 interface ProjectsClientProps {
   initialProjects: (PrismaProject & { mentor: User })[];
 }
 
 export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
+  const t = useTranslations('Projects');
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string>("All");
   const [activeDifficulty, setActiveDifficulty] = useState<string>("All");
@@ -33,29 +36,21 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
   return (
     <div className="container mx-auto px-4 py-24 min-h-screen">
       <div className="flex flex-col items-center mb-12 text-center">
-        <motion.h1 
+        <motion.h1
           className="text-4xl md:text-5xl font-bold mb-4 gradient-text"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          Project Hub
+          {t('projectHub')}
         </motion.h1>
-        <motion.p 
-          className="text-xl text-zinc-400 mb-2 font-medium"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-        >
-          مرکز پروژه‌ها
-        </motion.p>
-        <motion.p 
+        <motion.p
           className="text-zinc-500 max-w-2xl"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          Explore 20+ cutting-edge XR projects
+          {t('exploreProjects')}
         </motion.p>
       </div>
 
@@ -68,7 +63,7 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
         <div className="relative w-full md:w-96">
           <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
           <Input 
-            placeholder="Search projects..." 
+            placeholder={t('searchProjects')} 
             className="ps-9 bg-white/5 border-white/10"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -96,10 +91,10 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
               <SelectValue placeholder="Difficulty" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="All">All Levels</SelectItem>
-              <SelectItem value="Beginner">Beginner</SelectItem>
-              <SelectItem value="Intermediate">Intermediate</SelectItem>
-              <SelectItem value="Advanced">Advanced</SelectItem>
+              <SelectItem value="All">{t('allLevels')}</SelectItem>
+              <SelectItem value="Beginner">{t('beginner')}</SelectItem>
+              <SelectItem value="Intermediate">{t('intermediate')}</SelectItem>
+              <SelectItem value="Advanced">{t('advanced')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -137,7 +132,7 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
         
         {filteredProjects.length === 0 && (
           <div className="col-span-full text-center py-20 text-zinc-500">
-            No projects found matching your criteria.
+            {t('noProjects')}
           </div>
         )}
       </motion.div>

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useAppStore } from "@/lib/store";
+import { useTranslations } from "next-intl";
 
 interface ProjectCardProps {
   project: PrismaProject & { mentor: User };
@@ -14,9 +15,10 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ project, onViewDetails }: ProjectCardProps) {
+  const t = useTranslations('Projects');
   const { user, isAuthenticated, selectProject } = useAppStore();
 
-  const categoryVariant = project.category.toLowerCase() as any;
+  const categoryVariant = project.category.toLowerCase() ;
   // TODO: Fetch enrolled count dynamically if needed. For now, mocking it to 0 as it's not in schema
   const enrolledCount = 0;
   const progress = (enrolledCount / project.maxCapacity) * 100;
@@ -71,7 +73,7 @@ export function ProjectCard({ project, onViewDetails }: ProjectCardProps) {
           <div className={`w-3 h-3 rounded-full ${statusColor} shadow-lg shadow-black`} title={project.status} />
         </div>
         <div className="absolute top-4 start-4 z-20">
-          <Badge variant={categoryVariant}>{project.category}</Badge>
+          <Badge variant={categoryVariant as any}>{project.category}</Badge>
         </div>
         <div className="absolute bottom-4 start-4 end-4 z-20">
           <h3 className="text-lg font-bold text-white leading-tight">{project.title}</h3>
@@ -97,7 +99,7 @@ export function ProjectCard({ project, onViewDetails }: ProjectCardProps) {
         <div className="mb-4">
           <div className="flex items-center mb-2">
             <Layers className="w-4 h-4 me-2 text-zinc-400" />
-            <span className="text-xs text-zinc-400 font-medium">Tech Stack</span>
+            <span className="text-xs text-zinc-400 font-medium">{t('techStack')}</span>
           </div>
           <div className="flex flex-wrap gap-1.5">
             {parsedTechStack.slice(0, 3).map((tech, index) => (
@@ -115,30 +117,30 @@ export function ProjectCard({ project, onViewDetails }: ProjectCardProps) {
 
         <div className="mb-6">
           <div className="flex justify-between text-xs text-zinc-400 mb-2">
-            <span className="flex items-center"><Users className="w-3 h-3 me-1" /> Capacity</span>
+            <span className="flex items-center"><Users className="w-3 h-3 me-1" /> {t('capacityAndMentor')}</span>
             <span>{enrolledCount} / {project.maxCapacity}</span>
           </div>
           <Progress value={progress} className="h-1.5" />
         </div>
 
         <div className="flex gap-2 mt-auto">
-          <Button 
-            variant="secondary" 
+          <Button
+            variant="secondary"
             className="flex-1 bg-white/10 hover:bg-white/20 text-white border-none"
             onClick={onViewDetails}
           >
-            View Details
+            {t('viewDetails')}
           </Button>
-          
+
           {isAuthenticated && isStudent && isOpen && !hasSelectedProject && (
-            <Button 
+            <Button
               className="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white"
               onClick={() => {
                 selectProject(project.id);
                 // Would normally show toast here
               }}
             >
-              Select
+              {t('select')}
               <ArrowRight className="w-4 h-4 ms-2" />
             </Button>
           )}

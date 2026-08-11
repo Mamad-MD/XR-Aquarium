@@ -11,7 +11,11 @@ export default async function Home() {
   });
 
   const teamMembers = await db.user.findMany({
-    where: { role: "MENTOR" },
+    where: {
+      role: {
+        in: ["MENTOR", "EXECUTIVE", "Technical Lead, Mentor & XR Core Team Member", "Deputy Event Secretary & XR Core Team Member", "Event Secretary & XR Core Team Member"]
+      }
+    },
   });
 
   return (

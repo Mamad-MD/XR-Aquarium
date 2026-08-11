@@ -43,7 +43,7 @@ export default function ProtectedRoute({ children, requiredRole }: ProtectedRout
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background relative overflow-hidden">
         {/* Ambient background glow */}
-        <div className="absolute top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-cyan-500/20 rounded-full blur-[100px] animate-pulse-glow" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-cyan-500/20 rounded-full blur-[100px] animate-pulse-glow" />
 
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
