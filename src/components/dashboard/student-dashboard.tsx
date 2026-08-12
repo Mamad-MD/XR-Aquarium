@@ -13,7 +13,7 @@ import {
   Bell, Clock, AlertCircle
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
 import { format } from "date-fns";
 
@@ -21,6 +21,8 @@ export function StudentDashboard({ user, data }: {
  user: { name?: string | null, email?: string | null, image?: string | null, id?: string | null }, data: { announcements?: Array<{ id: string, title: string, content: string, priority: string, createdAt: string }>, projectApplications?: Array<{ status: string, project: Record<string, unknown> }> } }) {
   const t = useTranslations("Dashboard");
   const tCommon = useTranslations("Common");
+  const locale = useLocale();
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -37,14 +39,12 @@ export function StudentDashboard({ user, data }: {
   if (!user || !data) return null;
 
   const announcements = data.announcements || [];
-
-  // Find accepted project or default to first one
   const acceptedApp = data.projectApplications?.find((a: { status: string, project: Record<string, unknown> }) => a.status === 'ACCEPTED');
   const projectApp = acceptedApp || data.projectApplications?.[0];
   const selectedProject = projectApp?.project;
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-black text-white p-4 md:p-6 gap-6 pt-24">
+    <div className="flex flex-col md:flex-row min-h-screen bg-black text-white p-4 md:p-6 gap-6 pt-24 w-full">
       {/* Sidebar */}
       <motion.aside
         initial={{ x: -50, opacity: 0 }}
@@ -64,13 +64,11 @@ export function StudentDashboard({ user, data }: {
           <div>
             <h2 className="text-xl font-bold tracking-tight">{user.name || "XR Student"}</h2>
             <p className="text-slate-400 text-sm">{user.email}</p>
-            <div className="mt-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+            <div className="mt-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-cyan-500/10 text-cyan-400 border border-cyan-500/20" dir="ltr">
               ID: {user.id?.slice(0, 8) || "N/A"}
             </div>
           </div>
         </div>
-
-        {/* Desktop Nav is handled by Tabs, this just provides visual structure for the profile */}
       </motion.aside>
 
       {/* Main Content */}
@@ -78,25 +76,25 @@ export function StudentDashboard({ user, data }: {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className="flex-1 max-w-6xl"
+        className="flex-1 max-w-6xl w-full"
       >
         <Tabs defaultValue="overview" className="w-full">
           <TabsList className="grid grid-cols-4 w-full md:w-auto md:inline-flex bg-slate-900/50 border border-slate-800 p-1 mb-8">
             <TabsTrigger value="overview" className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400">
               <LayoutDashboard className="w-4 h-4 md:me-2" />
-              <span className="hidden md:inline">Overview</span>
+              <span className="hidden md:inline">{t("overview")}</span>
             </TabsTrigger>
             <TabsTrigger value="project" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
               <Boxes className="w-4 h-4 md:me-2" />
-              <span className="hidden md:inline">My Project</span>
+              <span className="hidden md:inline">{t("myProject")}</span>
             </TabsTrigger>
             <TabsTrigger value="schedule" className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400">
               <Calendar className="w-4 h-4 md:me-2" />
-              <span className="hidden md:inline">Schedule</span>
+              <span className="hidden md:inline">{t("schedule")}</span>
             </TabsTrigger>
             <TabsTrigger value="downloads" className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400">
               <FileText className="w-4 h-4 md:me-2" />
-              <span className="hidden md:inline">Downloads</span>
+              <span className="hidden md:inline">{t("downloads")}</span>
             </TabsTrigger>
           </TabsList>
 
@@ -106,7 +104,7 @@ export function StudentDashboard({ user, data }: {
                 <h1 className="text-3xl font-bold tracking-tight mb-2">
                   {t("welcomeBack")}, <span className="gradient-text">{user.name?.split(' ')[0] || 'Student'}</span>
                 </h1>
-                <p className="text-slate-400">Here&apos;s what&apos;s happening in the XR Cohort today.</p>
+                <p className="text-slate-400">{t("whatsHappening")}</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -119,7 +117,7 @@ export function StudentDashboard({ user, data }: {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold text-white">{t('active')}</div>
-                    <p className="text-xs text-slate-500 mt-1">XR Development Cohort 4</p>
+                    <p className="text-xs text-slate-500 mt-1" dir="ltr">XR Development Cohort 4</p>
                   </CardContent>
                 </Card>
 
@@ -128,7 +126,7 @@ export function StudentDashboard({ user, data }: {
                     <CardTitle className="text-sm font-medium text-slate-400">{t('cohortProgress')}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-white mb-2">Week 4 of 12</div>
+                    <div className="text-2xl font-bold text-white mb-2" dir="ltr">Week 4 of 12</div>
                     <Progress value={33} className="h-2 bg-slate-800"  />
                   </CardContent>
                 </Card>
@@ -140,7 +138,7 @@ export function StudentDashboard({ user, data }: {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-xl font-bold text-white truncate">Project Proposal</div>
+                    <div className="text-xl font-bold text-white truncate" dir="auto">Project Proposal</div>
                     <p className="text-xs text-slate-500 mt-1 text-cyan-400">In 3 days</p>
                   </CardContent>
                 </Card>
@@ -148,11 +146,11 @@ export function StudentDashboard({ user, data }: {
 
               <div className="mt-8">
                 <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                  <Bell className="w-5 h-5 text-cyan-400" /> Recent Announcements
+                  <Bell className="w-5 h-5 text-cyan-400" /> {t("recentAnnouncements")}
                 </h3>
                 <ScrollArea className="h-[400px] rounded-xl border border-slate-800 bg-slate-950/50 p-4">
                   <div className="flex flex-col gap-4">
-                    {announcements.map((announcement: { id: string, title: string, content: string, priority: string, createdAt: string }) => (
+                    {announcements.map((announcement: any) => (
                       <motion.div
                         key={announcement.id}
                         variants={itemVariants}
@@ -167,13 +165,15 @@ export function StudentDashboard({ user, data }: {
                             announcement.priority === 'HIGH' || announcement.priority === 'URGENT' ? 'text-red-400' : 'text-cyan-400'
                           }`}>
                             {(announcement.priority === 'HIGH' || announcement.priority === 'URGENT') && <AlertCircle className="w-4 h-4" />}
-                            {announcement.title}
+                            {locale === 'fa' && announcement.titleFa ? announcement.titleFa : announcement.title}
                           </h4>
-                          <span className="text-xs text-slate-500" dir="ltr">
+                          <span className="text-xs text-slate-500 shrink-0" dir="ltr">
                             {announcement.createdAt ? format(new Date(announcement.createdAt), 'MMM d, h:mm a') : ''}
                           </span>
                         </div>
-                        <p className="text-slate-300 text-sm whitespace-pre-wrap">{announcement.content}</p>
+                        <p className="text-slate-300 text-sm whitespace-pre-wrap">
+                          {locale === 'fa' && announcement.contentFa ? announcement.contentFa : announcement.content}
+                        </p>
                       </motion.div>
                     ))}
                     {announcements.length === 0 && (
@@ -193,16 +193,18 @@ export function StudentDashboard({ user, data }: {
                 <Card className="glass-strong border-purple-500/30 overflow-hidden relative">
                   <div className="absolute top-0 end-0 p-32 bg-purple-500/10 blur-3xl -z-10 rounded-full"></div>
                   <CardHeader>
-                    <CardTitle className="text-2xl neon-purple">{String(selectedProject.title)}</CardTitle>
-                    <CardDescription className="text-slate-400">
-                      {String(selectedProject.description)}
+                    <CardTitle className="text-2xl neon-purple" dir="auto">
+                      {locale === 'fa' && (selectedProject as any).titleFa ? String((selectedProject as any).titleFa) : String(selectedProject.title)}
+                    </CardTitle>
+                    <CardDescription className="text-slate-400" dir="auto">
+                      {locale === 'fa' && (selectedProject as any).descriptionFa ? String((selectedProject as any).descriptionFa) : String(selectedProject.description)}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="flex flex-col gap-4">
                     <div>
                       <div className="flex justify-between text-sm mb-2">
-                        <span className="text-slate-400">Project Progress</span>
-                        <span className="text-purple-400">0%</span>
+                        <span className="text-slate-400">{t("projectProgress")}</span>
+                        <span className="text-purple-400" dir="ltr">0%</span>
                       </div>
                       <Progress value={0} className="h-2 bg-slate-800"  />
                     </div>
@@ -210,12 +212,12 @@ export function StudentDashboard({ user, data }: {
                     <div className="grid grid-cols-2 gap-4">
                       <div className="p-4 rounded-lg bg-slate-900/50 border border-slate-800">
                         <p className="text-sm text-slate-400">{t('category')}</p>
-                        <p className="text-lg font-medium">{String(selectedProject.category)}</p>
+                        <p className="text-lg font-medium" dir="ltr">{String(selectedProject.category)}</p>
                       </div>
                       <div className="p-4 rounded-lg bg-slate-900/50 border border-slate-800">
-                        <p className="text-sm text-slate-400">{t('status')}</p>
+                        <p className="text-sm text-slate-400">{t('statusLabel')}</p>
                         <p className="text-lg font-medium text-green-400">
-                          {projectApp.status === "ACCEPTED" ? "{t('active')} Team Member" : "{t('applicationPending')}"}
+                          {projectApp.status === "ACCEPTED" ? t('activeTeamMember') : t('applicationPending')}
                         </p>
                       </div>
                     </div>
@@ -236,7 +238,7 @@ export function StudentDashboard({ user, data }: {
                   <Boxes className="w-16 h-16 text-slate-600 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold mb-2">{t('noProjectSelected')}</h3>
                   <p className="text-slate-400 mb-6 max-w-md mx-auto">
-                    You haven&apos;t joined a project yet. Browse the available projects and find a team to join for this cohort.
+                    {t('noProjectDesc')}
                   </p>
                   <Button asChild className="bg-cyan-600 hover:bg-cyan-700 text-white shadow-[0_0_15px_rgba(8,145,178,0.4)]">
                     <Link href="/projects">{t('browseProjects')}</Link>
@@ -256,7 +258,6 @@ export function StudentDashboard({ user, data }: {
                 </CardHeader>
                 <CardContent>
                   <div className="relative border-s-2 border-slate-800 ms-3 flex flex-col gap-4 pb-4">
-                    {/* Mock Schedule Items */}
                     {[
                       { title: "Intro to WebXR API", date: "Today, 2:00 PM", type: "Lecture", speaker: "Alex Vance" },
                       { title: "Three.js Fundamentals Lab", date: "Tomorrow, 10:00 AM", type: "Lab", speaker: "Sarah Chen" },
@@ -266,13 +267,13 @@ export function StudentDashboard({ user, data }: {
                         <div className="absolute w-3 h-3 bg-cyan-500 rounded-full -start-[7px] top-1.5 shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
                         <div className="glass p-4 rounded-lg border border-slate-800 hover:border-cyan-500/30 transition-colors">
                           <div className="flex justify-between items-start mb-2">
-                            <h4 className="font-semibold text-white">{item.title}</h4>
+                            <h4 className="font-semibold text-white" dir="auto">{item.title}</h4>
                             <span className="text-xs px-2 py-1 rounded-md bg-slate-800 text-cyan-400">{item.type}</span>
                           </div>
                           <div className="text-sm text-slate-400 flex items-center gap-4">
-                            <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {item.date}</span>
+                            <span className="flex items-center gap-1" dir="ltr"><Clock className="w-3 h-3" /> {item.date}</span>
                             <span>•</span>
-                            <span>{item.speaker}</span>
+                            <span dir="auto">{item.speaker}</span>
                           </div>
                         </div>
                       </div>
@@ -286,7 +287,6 @@ export function StudentDashboard({ user, data }: {
           <TabsContent value="downloads">
             <motion.div variants={containerVariants} initial="hidden" animate="visible">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Mock Downloads */}
                 {[
                   { name: "Cohort Syllabus v1.2", size: "2.4 MB", type: "PDF" },
                   { name: "Starter Project Template", size: "15 MB", type: "ZIP" },
@@ -300,8 +300,8 @@ export function StudentDashboard({ user, data }: {
                           <FileText className="w-5 h-5" />
                         </div>
                         <div>
-                          <p className="font-medium text-sm text-slate-200">{file.name}</p>
-                          <p className="text-xs text-slate-500">{file.type} • {file.size}</p>
+                          <p className="font-medium text-sm text-slate-200" dir="auto">{file.name}</p>
+                          <p className="text-xs text-slate-500" dir="ltr">{file.type} • {file.size}</p>
                         </div>
                       </div>
                       <Button size="icon" variant="ghost" className="text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10">

@@ -21,7 +21,6 @@ import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 
 export function AdminDashboard({ user, data }: {
-
   user: { name?: string | null, image?: string | null, id?: string | null },
   data: {
     studentsCount?: number,
@@ -76,7 +75,7 @@ export function AdminDashboard({ user, data }: {
   if (!user) return null;
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-black text-white p-4 md:p-6 gap-6 pt-24">
+    <div className="flex flex-col md:flex-row min-h-screen bg-black text-white p-4 md:p-6 gap-6 pt-24 w-full">
       {/* Admin Sidebar */}
       <motion.aside
         initial={{ x: -50, opacity: 0 }}
@@ -107,54 +106,54 @@ export function AdminDashboard({ user, data }: {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className="flex-1 max-w-6xl"
+        className="flex-1 max-w-6xl w-full"
       >
         <Tabs defaultValue="overview" className="w-full">
           <TabsList className="grid grid-cols-5 w-full md:w-auto md:inline-flex bg-slate-900/50 border border-slate-800 p-1 mb-8">
             <TabsTrigger value="overview" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
               <LayoutDashboard className="w-4 h-4 md:me-2" />
-              <span className="hidden md:inline">Overview</span>
+              <span className="hidden md:inline">{t("overview")}</span>
             </TabsTrigger>
             <TabsTrigger value="students" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
               <Users className="w-4 h-4 md:me-2" />
-              <span className="hidden md:inline">Students</span>
+              <span className="hidden md:inline">{t("users")}</span>
             </TabsTrigger>
             <TabsTrigger value="projects" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
               <Boxes className="w-4 h-4 md:me-2" />
-              <span className="hidden md:inline">Projects</span>
+              <span className="hidden md:inline">{t("activeProjects")}</span>
             </TabsTrigger>
             <TabsTrigger value="announcements" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
               <Bell className="w-4 h-4 md:me-2" />
-              <span className="hidden md:inline">Comms</span>
+              <span className="hidden md:inline">{t("recentAnnouncements")}</span>
             </TabsTrigger>
             <TabsTrigger value="settings" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
               <Settings className="w-4 h-4 md:me-2" />
-              <span className="hidden md:inline">Settings</span>
+              <span className="hidden md:inline">{tCommon("settings")}</span>
             </TabsTrigger>
             <TabsTrigger value="applications" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
               <FileText className="w-4 h-4 md:me-2" />
-              <span className="hidden md:inline">Applications</span>
+              <span className="hidden md:inline">{t("projectApps")}</span>
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview">
             <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-6">
               <h1 className="text-3xl font-bold tracking-tight mb-6">
-                System <span className="text-purple-400">Overview</span>
+                {t("adminOverview")}
               </h1>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
-                  { label: "Total Students", value: data?.studentsCount || "0", icon: Users, color: "text-blue-400" },
-                  { label: "Mentors", value: data?.mentorsCount || "0", icon: Activity, color: "text-purple-400" },
-                  { label: "Projects Open", value: data?.projectsCount || "0", icon: Boxes, color: "text-green-400" },
-                  { label: "Active Now", value: "0", icon: Activity, color: "text-cyan-400" }
+                  { label: t("totalStudents"), value: data?.studentsCount || "0", icon: Users, color: "text-blue-400" },
+                  { label: t("mentors"), value: data?.mentorsCount || "0", icon: Activity, color: "text-purple-400" },
+                  { label: t("projectsOpen"), value: data?.projectsCount || "0", icon: Boxes, color: "text-green-400" },
+                  { label: t("activeNow"), value: "0", icon: Activity, color: "text-cyan-400" }
                 ].map((stat, i) => (
                   <Card key={i} className="glass border-slate-800">
                     <CardContent className="p-6">
                       <stat.icon className={`w-8 h-8 mb-4 ${stat.color} opacity-80`} />
                       <p className="text-sm font-medium text-slate-400">{stat.label}</p>
-                      <p className="text-3xl font-bold text-white mt-1">{stat.value}</p>
+                      <p className="text-3xl font-bold text-white mt-1"><span dir="ltr">{stat.value}</span></p>
                     </CardContent>
                   </Card>
                 ))}
@@ -163,7 +162,7 @@ export function AdminDashboard({ user, data }: {
               <Card className="glass mt-8 border-slate-800">
                 <CardHeader>
                   <CardTitle className="text-lg flex items-center gap-2">
-                    <Activity className="w-5 h-5 text-purple-400" /> Recent Activity
+                    <Activity className="w-5 h-5 text-purple-400" /> {t("activity")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -174,8 +173,8 @@ export function AdminDashboard({ user, data }: {
                       { msg: "System backup completed successfully", time: "3 hours ago" }
                     ].map((act, i) => (
                       <div key={i} className="flex justify-between items-center py-2 border-b border-slate-800 last:border-0">
-                        <span className="text-sm text-slate-300">{act.msg}</span>
-                        <span className="text-xs text-slate-500">{act.time}</span>
+                        <span className="text-sm text-slate-300" dir="auto">{act.msg}</span>
+                        <span className="text-xs text-slate-500" dir="ltr">{act.time}</span>
                       </div>
                     ))}
                   </div>
@@ -200,16 +199,15 @@ export function AdminDashboard({ user, data }: {
                 <CardContent>
                   <div className="rounded-md border border-slate-800">
                     <div className="grid grid-cols-12 gap-4 p-4 border-b border-slate-800 bg-slate-900/50 text-sm font-medium text-slate-400">
-                      <div className="col-span-4">Name</div>
-                      <div className="col-span-3">Project</div>
-                      <div className="col-span-3">Status</div>
-                      <div className="col-span-2 text-end">Actions</div>
+                      <div className="col-span-4">{t("name")}</div>
+                      <div className="col-span-3">{t("project")}</div>
+                      <div className="col-span-3">{t("statusLabel")}</div>
+                      <div className="col-span-2 text-end">{t("actions")}</div>
                     </div>
-                    {/* Mock Table Rows */}
                     {[1, 2, 3, 4, 5].map((i) => (
                       <div key={i} className="grid grid-cols-12 gap-4 p-4 items-center border-b border-slate-800/50 last:border-0 hover:bg-slate-900/30 transition-colors">
                         <div className="col-span-4 flex items-center gap-3">
-                          <Avatar className="h-8 w-8">
+                          <Avatar className="h-8 w-8 shrink-0">
                             <AvatarFallback className="bg-slate-800 text-xs">S{i}</AvatarFallback>
                           </Avatar>
                           <div>
@@ -217,19 +215,19 @@ export function AdminDashboard({ user, data }: {
                             <p className="text-xs text-slate-500">student{i}@university.edu</p>
                           </div>
                         </div>
-                        <div className="col-span-3 text-sm text-slate-300">
+                        <div className="col-span-3 text-sm text-slate-300" dir="auto">
                           {i % 2 === 0 ? "XR Visualization" : "Unassigned"}
                         </div>
                         <div className="col-span-3">
                           <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
                             i % 2 === 0 ? 'bg-green-500/10 text-green-400' : 'bg-yellow-500/10 text-yellow-400'
                           }`}>
-                            {i % 2 === 0 ? "Active" : "Pending Project"}
+                            {i % 2 === 0 ? t("active") : "Pending"}
                           </span>
                         </div>
                         <div className="col-span-2 text-end">
                           <Button variant="ghost" size="sm" className="h-8 text-slate-400 hover:text-purple-400">
-                            Manage
+                            {tCommon("edit")}
                           </Button>
                         </div>
                       </div>
@@ -256,7 +254,7 @@ export function AdminDashboard({ user, data }: {
                         value={newAnnouncement.title}
                         onChange={(e) => setNewAnnouncement({...newAnnouncement, title: e.target.value})}
                         className="bg-slate-900/50 border-slate-800 focus-visible:ring-purple-500"
-                        placeholder="e.g., Week 4 Schedule Update"
+                        placeholder="..."
                         disabled={isSubmitting}
                       />
                     </div>
@@ -267,14 +265,14 @@ export function AdminDashboard({ user, data }: {
                         value={newAnnouncement.content}
                         onChange={(e) => setNewAnnouncement({...newAnnouncement, content: e.target.value})}
                         className="flex min-h-[120px] w-full rounded-md border border-slate-800 bg-slate-900/50 px-3 py-2 text-sm shadow-sm placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-purple-500 disabled:cursor-not-allowed disabled:opacity-50"
-                        placeholder="Type your announcement here..."
+                        placeholder="..."
                         disabled={isSubmitting}
                       />
                     </div>
                     <div className="flex flex-col gap-2">
                       <Label>{t("priority")}</Label>
                       <div className="flex gap-4">
-                        <label className="flex items-center gap-2 text-sm">
+                        <label className="flex items-center gap-2 text-sm cursor-pointer">
                           <input
                             type="radio"
                             name="priority"
@@ -285,7 +283,7 @@ export function AdminDashboard({ user, data }: {
                           />
                           {t("normal")}
                         </label>
-                        <label className="flex items-center gap-2 text-sm">
+                        <label className="flex items-center gap-2 text-sm cursor-pointer">
                           <input
                             type="radio"
                             name="priority"
@@ -299,14 +297,14 @@ export function AdminDashboard({ user, data }: {
                       </div>
                     </div>
                     <Button type="submit" disabled={isSubmitting} className="w-full bg-purple-600 hover:bg-purple-700 text-white">
-                      <Mail className="w-4 h-4 me-2" /> {isSubmitting ? "Posting..." : "Post Announcement"}
+                      <Mail className="w-4 h-4 me-2" /> {isSubmitting ? tCommon("loading") : t("postAnnouncement")}
                     </Button>
                   </form>
                 </CardContent>
               </Card>
 
               <div className="flex flex-col gap-4">
-                <h3 className="font-medium text-slate-300">Recent Broadcasts</h3>
+                <h3 className="font-medium text-slate-300">{t("recentBroadcasts")}</h3>
                 <ScrollArea className="h-[500px]">
                   <div className="flex flex-col gap-4 pe-4">
                     {announcements.map((a: { id: string, title: string, content: string, priority: string, createdAt: string }) => (
@@ -325,7 +323,7 @@ export function AdminDashboard({ user, data }: {
                       </div>
                     ))}
                     {announcements.length === 0 && (
-                      <div className="text-slate-500 text-sm">No announcements yet</div>
+                      <div className="text-slate-500 text-sm">{t("noAnnouncements")}</div>
                     )}
                   </div>
                 </ScrollArea>
@@ -338,7 +336,7 @@ export function AdminDashboard({ user, data }: {
               <Card className="glass border-slate-800">
                 <CardHeader>
                   <CardTitle>{t("systemConfig")}</CardTitle>
-                  <CardDescription>Manage global cohort settings and access controls.</CardDescription>
+                  <CardDescription>مدیریت دسترسی‌ها و تنظیمات سراسری سیستم.</CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-4">
                   <div className="flex items-center justify-between py-2">
@@ -383,7 +381,6 @@ export function AdminDashboard({ user, data }: {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Mock Projects */}
                     {[
                       { name: "XR Data Visualization", mentor: "Dr. Sarah Chen", cap: "2/4", status: "Open" },
                       { name: "Neural Interfaces", mentor: "Alex Vance", cap: "4/4", status: "Full" },
@@ -391,19 +388,19 @@ export function AdminDashboard({ user, data }: {
                     ].map((p, i) => (
                       <div key={i} className="p-4 rounded-lg border border-slate-800 bg-slate-900/40">
                         <div className="flex justify-between items-start mb-2">
-                          <h4 className="font-semibold text-purple-400">{p.name}</h4>
+                          <h4 className="font-semibold text-purple-400" dir="auto">{p.name}</h4>
                           <span className={`text-xs px-2 py-1 rounded ${
                             p.status === 'Full' ? 'bg-red-500/10 text-red-400' : 'bg-green-500/10 text-green-400'
                           }`}>
-                            {p.status}
+                            {p.status === 'Full' ? t('full') : t('active')}
                           </span>
                         </div>
                         <div className="flex justify-between items-end mt-4">
                           <div className="text-sm text-slate-400">
-                            Mentor: <span className="text-slate-300">{p.mentor}</span>
+                            {t("mentors")}: <span className="text-slate-300">{p.mentor}</span>
                           </div>
                           <div className="text-sm font-medium">
-                            Capacity: {p.cap}
+                            {t("capacity")}: <span dir="ltr">{p.cap}</span>
                           </div>
                         </div>
                       </div>
@@ -424,11 +421,11 @@ export function AdminDashboard({ user, data }: {
                 <CardContent>
                   <div className="rounded-md border border-slate-800">
                     <div className="grid grid-cols-12 gap-4 p-4 border-b border-slate-800 bg-slate-900/50 text-sm font-medium text-slate-400">
-                      <div className="col-span-3">User</div>
-                      <div className="col-span-3">Project</div>
-                      <div className="col-span-2">Date Applied</div>
-                      <div className="col-span-2">Status</div>
-                      <div className="col-span-2 text-end">Actions</div>
+                      <div className="col-span-3">{tCommon("profile")}</div>
+                      <div className="col-span-3">{t("project")}</div>
+                      <div className="col-span-2">{t("dateApplied")}</div>
+                      <div className="col-span-2">{t("statusLabel")}</div>
+                      <div className="col-span-2 text-end">{t("actions")}</div>
                     </div>
                     {applications.length === 0 ? (
                       <div className="p-8 text-center text-slate-500">{t("noApps")}</div>
@@ -438,7 +435,7 @@ export function AdminDashboard({ user, data }: {
                           <div className="col-span-3 text-sm font-medium">
                             {app.user.name || 'Unknown'}
                           </div>
-                          <div className="col-span-3 text-sm text-slate-300">
+                          <div className="col-span-3 text-sm text-slate-300" dir="auto">
                             {app.project.title}
                           </div>
                           <div className="col-span-2 text-xs text-slate-400" dir="ltr">
