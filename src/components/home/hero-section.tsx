@@ -61,7 +61,9 @@ export function HeroSection() {
           </motion.div>
 
           <motion.h1 variants={itemVariants} className="text-5xl md:text-7xl font-bold mb-4 tracking-tight z-10 relative">
-            <span className="gradient-text neon-text-cyan block pb-2">{t('title')}</span>
+            <span className="gradient-text neon-text-cyan inline-block pb-2 px-3 dir-rtl">
+              {t('title')}
+            </span>
           </motion.h1>
 
           <motion.h2 variants={itemVariants} className="text-2xl md:text-4xl font-medium text-gray-300 mb-6 font-sans">
