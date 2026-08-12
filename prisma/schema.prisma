@@ -21,6 +21,7 @@ model User {
   password      String?
   role          String    @default("PARTICIPANT")
   roleFa        String?
+  isVisible     Boolean   @default(true)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 

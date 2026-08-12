@@ -6,16 +6,16 @@ export async function POST(req: NextRequest) {
   try {
     const session = await auth();
     if (!session?.user) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return NextResponse.json({ message: "برای این کار باید وارد حساب کاربری خود شوید" }, { status: 401 });
     }
 
     if (session.user.role !== "PARTICIPANT") {
-      return new NextResponse("Only participants can apply", { status: 403 });
+      return NextResponse.json({ message: "فقط شرکت‌کنندگان می‌توانند برای پروژه‌ها درخواست ثبت کنند" }, { status: 403 });
     }
 
     const { projectId } = await req.json();
     if (!projectId) {
-      return new NextResponse("Project ID required", { status: 400 });
+      return NextResponse.json({ message: "شناسه پروژه الزامی است" }, { status: 400 });
     }
 
     const project = await db.project.findUnique({
@@ -23,17 +23,15 @@ export async function POST(req: NextRequest) {
     });
 
     if (!project) {
-      return new NextResponse("Project not found", { status: 404 });
+      return NextResponse.json({ message: "پروژه مورد نظر یافت نشد" }, { status: 404 });
     }
 
-    // You might want to actually count enrolled students here instead of 0
-    // But as per instructions: check if not full
     const enrolledCount = await db.projectApplication.count({
-      where: { projectId, status: "ACCEPTED" } // Example status
+      where: { projectId, status: "ACCEPTED" }
     });
 
     if (enrolledCount >= project.maxCapacity) {
-      return new NextResponse("Project is full", { status: 400 });
+      return NextResponse.json({ message: "ظرفیت این پروژه تکمیل شده است" }, { status: 400 });
     }
 
     const existingApplication = await db.projectApplication.findFirst({
@@ -44,7 +42,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (existingApplication) {
-      return new NextResponse("Already applied to this project", { status: 400 });
+      return NextResponse.json({ message: "شما قبلاً برای این پروژه درخواست داده‌اید" }, { status: 400 });
     }
 
     await db.projectApplication.create({
@@ -55,9 +53,9 @@ export async function POST(req: NextRequest) {
       }
     });
 
-    return new NextResponse("OK", { status: 200 });
+    return NextResponse.json({ message: "درخواست شما با موفقیت ثبت شد" }, { status: 200 });
   } catch (error) {
     console.error("[PROJECT_APPLY]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json({ message: "خطایی در سرور رخ داد، لطفاً دوباره تلاش کنید" }, { status: 500 });
   }
 }

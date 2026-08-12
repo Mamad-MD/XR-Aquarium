@@ -38,16 +38,13 @@ export function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailD
   const enrolledCount = 0;
   const isFull = enrolledCount >= project.maxCapacity;
 
-  // We rely on the API to catch if already applied, but we can do a basic check if we had that data.
-  // For simplicity based on instructions, we'll just let the API handle the error.
-
   const handleSelect = async () => {
     if (status === "unauthenticated" || !session) {
-      toast.error("Please login to select a project");
+      toast.error("برای انتخاب پروژه ابتدا وارد حساب کاربری خود شوید");
       return;
     }
     if (session.user?.role !== 'PARTICIPANT') {
-      toast.error("Only participants can apply for projects");
+      toast.error("فقط شرکت‌کنندگان می‌توانند برای پروژه‌ها درخواست ثبت کنند");
       return;
     }
 
@@ -61,17 +58,24 @@ export function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailD
         body: JSON.stringify({ projectId: project.id }),
       });
 
+      // سرور همیشه یک JSON با فیلد message برمی‌گرداند (چه موفق چه ناموفق)
+      let data: { message?: string } = {};
+      try {
+        data = await response.json();
+      } catch {
+        data = {};
+      }
+
       if (!response.ok) {
-        const errorText = await response.text();
-        toast.error(errorText || "Failed to apply for project");
+        toast.error(data.message || "درخواست شما با خطا مواجه شد. لطفاً دوباره تلاش کنید");
         return;
       }
 
-      toast.success(`Successfully applied to ${project.title}`);
+      toast.success(data.message || `درخواست شما برای پروژه «${project.titleFa || project.title}» با موفقیت ثبت شد`);
       router.refresh();
       onClose();
     } catch (error) {
-      toast.error("An unexpected error occurred");
+      toast.error("خطایی غیرمنتظره رخ داد. اتصال اینترنت خود را بررسی کنید");
       console.error(error);
     } finally {
       setIsApplying(false);

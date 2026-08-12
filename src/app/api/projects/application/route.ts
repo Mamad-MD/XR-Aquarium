@@ -7,13 +7,13 @@ export async function PATCH(req: Request) {
     const session = await auth();
 
     if (!session?.user || session.user.role !== 'ADMIN') {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "دسترسی غیرمجاز" }, { status: 401 });
     }
 
     const { applicationId, status } = await req.json();
 
     if (!applicationId || !status) {
-      return NextResponse.json({ error: "Missing applicationId or status" }, { status: 400 });
+      return NextResponse.json({ error: "شناسه درخواست یا وضعیت مشخص نشده است" }, { status: 400 });
     }
 
     const application = await db.projectApplication.update({
@@ -24,9 +24,9 @@ export async function PATCH(req: Request) {
       },
     });
 
-    return NextResponse.json({ success: true, application }, { status: 200 });
+    return NextResponse.json({ success: true, message: "وضعیت درخواست با موفقیت به‌روزرسانی شد", application }, { status: 200 });
   } catch (error) {
     console.error("Error updating application:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ error: "خطای داخلی سرور رخ داد" }, { status: 500 });
   }
 }
