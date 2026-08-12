@@ -3,16 +3,17 @@ import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { AdminDashboard } from "@/components/dashboard/admin-dashboard";
 import { StudentDashboard } from "@/components/dashboard/student-dashboard";
+import { getLocale } from "next-intl/server"; // ایمپورت برای سمت سرور
 
 export default async function DashboardPage() {
   const session = await auth();
+  const locale = await getLocale(); // دریافت زبان در سرور
 
   if (!session?.user) {
     redirect("/auth/login");
   }
 
   const announcements = await db.announcement.findMany({
-    // orderBy: { createdAt: "desc" },  // Removed because createdAt does not exist in Prisma schema for Announcement
     take: 10,
   });
 
@@ -25,23 +26,25 @@ export default async function DashboardPage() {
       orderBy: { appliedAt: 'desc' }
     });
 
-    // Use an explicit fallback for createdAt if it doesn't exist, to avoid breaking the UI that expects it
     const safeAnnouncements = announcements.map(a => ({
       ...a,
-      createdAt: new Date().toISOString() // Fallback
+      createdAt: new Date().toISOString()
     }));
 
     return (
-      <AdminDashboard
-        user={session.user}
-        data={{
-          studentsCount,
-          mentorsCount,
-          projectsCount,
-          announcements: safeAnnouncements,
-          applications
-        }}
-      />
+      // تنظیم جهت و تراز متن بر اساس زبان
+      <div dir={locale === 'fa' ? 'rtl' : 'ltr'} className={`w-full flex-1 ${locale === 'fa' ? 'text-right' : 'text-left'}`}>
+        <AdminDashboard
+          user={session.user}
+          data={{
+            studentsCount,
+            mentorsCount,
+            projectsCount,
+            announcements: safeAnnouncements,
+            applications
+          }}
+        />
+      </div>
     );
   }
 
@@ -59,10 +62,9 @@ export default async function DashboardPage() {
 
   const safeAnnouncements = announcements.map(a => ({
     ...a,
-    createdAt: new Date().toISOString() // Fallback
+    createdAt: new Date().toISOString()
   }));
 
-  // Create a safe payload mapping Date objects to strings
   const safeData = {
     ...userWithData,
     createdAt: userWithData?.createdAt.toISOString(),
@@ -78,5 +80,10 @@ export default async function DashboardPage() {
     announcements: safeAnnouncements,
   };
 
-  return <StudentDashboard user={session.user} data={safeData} />;
+  return (
+    // تنظیم جهت و تراز متن بر اساس زبان
+    <div dir={locale === 'fa' ? 'rtl' : 'ltr'} className={`w-full flex-1 ${locale === 'fa' ? 'text-right' : 'text-left'}`}>
+      <StudentDashboard user={session.user} data={safeData} />
+    </div>
+  );
 }
