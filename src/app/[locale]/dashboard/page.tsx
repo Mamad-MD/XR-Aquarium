@@ -3,13 +3,24 @@ import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { AdminDashboard } from "@/components/dashboard/admin-dashboard";
 import { StudentDashboard } from "@/components/dashboard/student-dashboard";
-import { getLocale } from "next-intl/server"; // ایمپورت برای سمت سرور
+import { getLocale } from "next-intl/server";
 
 export default async function DashboardPage() {
   const session = await auth();
-  const locale = await getLocale(); // دریافت زبان در سرور
+  const locale = await getLocale();
 
-  if (!session?.user) {
+  // ۱. بررسی لاگین بودن کاربر
+  if (!session?.user?.email) {
+    redirect("/auth/login");
+  }
+
+  // ۲. 🔥 راه‌حل قطعی: خواندن مستقیم و لحظه‌ای اطلاعات کاربر از دیتابیس
+  const dbUser = await db.user.findUnique({
+    where: { email: session.user.email }
+  });
+
+  // اگر کاربری در دیتابیس پیدا نشد
+  if (!dbUser) {
     redirect("/auth/login");
   }
 
@@ -17,10 +28,14 @@ export default async function DashboardPage() {
     take: 10,
   });
 
-  if (session.user.role === "ADMIN") {
+  // ۳. بررسی نقش مستقیماً از روی دیتابیس (کاملاً امن و بدون باگ کش)
+  if (dbUser.role === "ADMIN" || dbUser.role === "admin") {
     const studentsCount = await db.user.count({ where: { role: "PARTICIPANT" } });
     const mentorsCount = await db.user.count({ where: { role: "MENTOR" } });
     const projectsCount = await db.project.count();
+    const allStudents = await db.user.findMany({ where: { role: "PARTICIPANT" } });
+    const allProjects = await db.project.findMany({ include: { mentor: true } });
+
     const applications = await db.projectApplication.findMany({
       include: { user: true, project: true },
       orderBy: { appliedAt: 'desc' }
@@ -32,25 +47,26 @@ export default async function DashboardPage() {
     }));
 
     return (
-      // تنظیم جهت و تراز متن بر اساس زبان
       <div dir={locale === 'fa' ? 'rtl' : 'ltr'} className={`w-full flex-1 ${locale === 'fa' ? 'text-right' : 'text-left'}`}>
         <AdminDashboard
-          user={session.user}
+          user={{ ...session.user, name: dbUser.name }}
           data={{
             studentsCount,
             mentorsCount,
             projectsCount,
             announcements: safeAnnouncements,
-            applications
+            applications,
+            students: allStudents,
+            projects: allProjects,
           }}
         />
       </div>
     );
   }
 
-  // Student case
+  // ۴. در غیر این صورت، بارگذاری اطلاعات برای داشبورد دانشجو
   const userWithData = await db.user.findUnique({
-    where: { id: session.user.id },
+    where: { id: dbUser.id },
     include: {
       projectApplications: {
         include: {
@@ -81,7 +97,6 @@ export default async function DashboardPage() {
   };
 
   return (
-    // تنظیم جهت و تراز متن بر اساس زبان
     <div dir={locale === 'fa' ? 'rtl' : 'ltr'} className={`w-full flex-1 ${locale === 'fa' ? 'text-right' : 'text-left'}`}>
       <StudentDashboard user={session.user} data={safeData} />
     </div>

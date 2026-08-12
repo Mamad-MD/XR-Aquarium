@@ -158,7 +158,9 @@ model Resource {
 model Announcement {
   id         String   @id @default(cuid())
   title      String
+  titleFa    String?
   content    String
+  contentFa  String?
   // Priority (LOW, MEDIUM, HIGH, URGENT)
   priority   String   @default("MEDIUM")
   authorId   String

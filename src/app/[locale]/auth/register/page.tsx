@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Eye, EyeOff, Lock, Mail, User as UserIcon } from "lucide-react";
+import { Eye, EyeOff, Lock, User as UserIcon, BadgeCheck } from "lucide-react";
 import { signIn } from "next-auth/react";
 import { toast } from "sonner";
 
@@ -18,7 +18,7 @@ export default function RegisterPage() {
   const router = useRouter();
 
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [studentId, setStudentId] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState<UserRole>("student");
@@ -29,51 +29,52 @@ export default function RegisterPage() {
     e.preventDefault();
     setError("");
 
-    if (!name || !email || !password || !confirmPassword) {
-      setError("Please fill in all fields.");
+    if (!name || !studentId || !password || !confirmPassword) {
+      setError("لطفاً تمامی فیلدها را پر کنید.");
       return;
     }
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+      setError("رمز عبور و تکرار آن یکسان نیستند.");
       return;
     }
 
     if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
+      setError("رمز عبور باید حداقل ۶ کاراکتر باشد.");
       return;
     }
+
+    // تبدیل شماره دانشجویی به فرمت ایمیل
+    const emailPayload = studentId.includes("@") ? studentId : `${studentId}@xrlab.ir`;
 
     try {
       const response = await fetch("/api/auth/register", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name, email, password, role }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email: emailPayload, password, role }),
       });
 
       if (!response.ok) {
         const data = await response.json();
-        setError(data.error || "An error occurred during registration.");
+        setError(data.error || "خطایی در هنگام ثبت‌نام رخ داد.");
         return;
       }
 
-      const res = await signIn("credentials", { email, password, redirect: false });
+      const res = await signIn("credentials", { email: emailPayload, password, redirect: false });
 
       if (res?.error) {
-        setError(res.error || "Failed to sign in after registration.");
+        setError("ثبت‌نام انجام شد اما ورود خودکار با خطا مواجه شد.");
       } else {
-        toast.success("Account created successfully!");
+        toast.success("حساب کاربری با موفقیت ساخته شد!");
         router.push("/dashboard");
       }
     } catch (err) {
-      setError("An unexpected error occurred.");
+      setError("یک خطای غیرمنتظره رخ داد.");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-background py-10">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-background py-10" dir="rtl">
       {/* Decorative Orbs */}
       <div className="absolute top-1/4 end-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-[128px] animate-pulse-glow" />
       <div className="absolute bottom-1/4 start-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-[128px] animate-pulse-glow" style={{ animationDelay: "1s" }} />
@@ -83,27 +84,26 @@ export default function RegisterPage() {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
         className="w-full max-w-md z-10 p-4"
-        dir="ltr"
       >
         <Card className="glass-strong border-gradient relative overflow-hidden">
           <CardHeader className="flex flex-col gap-4 text-center pb-6">
-            <CardTitle className="text-3xl font-bold tracking-tight gradient-text">Join the Aquarium</CardTitle>
-            <CardDescription className="text-muted-foreground text-sm" dir="rtl">
-              عضویت در فضای آموزشی آکواریوم
+            <CardTitle className="text-3xl font-bold tracking-tight gradient-text">عضویت در آکواریوم</CardTitle>
+            <CardDescription className="text-muted-foreground text-sm">
+              ثبت‌نام در فضای آموزشی آزمایشگاه XR
             </CardDescription>
           </CardHeader>
 
           <CardContent>
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <div className="flex flex-col gap-4">
-                <Label htmlFor="name">Full Name</Label>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-right">
+              <div className="flex flex-col gap-3">
+                <Label htmlFor="name">نام و نام خانوادگی</Label>
                 <div className="relative">
-                  <UserIcon className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <BadgeCheck className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="name"
                     type="text"
-                    placeholder="Enter your full name"
-                    className="ps-10 bg-input/50 border-white/10 focus-visible:ring-purple-500"
+                    placeholder="مثال: علی احمدی"
+                    className="pr-10 pl-3 bg-input/50 border-white/10 focus-visible:ring-purple-500"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
@@ -111,31 +111,33 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-4">
-                <Label htmlFor="email">Email</Label>
+              <div className="flex flex-col gap-3">
+                <Label htmlFor="studentId">شماره دانشجویی</Label>
                 <div className="relative">
-                  <Mail className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <UserIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
-                    id="email"
-                    type="email"
-                    placeholder="Enter your email"
-                    className="ps-10 bg-input/50 border-white/10 focus-visible:ring-purple-500"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    id="studentId"
+                    type="text"
+                    dir="rtl"
+                    placeholder="مثال: 40498763"
+                    className="pr-10 pl-3 bg-input/50 border-white/10 focus-visible:ring-purple-500 text-left"
+                    value={studentId}
+                    onChange={(e) => setStudentId(e.target.value)}
                     required
                   />
                 </div>
               </div>
 
-              <div className="flex flex-col gap-4">
-                <Label htmlFor="password">Password</Label>
+              <div className="flex flex-col gap-3">
+                <Label htmlFor="password">رمز عبور</Label>
                 <div className="relative">
-                  <Lock className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Lock className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
+                    dir="ltr"
                     placeholder="••••••••"
-                    className="ps-10 pe-10 bg-input/50 border-white/10 focus-visible:ring-purple-500"
+                    className="pr-10 pl-10 bg-input/50 border-white/10 focus-visible:ring-purple-500 text-left"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -143,26 +145,23 @@ export default function RegisterPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
               </div>
 
-              <div className="flex flex-col gap-4">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <div className="flex flex-col gap-3">
+                <Label htmlFor="confirmPassword">تکرار رمز عبور</Label>
                 <div className="relative">
-                  <Lock className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Lock className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="confirmPassword"
                     type={showPassword ? "text" : "password"}
+                    dir="ltr"
                     placeholder="••••••••"
-                    className="ps-10 bg-input/50 border-white/10 focus-visible:ring-purple-500"
+                    className="pr-10 pl-3 bg-input/50 border-white/10 focus-visible:ring-purple-500 text-left"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
@@ -170,39 +169,11 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-4 pt-1">
-                <Label>Role</Label>
-                <div className="flex gap-44">
-                  <label className="flex items-center gap-42 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="role"
-                      value="student"
-                      checked={role === "student"}
-                      onChange={() => setRole("student")}
-                      className="text-purple-500 focus:ring-purple-500 bg-input/50 border-white/10"
-                    />
-                    <span className="text-sm">Student</span>
-                  </label>
-                  <label className="flex items-center gap-42 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="role"
-                      value="admin"
-                      checked={role === "admin"}
-                      onChange={() => setRole("admin")}
-                      className="text-purple-500 focus:ring-purple-500 bg-input/50 border-white/10"
-                    />
-                    <span className="text-sm">Admin</span>
-                  </label>
-                </div>
-              </div>
-
               {error && (
                 <motion.p
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="text-destructive text-sm font-medium text-center"
+                  className="text-destructive text-sm font-medium text-center mt-2"
                 >
                   {error}
                 </motion.p>
@@ -210,18 +181,18 @@ export default function RegisterPage() {
 
               <Button
                 type="submit"
-                className="w-full bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-400 hover:to-cyan-400 text-white border-0 neon-purple mt-4"
+                className="w-full bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-400 hover:to-cyan-400 text-white border-0 neon-purple mt-4 text-lg"
               >
-                Create Account
+                ایجاد حساب کاربری
               </Button>
             </form>
           </CardContent>
 
           <CardFooter className="flex justify-center pt-2">
-            <div className="text-sm text-muted-foreground">
-              Already have an account?{" "}
-              <Link href="/auth/login" className="text-purple-400 hover:text-purple-300 transition-colors">
-                Login
+            <div className="text-sm text-muted-foreground mt-2">
+              قبلاً ثبت‌نام کرده‌اید؟{" "}
+              <Link href="/auth/login" className="text-purple-400 hover:text-purple-300 transition-colors font-medium">
+                وارد شوید
               </Link>
             </div>
           </CardFooter>

@@ -2,13 +2,17 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { db as prisma } from "@/lib/db";
 
+// آرایه‌های مجاز برای تخصیص نقش‌ها (در محیط واقعی بهتر است از متغیرهای محیطی ENV خوانده شوند)
+const ADMIN_IDS = ["40333253", "12345678"]; // دومی یک نمونه تستی است
+const MENTOR_IDS = ["99999999"]; // جایگاه برای منتورها
+
 export async function POST(req: Request) {
   try {
-    const { name, email, password, role } = await req.json();
+    const { name, email, password } = await req.json();
 
     if (!name || !email || !password) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { error: "لطفاً تمامی فیلدها را پر کنید." },
         { status: 400 }
       );
     }
@@ -19,19 +23,30 @@ export async function POST(req: Request) {
 
     if (existingUser) {
       return NextResponse.json(
-        { error: "Email already exists" },
+        { error: "این شماره دانشجویی قبلاً در سیستم ثبت شده است." },
         { status: 400 }
       );
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // استخراج شماره دانشجویی از ایمیل ساختگی (مثلاً 40333253@xrlab.ir -> 40333253)
+    const studentId = email.split('@')[0];
+
+    // لاجیک تشخیص نقش
+    let dbRole = "PARTICIPANT"; // پیش‌فرض برای همه
+    if (ADMIN_IDS.includes(studentId) || ADMIN_IDS.includes(email)) {
+      dbRole = "ADMIN";
+    } else if (MENTOR_IDS.includes(studentId) || MENTOR_IDS.includes(email)) {
+      dbRole = "MENTOR";
+    }
+
     const user = await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
-        role: role || "student",
+        role: dbRole,
       },
       select: {
         id: true,
@@ -46,7 +61,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Registration error:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "خطای سرور. لطفاً با پشتیبانی تماس بگیرید." },
       { status: 500 }
     );
   }

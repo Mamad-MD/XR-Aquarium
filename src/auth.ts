@@ -13,7 +13,7 @@ export const {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email" },
+        email: { label: "Student ID", type: "email" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
@@ -32,6 +32,8 @@ export const {
 
         if (!passwordMatch) return null;
 
+        console.log("کاربر لاگین کرد. نقش در دیتابیس:", user.role);
+
         return {
           id: user.id,
           name: user.name,
@@ -45,14 +47,14 @@ export const {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.role = user.role;
+        token.role = (user as any).role;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user && token) {
         session.user.id = token.id as string;
-        session.user.role = token.role as string;
+        (session.user as any).role = token.role as string;
       }
       return session;
     },

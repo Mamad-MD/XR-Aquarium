@@ -144,6 +144,7 @@
     "users": "Users",
     "activeUsers": "Active Users",
     "systemStatus": "System Status",
+    "full": "Full",
     "metrics": {
       "views": "Views",
       "interactions": "Interactions",
