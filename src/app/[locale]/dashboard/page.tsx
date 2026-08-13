@@ -35,10 +35,48 @@ export default async function DashboardPage() {
     const projectsCount = await db.project.count();
     const allStudents = await db.user.findMany({ where: { role: "PARTICIPANT" } });
     const allProjects = await db.project.findMany({ include: { mentor: true } });
+    const allMentors = await db.user.findMany({
+      where: { role: "MENTOR" },
+      select: { id: true, name: true, nameFa: true },
+    });
 
     const applications = await db.projectApplication.findMany({
       include: { user: true, project: true },
       orderBy: { appliedAt: 'desc' }
+    });
+
+    // تیم‌ها برای تب تایید تیم‌ها
+    const allTeams = await db.team.findMany({
+      include: {
+        leader: { select: { name: true, nameFa: true } },
+        members: { include: { user: { select: { name: true, nameFa: true } } } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    // تجهیزات برای تب مدیریت تجهیزات
+    const equipmentInventory = await db.equipment.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const pendingEquipmentRequests = await db.equipmentRequest.findMany({
+      where: { status: 'PENDING' },
+      include: {
+        equipment: { select: { id: true, name: true, nameFa: true } },
+        team: { select: { id: true, name: true, nameFa: true } },
+        requestedBy: { select: { name: true, nameFa: true } },
+      },
+      orderBy: { requestedAt: 'desc' },
+    });
+
+    const assignedEquipmentRequests = await db.equipmentRequest.findMany({
+      where: { status: 'APPROVED' },
+      include: {
+        equipment: { select: { id: true, name: true, nameFa: true } },
+        team: { select: { id: true, name: true, nameFa: true } },
+        requestedBy: { select: { name: true, nameFa: true } },
+      },
+      orderBy: { reviewedAt: 'desc' },
     });
 
     const safeAnnouncements = announcements.map(a => ({
@@ -58,6 +96,11 @@ export default async function DashboardPage() {
             applications,
             students: allStudents,
             projects: allProjects,
+            mentors: allMentors,
+            teams: allTeams,
+            equipmentInventory,
+            pendingEquipmentRequests,
+            assignedEquipmentRequests,
           }}
         />
       </div>
@@ -87,6 +130,10 @@ export default async function DashboardPage() {
             where: { status: "PENDING" },
             include: { user: true },
           },
+          equipmentRequests: {
+            where: { status: "APPROVED" },
+            include: { equipment: { select: { name: true, nameFa: true } } },
+          },
         },
       },
     },
@@ -99,6 +146,7 @@ export default async function DashboardPage() {
         nameFa: myTeamMembership.team.nameFa,
         description: myTeamMembership.team.description,
         leaderId: myTeamMembership.team.leaderId,
+        status: myTeamMembership.team.status,
         members: myTeamMembership.team.members.map((m) => ({
           id: m.id,
           userId: m.userId,
@@ -108,6 +156,11 @@ export default async function DashboardPage() {
           id: r.id,
           userId: r.userId,
           user: { name: r.user.name, nameFa: r.user.nameFa },
+        })),
+        assignedEquipment: myTeamMembership.team.equipmentRequests.map((eq) => ({
+          id: eq.id,
+          quantity: eq.quantity,
+          equipment: { name: eq.equipment.name, nameFa: eq.equipment.nameFa },
         })),
       }
     : null;

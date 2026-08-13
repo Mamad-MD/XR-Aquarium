@@ -52,6 +52,12 @@ export function TeamDetailDialog({
   const canRequestJoin =
     currentUserId && !currentTeamId && !isMember && !myPendingRequest;
 
+  const statusBadge: Record<string, { label: string; className: string }> = {
+    PENDING: { label: t("statusPending"), className: "bg-yellow-500/10 text-yellow-400 border border-yellow-500/30" },
+    APPROVED: { label: t("statusApproved"), className: "bg-green-500/10 text-green-400 border border-green-500/30" },
+    REJECTED: { label: t("statusRejected"), className: "bg-red-500/10 text-red-400 border border-red-500/30" },
+  };
+
   const handleJoinRequest = async () => {
     if (status === "unauthenticated") {
       toast.error(t("loginRequired"));
@@ -133,10 +139,15 @@ export function TeamDetailDialog({
       <DialogContent className="max-w-full sm:max-w-[600px] bg-gray-950/90 border-white/10 backdrop-blur-xl overflow-hidden">
         <DialogHeader>
           <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
-            <Badge className="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
-              <Users className="w-3.5 h-3.5 me-1" /> {team.members.length}{" "}
-              {t("members")}
-            </Badge>
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge className="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                <Users className="w-3.5 h-3.5 me-1" /> {team.members.length}{" "}
+                {t("members")}
+              </Badge>
+              <Badge className={statusBadge[team.status]?.className}>
+                {statusBadge[team.status]?.label}
+              </Badge>
+            </div>
             {isLeader && (
               <Badge className="bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
                 <Crown className="w-3.5 h-3.5 me-1" /> {t("youAreLeader")}
@@ -154,6 +165,16 @@ export function TeamDetailDialog({
           {team.description && (
             <p className="text-base text-gray-300 mt-4 leading-relaxed">
               {team.description}
+            </p>
+          )}
+          {isLeader && team.status === "PENDING" && (
+            <p className="text-sm text-yellow-400 mt-3 bg-yellow-500/5 border border-yellow-500/20 rounded-lg p-3">
+              {t("pendingApprovalNotice")}
+            </p>
+          )}
+          {isLeader && team.status === "REJECTED" && (
+            <p className="text-sm text-red-400 mt-3 bg-red-500/5 border border-red-500/20 rounded-lg p-3">
+              {t("rejectedNotice")}
             </p>
           )}
         </DialogHeader>

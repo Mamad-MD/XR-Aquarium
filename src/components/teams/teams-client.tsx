@@ -37,6 +37,7 @@ export interface TeamWithRelations {
   nameFa: string | null;
   description: string | null;
   leaderId: string;
+  status: string;
   createdAt: string;
   updatedAt: string;
   leader: User;

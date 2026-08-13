@@ -12,7 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   LayoutDashboard, Users, Boxes, Bell, Settings,
-  Search, Plus, Activity, Mail, FileText, Check, X
+  Search, Plus, Activity, Mail, FileText, Check, X, UsersRound, Package
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
@@ -21,6 +21,9 @@ import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ChangePasswordForm } from "./change-password-form"; // ایمپورت فرم تغییر رمز
+import { CreateProjectDialog } from "./create-project-dialog";
+import { AdminTeamsPanel, type AdminTeamData } from "./admin-teams-panel";
+import { AdminEquipmentPanel, type AdminEquipmentItem, type AdminEquipmentRequestItem } from "./admin-equipment-panel";
 
 export function AdminDashboard({ user, data }: {
   user: { name?: string | null, image?: string | null, id?: string | null },
@@ -38,6 +41,11 @@ export function AdminDashboard({ user, data }: {
     }>,
     students?: Array<any>,
     projects?: Array<any>,
+    mentors?: Array<{ id: string, name: string | null, nameFa: string | null }>,
+    teams?: AdminTeamData[],
+    equipmentInventory?: AdminEquipmentItem[],
+    pendingEquipmentRequests?: AdminEquipmentRequestItem[],
+    assignedEquipmentRequests?: AdminEquipmentRequestItem[],
   }
 }) {
   const t = useTranslations("Dashboard");
@@ -50,9 +58,17 @@ export function AdminDashboard({ user, data }: {
   const applications = data?.applications || [];
   const students = data?.students || [];
   const projects = data?.projects || [];
+  const mentors = data?.mentors || [];
+  const teams = data?.teams || [];
+  const equipmentInventory = data?.equipmentInventory || [];
+  const pendingEquipmentRequests = data?.pendingEquipmentRequests || [];
+  const assignedEquipmentRequests = data?.assignedEquipmentRequests || [];
+
+  const pendingTeamsCount = teams.filter((tm) => tm.status === "PENDING").length;
 
   const [newAnnouncement, setNewAnnouncement] = useState({ title: "", content: "", priority: "MEDIUM" as "LOW" | "MEDIUM" | "HIGH" | "URGENT" });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -138,7 +154,7 @@ export function AdminDashboard({ user, data }: {
         className="flex-1 max-w-6xl w-full"
       >
         <Tabs defaultValue="overview" className="w-full" dir={isFa ? 'rtl' : 'ltr'}>
-          <TabsList className="grid grid-cols-6 w-full md:w-auto md:inline-flex bg-slate-900/50 border border-slate-800 p-1 mb-8 overflow-x-auto">
+          <TabsList className="grid grid-cols-8 w-full md:w-auto md:inline-flex bg-slate-900/50 border border-slate-800 p-1 mb-8 overflow-x-auto">
             <TabsTrigger value="overview" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
               <LayoutDashboard className="w-4 h-4 md:mx-2 mx-1 shrink-0" />
               <span className="hidden md:inline">{t("overview")}</span>
@@ -150,6 +166,17 @@ export function AdminDashboard({ user, data }: {
             <TabsTrigger value="projects" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
               <Boxes className="w-4 h-4 md:mx-2 mx-1 shrink-0" />
               <span className="hidden md:inline">{t("activeProjects")}</span>
+            </TabsTrigger>
+            <TabsTrigger value="teams" className="relative data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
+              <UsersRound className="w-4 h-4 md:mx-2 mx-1 shrink-0" />
+              <span className="hidden md:inline">{t("teamsTab")}</span>
+              {pendingTeamsCount > 0 && (
+                <span className="absolute -top-1 -end-1 w-2 h-2 rounded-full bg-red-500" />
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="equipment" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
+              <Package className="w-4 h-4 md:mx-2 mx-1 shrink-0" />
+              <span className="hidden md:inline">{t("equipmentTab")}</span>
             </TabsTrigger>
             <TabsTrigger value="announcements" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
               <Bell className="w-4 h-4 md:mx-2 mx-1 shrink-0" />
@@ -289,7 +316,10 @@ export function AdminDashboard({ user, data }: {
                     <CardTitle>{t("activeProjects")}</CardTitle>
                     <CardDescription>{t("manageProjects")}</CardDescription>
                   </div>
-                  <Button className="bg-purple-600 hover:bg-purple-700 w-full sm:w-auto">
+                  <Button
+                    className="bg-purple-600 hover:bg-purple-700 w-full sm:w-auto"
+                    onClick={() => setIsCreateProjectOpen(true)}
+                  >
                     <Plus className="w-4 h-4 mx-2 shrink-0" /> {t("newProject")}
                   </Button>
                 </CardHeader>
@@ -324,6 +354,24 @@ export function AdminDashboard({ user, data }: {
                   </div>
                 </CardContent>
               </Card>
+            </motion.div>
+          </TabsContent>
+
+          {/* تب تیم‌ها */}
+          <TabsContent value="teams">
+            <motion.div variants={containerVariants} initial="hidden" animate="visible">
+              <AdminTeamsPanel teams={teams} />
+            </motion.div>
+          </TabsContent>
+
+          {/* تب تجهیزات */}
+          <TabsContent value="equipment">
+            <motion.div variants={containerVariants} initial="hidden" animate="visible">
+              <AdminEquipmentPanel
+                equipment={equipmentInventory}
+                pendingRequests={pendingEquipmentRequests}
+                assignedRequests={assignedEquipmentRequests}
+              />
             </motion.div>
           </TabsContent>
 
@@ -568,6 +616,12 @@ export function AdminDashboard({ user, data }: {
           </TabsContent>
         </Tabs>
       </motion.main>
+
+      <CreateProjectDialog
+        isOpen={isCreateProjectOpen}
+        onClose={() => setIsCreateProjectOpen(false)}
+        mentors={mentors}
+      />
     </div>
   );
 }

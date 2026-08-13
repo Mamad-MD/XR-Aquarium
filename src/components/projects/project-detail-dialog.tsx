@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Project as PrismaProject, User } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import {
@@ -17,6 +17,7 @@ import { CheckCircle, Clock, Users, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 import { useTranslations } from "next-intl";
 
@@ -30,7 +31,16 @@ export function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailD
   const t = useTranslations('Projects');
   const { data: session, status } = useSession();
   const [isApplying, setIsApplying] = useState(false);
+  const [myLeaderTeam, setMyLeaderTeam] = useState<{ id: string; name: string; status: string } | null | undefined>(undefined);
   const router = useRouter();
+
+  useEffect(() => {
+    if (!isOpen || status !== "authenticated") return;
+    fetch("/api/teams/my-leader-team")
+      .then((res) => res.json())
+      .then((data) => setMyLeaderTeam(data.team || null))
+      .catch(() => setMyLeaderTeam(null));
+  }, [isOpen, status]);
 
   if (!project) return null;
 
@@ -40,11 +50,17 @@ export function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailD
 
   const handleSelect = async () => {
     if (status === "unauthenticated" || !session) {
-      toast.error("برای انتخاب پروژه ابتدا وارد حساب کاربری خود شوید");
+      toast.error("برای درخواست پروژه ابتدا وارد حساب کاربری خود شوید");
       return;
     }
-    if (session.user?.role !== 'PARTICIPANT') {
-      toast.error("فقط شرکت‌کنندگان می‌توانند برای پروژه‌ها درخواست ثبت کنند");
+
+    if (!myLeaderTeam) {
+      toast.error("فقط سرپرست یک تیم می‌تواند برای پروژه درخواست دهد. ابتدا یک تیم بسازید");
+      return;
+    }
+
+    if (myLeaderTeam.status !== "APPROVED") {
+      toast.error("تیم شما هنوز توسط مدیر سیستم تایید نشده است");
       return;
     }
 
@@ -71,7 +87,7 @@ export function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailD
         return;
       }
 
-      toast.success(data.message || `درخواست شما برای پروژه «${project.titleFa || project.title}» با موفقیت ثبت شد`);
+      toast.success(data.message || `درخواست تیم شما برای پروژه «${project.titleFa || project.title}» با موفقیت ثبت شد`);
       router.refresh();
       onClose();
     } catch (error) {
@@ -109,6 +125,18 @@ export function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailD
   } catch {
     parsedTechStack = project.techStack.split(',').map(s => s.trim());
   }
+
+  // پیام راهنما بر اساس وضعیت تیم کاربر برای درخواست پروژه
+  let eligibilityNotice: string | null = null;
+  if (status === "authenticated" && myLeaderTeam === null) {
+    eligibilityNotice = "فقط سرپرست یک تیم می‌تواند برای پروژه درخواست دهد. ابتدا یک تیم بسازید یا سرپرست تیم شوید.";
+  } else if (status === "authenticated" && myLeaderTeam && myLeaderTeam.status === "PENDING") {
+    eligibilityNotice = "تیم شما در انتظار تایید مدیر سیستم است. پس از تایید می‌توانید برای پروژه‌ها درخواست دهید.";
+  } else if (status === "authenticated" && myLeaderTeam && myLeaderTeam.status === "REJECTED") {
+    eligibilityNotice = "درخواست ساخت تیم شما رد شده است، بنابراین امکان درخواست برای پروژه وجود ندارد.";
+  }
+
+  const canApply = status === "authenticated" && myLeaderTeam && myLeaderTeam.status === "APPROVED";
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -183,6 +211,17 @@ export function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailD
           </div>
         </ScrollArea>
 
+        {eligibilityNotice && (
+          <p className="mt-4 text-sm text-yellow-400 bg-yellow-500/5 border border-yellow-500/20 rounded-lg p-3">
+            {eligibilityNotice}{" "}
+            {myLeaderTeam === null && (
+              <Link href="/teams" className="underline hover:text-yellow-300">
+                {t('viewDetails')}
+              </Link>
+            )}
+          </p>
+        )}
+
         <div className="mt-6 flex justify-end">
           {isFull ? (
             <Button disabled variant="destructive">
@@ -191,8 +230,8 @@ export function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailD
           ) : (
             <Button
               onClick={handleSelect}
-              disabled={isApplying}
-              className="bg-cyan-600 hover:bg-cyan-500 text-white neon-cyan"
+              disabled={isApplying || !canApply}
+              className="bg-cyan-600 hover:bg-cyan-500 text-white neon-cyan disabled:opacity-40"
             >
               {isApplying ? t("applying") : t("applyForProject")}
             </Button>

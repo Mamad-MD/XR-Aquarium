@@ -28,12 +28,18 @@ export function TeamCard({
   const isMyTeam = team.id === currentTeamId;
   const isLeader = team.leaderId === currentUserId;
 
+  const statusBadge: Record<string, { label: string; className: string }> = {
+    PENDING: { label: t("statusPending"), className: "bg-yellow-500/10 text-yellow-400 border border-yellow-500/30" },
+    APPROVED: { label: t("statusApproved"), className: "bg-green-500/10 text-green-400 border border-green-500/30" },
+    REJECTED: { label: t("statusRejected"), className: "bg-red-500/10 text-red-400 border border-red-500/30" },
+  };
+
   return (
     <motion.div
       whileHover={{ y: -5, scale: 1.02 }}
       className="glass rounded-xl overflow-hidden border border-white/10 flex flex-col h-full transition-all duration-300 hover:neon-cyan p-5"
     >
-      <div className="flex items-start justify-between mb-4 gap-2">
+      <div className="flex items-start justify-between mb-3 gap-2">
         <div className="min-w-0">
           <h3 className="text-lg font-bold text-white leading-tight truncate">
             {team.name}
@@ -49,6 +55,12 @@ export function TeamCard({
             {isLeader ? t("youAreLeader") : t("yourTeam")}
           </Badge>
         )}
+      </div>
+
+      <div className="mb-3">
+        <Badge className={statusBadge[team.status]?.className}>
+          {statusBadge[team.status]?.label}
+        </Badge>
       </div>
 
       {team.description && (

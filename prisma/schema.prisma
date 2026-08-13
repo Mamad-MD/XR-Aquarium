@@ -40,6 +40,9 @@ model User {
   ledTeams          Team[]            @relation("TeamLeader")
   teamMemberships   TeamMember[]      @relation("TeamMemberships")
   teamJoinRequests  TeamJoinRequest[] @relation("TeamJoinRequests")
+
+  // Equipment relations
+  equipmentRequests EquipmentRequest[] @relation("EquipmentRequestedBy")
 }
 
 // NextAuth standard models
@@ -105,8 +108,9 @@ model Project {
 
 model ProjectApplication {
   id         String   @id @default(cuid())
-  userId     String
+  userId     String   // کاربری که درخواست را ثبت کرده (سرپرست تیم)
   projectId  String
+  teamId     String?  // تیمی که برای این پروژه درخواست داده است
   // Status (NOT_APPLIED, APPLIED, UNDER_REVIEW, ACCEPTED, REJECTED, WAITLISTED)
   status     String   @default("APPLIED")
   appliedAt  DateTime @default(now())
@@ -114,6 +118,7 @@ model ProjectApplication {
 
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  team       Team?    @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   @@unique([userId, projectId])
 }
@@ -125,14 +130,19 @@ model Team {
   name        String
   nameFa      String?
   description String?
+  // Status (PENDING, APPROVED, REJECTED)
+  status      String   @default("PENDING")
+  reviewedAt  DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   leaderId String
   leader   User   @relation("TeamLeader", fields: [leaderId], references: [id])
 
-  members      TeamMember[]
-  joinRequests TeamJoinRequest[]
+  members             TeamMember[]
+  joinRequests        TeamJoinRequest[]
+  projectApplications ProjectApplication[]
+  equipmentRequests   EquipmentRequest[]
 }
 
 model TeamMember {
@@ -161,6 +171,39 @@ model TeamJoinRequest {
   user User @relation("TeamJoinRequests", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, teamId])
+}
+
+// --- Equipment feature ---
+
+model Equipment {
+  id                String   @id @default(cuid())
+  name              String
+  nameFa            String?
+  description       String?
+  totalQuantity     Int
+  availableQuantity Int
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  requests EquipmentRequest[]
+}
+
+model EquipmentRequest {
+  id          String    @id @default(cuid())
+  equipmentId String
+  teamId      String
+  quantity    Int       @default(1)
+  // Status (PENDING, APPROVED, REJECTED, RETURNED)
+  status      String    @default("PENDING")
+  requestedAt DateTime  @default(now())
+  reviewedAt  DateTime?
+  returnedAt  DateTime?
+
+  requestedById String
+
+  equipment     Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  team          Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  requestedBy   User      @relation("EquipmentRequestedBy", fields: [requestedById], references: [id])
 }
 
 model Course {
