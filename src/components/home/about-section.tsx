@@ -86,7 +86,7 @@ export function AboutSection() {
             {t('title')}
           </h2>
           <p className="text-gray-400 max-w-3xl mx-auto text-lg leading-relaxed">
-            {t('description')}
+            {t.rich('description', { ltr: (chunks) => <span dir="ltr">{chunks}</span>, })}
           </p>
         </motion.div>
 
