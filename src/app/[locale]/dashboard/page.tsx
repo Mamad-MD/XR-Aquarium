@@ -76,6 +76,42 @@ export default async function DashboardPage() {
     },
   });
 
+  // ۵. اطلاعات تیم کاربر (در صورت عضویت)
+  const myTeamMembership = await db.teamMember.findFirst({
+    where: { userId: dbUser.id },
+    include: {
+      team: {
+        include: {
+          members: { include: { user: true } },
+          joinRequests: {
+            where: { status: "PENDING" },
+            include: { user: true },
+          },
+        },
+      },
+    },
+  });
+
+  const myTeam = myTeamMembership
+    ? {
+        id: myTeamMembership.team.id,
+        name: myTeamMembership.team.name,
+        nameFa: myTeamMembership.team.nameFa,
+        description: myTeamMembership.team.description,
+        leaderId: myTeamMembership.team.leaderId,
+        members: myTeamMembership.team.members.map((m) => ({
+          id: m.id,
+          userId: m.userId,
+          user: { name: m.user.name, nameFa: m.user.nameFa },
+        })),
+        joinRequests: myTeamMembership.team.joinRequests.map((r) => ({
+          id: r.id,
+          userId: r.userId,
+          user: { name: r.user.name, nameFa: r.user.nameFa },
+        })),
+      }
+    : null;
+
   const safeAnnouncements = announcements.map(a => ({
     ...a,
     createdAt: new Date().toISOString()
@@ -94,6 +130,7 @@ export default async function DashboardPage() {
       }
     })),
     announcements: safeAnnouncements,
+    myTeam,
   };
 
   return (

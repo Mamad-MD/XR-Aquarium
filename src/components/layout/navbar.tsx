@@ -28,19 +28,20 @@ export function Navbar() {
           <div className="hidden md:flex items-center gap-6 text-sm font-medium">
             <Link href="/" className="hover:text-blue-400 transition-colors">{t('home')}</Link>
             <Link href="/projects" className="hover:text-blue-400 transition-colors">{t('projects')}</Link>
+            <Link href="/teams" className="hover:text-blue-400 transition-colors">{t('teams')}</Link>
             <Link href="/learn" className="hover:text-blue-400 transition-colors">{t('learn')}</Link>
             <Link href="/dashboard" className="hover:text-blue-400 transition-colors">{t('dashboard')}</Link>
           </div>
         </div>
 
         <div className="flex items-center gap-4 text-sm font-medium">
-          <button 
+          <button
             onClick={toggleLocale}
             className="px-3 py-1 rounded-md bg-white/5 hover:bg-white/10 transition-colors border border-white/10 text-xs font-bold"
           >
             {locale === 'fa' ? 'EN' : 'FA'}
           </button>
-          
+
           {!isLoading && (
             session ? (
               <div className="flex items-center gap-4">

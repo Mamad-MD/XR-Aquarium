@@ -35,6 +35,11 @@ model User {
   uploadedResources   Resource[]           @relation("UploadedResources")
   announcements       Announcement[]       @relation("AnnouncementAuthor")
   notifications       Notification[]
+
+  // Team relations
+  ledTeams          Team[]            @relation("TeamLeader")
+  teamMemberships   TeamMember[]      @relation("TeamMemberships")
+  teamJoinRequests  TeamJoinRequest[] @relation("TeamJoinRequests")
 }
 
 // NextAuth standard models
@@ -111,6 +116,51 @@ model ProjectApplication {
   project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@unique([userId, projectId])
+}
+
+// --- Teams feature ---
+
+model Team {
+  id          String   @id @default(cuid())
+  name        String
+  nameFa      String?
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  leaderId String
+  leader   User   @relation("TeamLeader", fields: [leaderId], references: [id])
+
+  members      TeamMember[]
+  joinRequests TeamJoinRequest[]
+}
+
+model TeamMember {
+  id       String   @id @default(cuid())
+  teamId   String
+  userId   String
+  joinedAt DateTime @default(now())
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user User @relation("TeamMemberships", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, teamId])
+}
+
+model TeamJoinRequest {
+  id         String    @id @default(cuid())
+  teamId     String
+  userId     String
+  // Status (PENDING, ACCEPTED, REJECTED)
+  status     String    @default("PENDING")
+  message    String?
+  createdAt  DateTime  @default(now())
+  reviewedAt DateTime?
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user User @relation("TeamJoinRequests", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, teamId])
 }
 
 model Course {

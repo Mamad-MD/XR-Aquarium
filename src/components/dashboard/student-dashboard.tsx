@@ -10,16 +10,17 @@ import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   LayoutDashboard, Boxes, Calendar, FileText, Download,
-  Bell, Clock, AlertCircle, Settings
+  Bell, Clock, AlertCircle, Settings, UsersRound
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
 import { format } from "date-fns";
 import { ChangePasswordForm } from "./change-password-form";
+import { MyTeamCard, type MyTeamData } from "./my-team-card";
 
 export function StudentDashboard({ user, data }: {
- user: { name?: string | null, email?: string | null, image?: string | null, id?: string | null }, data: { announcements?: Array<{ id: string, title: string, content: string, priority: string, createdAt: string }>, projectApplications?: Array<{ status: string, project: Record<string, unknown> }> } }) {
+ user: { name?: string | null, email?: string | null, image?: string | null, id?: string | null }, data: { announcements?: Array<{ id: string, title: string, content: string, priority: string, createdAt: string }>, projectApplications?: Array<{ status: string, project: Record<string, unknown> }>, myTeam?: MyTeamData | null } }) {
   const t = useTranslations("Dashboard");
   const tCommon = useTranslations("Common");
   const locale = useLocale();
@@ -41,6 +42,7 @@ export function StudentDashboard({ user, data }: {
   const acceptedApp = data.projectApplications?.find((a: { status: string, project: Record<string, unknown> }) => a.status === 'ACCEPTED');
   const projectApp = acceptedApp || data.projectApplications?.[0];
   const selectedProject = projectApp?.project;
+  const myTeam = data.myTeam || null;
 
   return (
     <div dir={isFa ? 'rtl' : 'ltr'} className="flex flex-col md:flex-row min-h-screen bg-black text-white p-4 md:p-6 gap-6 pt-24 w-full">
@@ -77,8 +79,8 @@ export function StudentDashboard({ user, data }: {
         className="flex-1 max-w-6xl w-full"
       >
         <Tabs defaultValue="overview" className="w-full" dir={isFa ? 'rtl' : 'ltr'}>
-          {/* تعداد ستون‌ها را به 5 تغییر دادیم تا تنظیمات هم جا شود */}
-          <TabsList className="grid grid-cols-5 w-full md:w-auto md:inline-flex bg-slate-900/50 border border-slate-800 p-1 mb-8 overflow-x-auto">
+          {/* تعداد ستون‌ها را به 6 تغییر دادیم تا تب تیم هم جا شود */}
+          <TabsList className="grid grid-cols-6 w-full md:w-auto md:inline-flex bg-slate-900/50 border border-slate-800 p-1 mb-8 overflow-x-auto">
             <TabsTrigger value="overview" className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400">
               <LayoutDashboard className="w-4 h-4 md:mx-2 mx-1 shrink-0" />
               <span className="hidden md:inline">{t("overview")}</span>
@@ -86,6 +88,10 @@ export function StudentDashboard({ user, data }: {
             <TabsTrigger value="project" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
               <Boxes className="w-4 h-4 md:mx-2 mx-1 shrink-0" />
               <span className="hidden md:inline">{t("myProject")}</span>
+            </TabsTrigger>
+            <TabsTrigger value="team" className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400">
+              <UsersRound className="w-4 h-4 md:mx-2 mx-1 shrink-0" />
+              <span className="hidden md:inline">{t("myTeam")}</span>
             </TabsTrigger>
             <TabsTrigger value="schedule" className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400">
               <Calendar className="w-4 h-4 md:mx-2 mx-1 shrink-0" />
@@ -135,7 +141,7 @@ export function StudentDashboard({ user, data }: {
                   </CardContent>
                 </Card>
 
-                <Card className="glass-strong border-purple-500/20">
+                <Card className="glass-strong border-cyan-500/20">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-medium text-slate-400 text-start">{t('cohortProgress')}</CardTitle>
                   </CardHeader>
@@ -261,6 +267,12 @@ export function StudentDashboard({ user, data }: {
                   </Button>
                 </div>
               )}
+            </motion.div>
+          </TabsContent>
+
+          <TabsContent value="team">
+            <motion.div variants={containerVariants} initial="hidden" animate="visible">
+              <MyTeamCard team={myTeam} currentUserId={user.id || ""} />
             </motion.div>
           </TabsContent>
 
