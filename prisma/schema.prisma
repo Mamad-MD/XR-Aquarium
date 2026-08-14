@@ -1,3 +1,4 @@
+// DESTINATION: prisma/schema.prisma  (replace the whole file)
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
@@ -24,6 +25,13 @@ model User {
   isVisible     Boolean   @default(true)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+
+  // --- Access control (NEW) ---
+  isBanned         Boolean  @default(false)
+  paymentConfirmed Boolean  @default(false)
+
+  // --- Mentor contact (NEW) ---
+  telegramUsername String?
 
   // NextAuth relations
   accounts      Account[]
@@ -90,7 +98,6 @@ model Project {
   description  String
   category     String
   difficulty   String
-  // تعداد دقیق افراد موردنیاز برای این پروژه (باید با تعداد اعضای تیم درخواست‌دهنده برابر باشد)
   maxCapacity  Int
   thumbnailUrl String?
   duration     String
@@ -100,11 +107,33 @@ model Project {
   prerequisites String?
   objectives   String?
 
+  // --- Availability window (NEW) ---
+  // Free text so mentors can describe it however fits (e.g. "شنبه تا چهارشنبه" / "09:00 - 18:00")
+  availabilityDays  String?
+  availabilityHours String?
+
   mentorId     String
   mentor       User     @relation("ProjectMentor", fields: [mentorId], references: [id])
 
   applications ProjectApplication[]
   resources    Resource[]
+  steps        ProjectStep[]
+}
+
+// --- Project steps / deadlines (NEW) ---
+model ProjectStep {
+  id        String    @id @default(cuid())
+  projectId String
+  title     String
+  titleFa   String?
+  deadline  DateTime?
+  order     Int       @default(0)
+  // Status (PENDING, IN_PROGRESS, DONE)
+  status    String    @default("PENDING")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
 model ProjectApplication {
@@ -261,7 +290,6 @@ model Announcement {
   // Audience (EVERYONE, PARTICIPANTS, MENTORS, EXECUTIVES)
   audience   String   @default("EVERYONE")
   expiresAt  DateTime?
-  createdAt  DateTime @default(now())
 
   author     User     @relation("AnnouncementAuthor", fields: [authorId], references: [id])
 }

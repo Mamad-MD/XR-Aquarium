@@ -1,3 +1,4 @@
+// DESTINATION: src/auth.ts (replace the whole file)
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
@@ -31,6 +32,12 @@ export const {
         );
 
         if (!passwordMatch) return null;
+
+        // کاربر مسدود شده حق ورود ندارد
+        if (user.isBanned) {
+          console.log("تلاش برای ورود کاربر مسدود شده:", user.email);
+          return null;
+        }
 
         console.log("کاربر لاگین کرد. نقش در دیتابیس:", user.role);
 
