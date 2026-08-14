@@ -13,6 +13,11 @@ export default async function TeamsPage() {
         where: { status: "PENDING" },
         include: { user: true },
       },
+      projectApplications: {
+        where: { status: "ACCEPTED" },
+        include: { project: { select: { id: true, title: true, titleFa: true } } },
+        take: 1,
+      },
     },
     orderBy: { createdAt: "desc" },
   });
@@ -26,7 +31,7 @@ export default async function TeamsPage() {
     myTeamId = membership?.teamId || null;
   }
 
-  const safeTeams = teams.map((team) => ({
+  const safeTeams = teams.map(({ projectApplications, ...team }) => ({
     ...team,
     createdAt: team.createdAt.toISOString(),
     updatedAt: team.updatedAt.toISOString(),
@@ -39,6 +44,7 @@ export default async function TeamsPage() {
       createdAt: r.createdAt.toISOString(),
       reviewedAt: r.reviewedAt ? r.reviewedAt.toISOString() : null,
     })),
+    assignedProject: projectApplications[0]?.project || null,
   }));
 
   return (

@@ -140,7 +140,8 @@
     "statusApproved": "Approved",
     "statusRejected": "Rejected",
     "pendingApprovalNotice": "Your team is waiting for admin approval. Once approved, you'll be able to apply for projects and request equipment.",
-    "rejectedNotice": "Your team's request was rejected by an admin. Contact the cohort staff for more details."
+    "rejectedNotice": "Your team's request was rejected by an admin. Contact the cohort staff for more details.",
+    "assignedProject": "Assigned Project"
   },
   "Equipment": {
     "title": "Equipment",
@@ -191,17 +192,20 @@
     "advanced": "Advanced",
     "noProjects": "No projects found matching your criteria.",
     "objectives": "Objectives",
-    "capacityAndMentor": "Capacity & Mentor",
+    "capacityAndMentor": "Team Size & Mentor",
     "enrolled": "Enrolled",
     "spotsLeft": "spots left",
     "full": "Full",
     "duration": "Duration",
     "techStack": "Tech Stack",
-    "projectIsFull": "Project is Full",
+    "projectIsFull": "Already Assigned",
     "applyForProject": "Apply for Project",
     "applying": "Applying...",
     "viewDetails": "View Details",
-    "select": "Select"
+    "select": "Select",
+    "assignedTo": "Assigned to",
+    "requiredMembers": "Requires {count} members",
+    "requiredMembersLabel": "Required team size"
   },
   "CTA": {
     "title": "Ready to Create Wonders?",
@@ -243,9 +247,9 @@
     "projectProgress": "Project Progress",
     "category": "Category",
     "statusLabel": "Status",
-    "activeTeamMember": "Active Team Member",
+    "activeTeamMember": "Team Accepted",
     "applicationPending": "Application Pending",
-    "viewProjectDetails": "View Project Details",
+    "viewProjectDetails": "Browse Projects Page",
     "submitUpdate": "Submit Update",
     "noProjectSelected": "No Project Selected",
     "noProjectDesc": "You haven't joined a project yet. Browse the available projects and find a team to join for this cohort.",
@@ -280,6 +284,7 @@
     "manageProjects": "Manage cohort projects and teams",
     "newProject": "New Project",
     "capacity": "Capacity",
+    "requiredMembersShort": "Required members",
     "projectApps": "Project Applications",
     "reviewApps": "Review and manage student applications for projects",
     "dateApplied": "Date Applied",
@@ -337,5 +342,41 @@
     "presentation": "PRESENTATION",
     "meeting": "MEETING",
     "event": "EVENT"
+  },
+  "AboutPage": {
+    "title": "About Us",
+    "subtitle": "Getting to know the XR Aquarium cohort",
+    "body": "XR Aquarium is a hands-on cohort where participants form teams, get matched with mentors, and ship real extended-reality projects over the course of the program. Replace this paragraph with your own story in src/app/[locale]/about/page.tsx and messages/en.json / fa.json under the AboutPage key.",
+    "mission": "Our Mission",
+    "missionBody": "Give participants real, mentored experience building XR products from idea to demo day.",
+    "vision": "Our Vision",
+    "visionBody": "Become the reference cohort for extended-reality talent in the region.",
+    "values": "Our Values",
+    "valuesBody": "Hands-on learning, mentorship, and shipping real work over theory."
+  },
+  "ContactPage": {
+    "title": "Contact Us",
+    "subtitle": "Have a question? Reach out through any of these channels.",
+    "email": "Email",
+    "emailAddress": "info@xraquarium.com",
+    "social": "Social",
+    "socialHandle": "@xraquarium",
+    "location": "Location",
+    "locationBody": "Tehran, Iran",
+    "note": "Replace these placeholder details in src/app/[locale]/contact/page.tsx and the ContactPage section of messages/en.json / fa.json with your real contact information."
+  },
+  "PrivacyPage": {
+    "title": "Privacy Policy",
+    "lastUpdated": "This is placeholder text — replace it with your actual policy before launch.",
+    "dataCollectionTitle": "Data We Collect",
+    "dataCollectionBody": "We collect the information you provide when registering, such as your name, student ID, and email, along with activity data like project applications and team memberships.",
+    "dataUseTitle": "How We Use Your Data",
+    "dataUseBody": "Your data is used to operate the cohort platform: matching you with teams and projects, sending announcements, and managing your account.",
+    "dataSharingTitle": "Data Sharing",
+    "dataSharingBody": "We do not sell your data. Information is only visible to cohort staff and, where relevant, your teammates.",
+    "userRightsTitle": "Your Rights",
+    "userRightsBody": "You can request access to, correction of, or deletion of your data at any time by contacting the cohort administrators.",
+    "contactUsTitle": "Contact Us",
+    "contactUsBody": "For any privacy-related questions, reach out via the Contact page."
   }
 }

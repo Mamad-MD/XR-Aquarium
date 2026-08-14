@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(
-      { message: "درخواست تجهیز شما ثبت شد و در انتظار تایید مدیر سیستم است" },
+      { message: "درخواست تجهیز شما ثبت شد و در انتظار تایید منتور مربوطه است" },
       { status: 200 }
     );
   } catch (error) {

@@ -90,6 +90,7 @@ model Project {
   description  String
   category     String
   difficulty   String
+  // تعداد دقیق افراد موردنیاز برای این پروژه (باید با تعداد اعضای تیم درخواست‌دهنده برابر باشد)
   maxCapacity  Int
   thumbnailUrl String?
   duration     String
@@ -260,6 +261,7 @@ model Announcement {
   // Audience (EVERYONE, PARTICIPANTS, MENTORS, EXECUTIVES)
   audience   String   @default("EVERYONE")
   expiresAt  DateTime?
+  createdAt  DateTime @default(now())
 
   author     User     @relation("AnnouncementAuthor", fields: [authorId], references: [id])
 }

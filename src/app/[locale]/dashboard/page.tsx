@@ -24,8 +24,10 @@ export default async function DashboardPage() {
     redirect("/auth/login");
   }
 
+  // اطلاعیه‌ها: جدیدترین‌ها اول
   const announcements = await db.announcement.findMany({
     take: 10,
+    orderBy: { createdAt: 'desc' },
   });
 
   // ۳. بررسی نقش مستقیماً از روی دیتابیس (کاملاً امن و بدون باگ کش)
@@ -41,7 +43,11 @@ export default async function DashboardPage() {
     });
 
     const applications = await db.projectApplication.findMany({
-      include: { user: true, project: true },
+      include: {
+        user: true,
+        project: true,
+        team: { select: { id: true, name: true, nameFa: true } },
+      },
       orderBy: { appliedAt: 'desc' }
     });
 
@@ -81,7 +87,7 @@ export default async function DashboardPage() {
 
     const safeAnnouncements = announcements.map(a => ({
       ...a,
-      createdAt: new Date().toISOString()
+      createdAt: a.createdAt.toISOString(),
     }));
 
     return (
@@ -107,19 +113,7 @@ export default async function DashboardPage() {
     );
   }
 
-  // ۴. در غیر این صورت، بارگذاری اطلاعات برای داشبورد دانشجو
-  const userWithData = await db.user.findUnique({
-    where: { id: dbUser.id },
-    include: {
-      projectApplications: {
-        include: {
-          project: true,
-        },
-      },
-    },
-  });
-
-  // ۵. اطلاعات تیم کاربر (در صورت عضویت)
+  // ۴. اطلاعات تیم کاربر (در صورت عضویت) — شامل پروژه‌ی اختصاص‌یافته به تیم، در صورت وجود
   const myTeamMembership = await db.teamMember.findFirst({
     where: { userId: dbUser.id },
     include: {
@@ -133,6 +127,9 @@ export default async function DashboardPage() {
           equipmentRequests: {
             where: { status: "APPROVED" },
             include: { equipment: { select: { name: true, nameFa: true } } },
+          },
+          projectApplications: {
+            include: { project: true },
           },
         },
       },
@@ -165,23 +162,43 @@ export default async function DashboardPage() {
       }
     : null;
 
+  // ۵. «پروژه من» باید برای همه‌ی اعضای تیم یکسان باشد، نه فقط سرپرست که واقعاً درخواست را ثبت کرده
+  const teamProjectApplications = myTeamMembership
+    ? myTeamMembership.team.projectApplications.map((a) => ({
+        id: a.id,
+        status: a.status,
+        appliedAt: a.appliedAt.toISOString(),
+        reviewedAt: a.reviewedAt ? a.reviewedAt.toISOString() : null,
+        project: { ...a.project },
+      }))
+    : [];
+
+  // برای کاربرانی که هنوز تیمی ندارند اما به‌صورت قدیمی درخواست فردی ثبت کرده باشند (سازگاری با داده‌های قبلی)
+  const ownApplications = await db.projectApplication.findMany({
+    where: { userId: dbUser.id },
+    include: { project: true },
+  });
+
+  const projectApplications = teamProjectApplications.length > 0
+    ? teamProjectApplications
+    : ownApplications.map((a) => ({
+        id: a.id,
+        status: a.status,
+        appliedAt: a.appliedAt.toISOString(),
+        reviewedAt: a.reviewedAt ? a.reviewedAt.toISOString() : null,
+        project: { ...a.project },
+      }));
+
   const safeAnnouncements = announcements.map(a => ({
     ...a,
-    createdAt: new Date().toISOString()
+    createdAt: a.createdAt.toISOString(),
   }));
 
   const safeData = {
-    ...userWithData,
-    createdAt: userWithData?.createdAt.toISOString(),
-    updatedAt: userWithData?.updatedAt.toISOString(),
-    projectApplications: userWithData?.projectApplications.map(a => ({
-      ...a,
-      appliedAt: a.appliedAt.toISOString(),
-      reviewedAt: a.reviewedAt?.toISOString() || null,
-      project: {
-        ...a.project,
-      }
-    })),
+    id: dbUser.id,
+    createdAt: dbUser.createdAt.toISOString(),
+    updatedAt: dbUser.updatedAt.toISOString(),
+    projectApplications,
     announcements: safeAnnouncements,
     myTeam,
   };

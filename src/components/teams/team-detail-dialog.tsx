@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Crown, Users, Check, X, LogOut } from "lucide-react";
+import { Crown, Users, Check, X, LogOut, Boxes } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslations, useLocale } from "next-intl";
 import type { TeamWithRelations } from "./teams-client";
@@ -166,6 +166,14 @@ export function TeamDetailDialog({
             <p className="text-base text-gray-300 mt-4 leading-relaxed">
               {team.description}
             </p>
+          )}
+          {team.assignedProject && (
+            <div className="flex items-center gap-2 mt-4 text-sm bg-blue-500/5 border border-blue-500/20 rounded-lg p-3">
+              <Boxes className="w-4 h-4 text-blue-400 shrink-0" />
+              <span className="text-blue-400" dir="auto">
+                {t("assignedProject")}: {isFa && team.assignedProject.titleFa ? team.assignedProject.titleFa : team.assignedProject.title}
+              </span>
+            </div>
           )}
           {isLeader && team.status === "PENDING" && (
             <p className="text-sm text-yellow-400 mt-3 bg-yellow-500/5 border border-yellow-500/20 rounded-lg p-3">

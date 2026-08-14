@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Users, Crown } from "lucide-react";
+import { Users, Crown, Boxes } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -57,10 +57,16 @@ export function TeamCard({
         )}
       </div>
 
-      <div className="mb-3">
+      <div className="mb-3 flex flex-wrap gap-2">
         <Badge className={statusBadge[team.status]?.className}>
           {statusBadge[team.status]?.label}
         </Badge>
+        {team.assignedProject && (
+          <Badge className="bg-blue-500/10 text-blue-400 border border-blue-500/30">
+            <Boxes className="w-3 h-3 me-1" />
+            {isFa && team.assignedProject.titleFa ? team.assignedProject.titleFa : team.assignedProject.title}
+          </Badge>
+        )}
       </div>
 
       {team.description && (

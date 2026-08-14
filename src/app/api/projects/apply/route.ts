@@ -17,6 +17,7 @@ export async function POST(req: NextRequest) {
     // فقط سرپرست یک تیم می‌تواند برای پروژه درخواست دهد
     const team = await db.team.findFirst({
       where: { leaderId: session.user.id },
+      include: { _count: { select: { members: true } } },
     });
 
     if (!team) {
@@ -41,12 +42,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "پروژه مورد نظر یافت نشد" }, { status: 404 });
     }
 
-    const enrolledCount = await db.projectApplication.count({
-      where: { projectId, status: "ACCEPTED" }
+    // تعداد اعضای تیم باید دقیقاً برابر با ظرفیت موردنیاز پروژه باشد
+    const teamSize = team._count.members;
+    if (teamSize !== project.maxCapacity) {
+      return NextResponse.json(
+        {
+          message: `تعداد اعضای تیم شما (${teamSize} نفر) باید دقیقاً برابر با تعداد افراد موردنیاز این پروژه (${project.maxCapacity} نفر) باشد`,
+        },
+        { status: 400 }
+      );
+    }
+
+    // هر پروژه فقط به یک تیم اختصاص می‌یابد
+    const alreadyAssigned = await db.projectApplication.findFirst({
+      where: { projectId, status: "ACCEPTED" },
     });
 
-    if (enrolledCount >= project.maxCapacity) {
-      return NextResponse.json({ message: "ظرفیت این پروژه تکمیل شده است" }, { status: 400 });
+    if (alreadyAssigned) {
+      return NextResponse.json({ message: "این پروژه قبلاً به تیم دیگری اختصاص یافته است" }, { status: 400 });
     }
 
     // آیا تیم قبلاً برای پروژه دیگری پذیرفته شده است؟

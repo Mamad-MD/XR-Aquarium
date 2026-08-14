@@ -11,10 +11,22 @@ export async function GET() {
 
     const team = await db.team.findFirst({
       where: { leaderId: session.user.id },
-      select: { id: true, name: true, status: true },
+      include: { _count: { select: { members: true } } },
     });
 
-    return NextResponse.json({ team: team || null }, { status: 200 });
+    return NextResponse.json(
+      {
+        team: team
+          ? {
+              id: team.id,
+              name: team.name,
+              status: team.status,
+              memberCount: team._count.members,
+            }
+          : null,
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("[MY_LEADER_TEAM]", error);
     return NextResponse.json({ team: null }, { status: 200 });

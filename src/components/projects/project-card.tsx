@@ -1,32 +1,25 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Users, Clock, ArrowRight, Layers } from "lucide-react";
-import { Project as PrismaProject, User } from "@prisma/client";
+import { Users, Clock, ArrowRight, Layers, UsersRound } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { useAppStore } from "@/lib/store";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+import type { ProjectWithTeam } from "./projects-client";
 
 interface ProjectCardProps {
-  project: PrismaProject & { mentor: User };
+  project: ProjectWithTeam;
   onViewDetails: () => void;
 }
 
 export function ProjectCard({ project, onViewDetails }: ProjectCardProps) {
   const t = useTranslations('Projects');
-  const { user, isAuthenticated, selectProject } = useAppStore();
+  const locale = useLocale();
+  const isFa = locale === 'fa';
 
   const categoryVariant = project.category.toLowerCase() ;
-  // TODO: Fetch enrolled count dynamically if needed. For now, mocking it to 0 as it's not in schema
-  const enrolledCount = 0;
-  const progress = (enrolledCount / project.maxCapacity) * 100;
+  const isAssigned = !!project.assignedTeam;
 
-  const isStudent = user?.role === 'student';
-  const hasSelectedProject = !!user?.selectedProjectId;
-  const isOpen = project.status === 'open';
-  
   const neonClass = {
     VR: "hover:neon-green",
     AR: "hover:neon-blue",
@@ -41,12 +34,14 @@ export function ProjectCard({ project, onViewDetails }: ProjectCardProps) {
     Advanced: "text-red-400 border-red-400/30"
   }[project.difficulty];
 
-  const statusColor = {
-    'OPEN': "bg-green-500",
-    'FULL': "bg-red-500",
-    'IN_PROGRESS': "bg-yellow-500",
-    'COMPLETED': "bg-blue-500"
-  }[project.status] || "bg-green-500";
+  const statusColor = isAssigned
+    ? "bg-blue-500"
+    : {
+        'OPEN': "bg-green-500",
+        'FULL': "bg-red-500",
+        'IN_PROGRESS': "bg-yellow-500",
+        'COMPLETED': "bg-blue-500"
+      }[project.status] || "bg-green-500";
 
   // Parse techStack if it's a JSON string, or split if it's comma-separated
   let parsedTechStack: string[] = [];
@@ -116,11 +111,19 @@ export function ProjectCard({ project, onViewDetails }: ProjectCardProps) {
         </div>
 
         <div className="mb-6">
-          <div className="flex justify-between text-xs text-zinc-400 mb-2">
-            <span className="flex items-center"><Users className="w-3 h-3 me-1" /> {t('capacityAndMentor')}</span>
-            <span>{enrolledCount} / {project.maxCapacity}</span>
-          </div>
-          <Progress value={progress} className="h-1.5" />
+          {isAssigned ? (
+            <div className="flex items-center gap-2 text-sm bg-blue-500/10 border border-blue-500/20 rounded-lg px-3 py-2">
+              <UsersRound className="w-4 h-4 text-blue-400 shrink-0" />
+              <span className="text-blue-400 truncate" dir="auto">
+                {t('assignedTo')}: {isFa && project.assignedTeam?.nameFa ? project.assignedTeam.nameFa : project.assignedTeam?.name}
+              </span>
+            </div>
+          ) : (
+            <div className="flex items-center text-xs text-zinc-400">
+              <Users className="w-3.5 h-3.5 me-1.5" />
+              {t('requiredMembers', { count: project.maxCapacity })}
+            </div>
+          )}
         </div>
 
         <div className="flex gap-2 mt-auto">
@@ -130,20 +133,8 @@ export function ProjectCard({ project, onViewDetails }: ProjectCardProps) {
             onClick={onViewDetails}
           >
             {t('viewDetails')}
+            <ArrowRight className="w-4 h-4 ms-2" />
           </Button>
-
-          {isAuthenticated && isStudent && isOpen && !hasSelectedProject && (
-            <Button
-              className="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white"
-              onClick={() => {
-                selectProject(project.id);
-                // Would normally show toast here
-              }}
-            >
-              {t('select')}
-              <ArrowRight className="w-4 h-4 ms-2" />
-            </Button>
-          )}
         </div>
       </div>
     </motion.div>

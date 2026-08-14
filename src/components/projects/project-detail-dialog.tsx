@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react";
-import { Project as PrismaProject, User } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import {
   Dialog,
@@ -12,17 +11,17 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { CheckCircle, Clock, Users, ArrowRight } from "lucide-react";
+import { CheckCircle, Clock, Users, ArrowRight, UsersRound } from "lucide-react";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 import { useTranslations } from "next-intl";
+import type { ProjectWithTeam } from "./projects-client";
 
 interface ProjectDetailDialogProps {
-  project: (PrismaProject & { mentor: User }) | null;
+  project: ProjectWithTeam | null;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -31,7 +30,7 @@ export function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailD
   const t = useTranslations('Projects');
   const { data: session, status } = useSession();
   const [isApplying, setIsApplying] = useState(false);
-  const [myLeaderTeam, setMyLeaderTeam] = useState<{ id: string; name: string; status: string } | null | undefined>(undefined);
+  const [myLeaderTeam, setMyLeaderTeam] = useState<{ id: string; name: string; status: string; memberCount: number } | null | undefined>(undefined);
   const router = useRouter();
 
   useEffect(() => {
@@ -44,9 +43,7 @@ export function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailD
 
   if (!project) return null;
 
-  // Mock enrolledCount for now as it's not in Prisma schema
-  const enrolledCount = 0;
-  const isFull = enrolledCount >= project.maxCapacity;
+  const isAssigned = !!project.assignedTeam;
 
   const handleSelect = async () => {
     if (status === "unauthenticated" || !session) {
@@ -64,6 +61,11 @@ export function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailD
       return;
     }
 
+    if (myLeaderTeam.memberCount !== project.maxCapacity) {
+      toast.error(`تعداد اعضای تیم شما (${myLeaderTeam.memberCount} نفر) باید دقیقاً برابر با تعداد افراد موردنیاز این پروژه (${project.maxCapacity} نفر) باشد`);
+      return;
+    }
+
     try {
       setIsApplying(true);
       const response = await fetch('/api/projects/apply', {
@@ -74,7 +76,6 @@ export function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailD
         body: JSON.stringify({ projectId: project.id }),
       });
 
-      // سرور همیشه یک JSON با فیلد message برمی‌گرداند (چه موفق چه ناموفق)
       let data: { message?: string } = {};
       try {
         data = await response.json();
@@ -128,15 +129,24 @@ export function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailD
 
   // پیام راهنما بر اساس وضعیت تیم کاربر برای درخواست پروژه
   let eligibilityNotice: string | null = null;
-  if (status === "authenticated" && myLeaderTeam === null) {
+  if (isAssigned) {
+    eligibilityNotice = null; // پیام جداگانه پایین‌تر نمایش داده می‌شود
+  } else if (status === "authenticated" && myLeaderTeam === null) {
     eligibilityNotice = "فقط سرپرست یک تیم می‌تواند برای پروژه درخواست دهد. ابتدا یک تیم بسازید یا سرپرست تیم شوید.";
   } else if (status === "authenticated" && myLeaderTeam && myLeaderTeam.status === "PENDING") {
     eligibilityNotice = "تیم شما در انتظار تایید مدیر سیستم است. پس از تایید می‌توانید برای پروژه‌ها درخواست دهید.";
   } else if (status === "authenticated" && myLeaderTeam && myLeaderTeam.status === "REJECTED") {
     eligibilityNotice = "درخواست ساخت تیم شما رد شده است، بنابراین امکان درخواست برای پروژه وجود ندارد.";
+  } else if (status === "authenticated" && myLeaderTeam && myLeaderTeam.status === "APPROVED" && myLeaderTeam.memberCount !== project.maxCapacity) {
+    eligibilityNotice = `تعداد اعضای تیم شما (${myLeaderTeam.memberCount} نفر) با تعداد افراد موردنیاز این پروژه (${project.maxCapacity} نفر) برابر نیست.`;
   }
 
-  const canApply = status === "authenticated" && myLeaderTeam && myLeaderTeam.status === "APPROVED";
+  const canApply =
+    !isAssigned &&
+    status === "authenticated" &&
+    myLeaderTeam &&
+    myLeaderTeam.status === "APPROVED" &&
+    myLeaderTeam.memberCount === project.maxCapacity;
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -181,15 +191,19 @@ export function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailD
                 <Users className="w-5 h-5" /> {t('capacityAndMentor')}
               </h4>
               <div className="bg-white/5 border border-white/10 rounded-lg p-4 flex flex-col gap-4">
-                <div>
-                  <div className="flex justify-between text-sm mb-2">
-                    <span className="text-gray-400">{t('enrolled')} ({enrolledCount}/{project.maxCapacity})</span>
-                    <span className={isFull ? "text-red-400 font-medium" : "text-green-400 font-medium"}>
-                      {isFull ? t('full') : `${project.maxCapacity - enrolledCount} ${t('spotsLeft')}`}
+                {isAssigned ? (
+                  <div className="flex items-center gap-2 text-sm">
+                    <UsersRound className="w-4 h-4 text-blue-400 shrink-0" />
+                    <span className="text-blue-400" dir="auto">
+                      {t('assignedTo')}: {project.assignedTeam?.nameFa || project.assignedTeam?.name}
                     </span>
                   </div>
-                  <Progress value={(enrolledCount / project.maxCapacity) * 100} className="h-2" />
-                </div>
+                ) : (
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-400">{t('requiredMembersLabel')}</span>
+                    <span className="text-green-400 font-medium" dir="ltr">{project.maxCapacity}</span>
+                  </div>
+                )}
 
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-gray-400">{t('duration')}:</span>
@@ -223,7 +237,7 @@ export function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailD
         )}
 
         <div className="mt-6 flex justify-end">
-          {isFull ? (
+          {isAssigned ? (
             <Button disabled variant="destructive">
               {t('projectIsFull')}
             </Button>

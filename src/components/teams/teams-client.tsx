@@ -43,6 +43,7 @@ export interface TeamWithRelations {
   leader: User;
   members: TeamMemberWithUser[];
   joinRequests: TeamJoinRequestWithUser[];
+  assignedProject: { id: string; title: string; titleFa: string | null } | null;
 }
 
 interface TeamsClientProps {

@@ -12,7 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   LayoutDashboard, Users, Boxes, Bell, Settings,
-  Search, Plus, Activity, Mail, FileText, Check, X, UsersRound, Package
+  Search, Plus, Activity, Mail, FileText, Check, X, UsersRound, Package, Trash2, GraduationCap
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
@@ -37,7 +37,8 @@ export function AdminDashboard({ user, data }: {
       status: string,
       appliedAt: Date | string,
       user: { name: string | null },
-      project: { title: string }
+      project: { title: string },
+      team?: { name: string, nameFa: string | null } | null,
     }>,
     students?: Array<any>,
     projects?: Array<any>,
@@ -69,6 +70,8 @@ export function AdminDashboard({ user, data }: {
   const [newAnnouncement, setNewAnnouncement] = useState({ title: "", content: "", priority: "MEDIUM" as "LOW" | "MEDIUM" | "HIGH" | "URGENT" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
+  const [busyUserId, setBusyUserId] = useState<string | null>(null);
+  const [busyProjectId, setBusyProjectId] = useState<string | null>(null);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -117,6 +120,75 @@ export function AdminDashboard({ user, data }: {
     }
   };
 
+  const handlePromoteToMentor = async (studentId: string) => {
+    if (!confirm(isFa ? "این کاربر به نقش منتور تغییر پیدا می‌کند. ادامه می‌دهید؟" : "This user's role will change to Mentor. Continue?")) return;
+    try {
+      setBusyUserId(studentId);
+      const res = await fetch('/api/admin/users/role', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: studentId, role: 'MENTOR' })
+      });
+      const responseData = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast.error(responseData.message || (isFa ? "عملیات با خطا مواجه شد" : "Action failed"));
+        return;
+      }
+      toast.success(responseData.message || (isFa ? "کاربر به منتور ارتقا یافت" : "User promoted to mentor"));
+      router.refresh();
+    } catch (e) {
+      toast.error(isFa ? 'خطا در ارتباط با سرور' : 'Server error');
+    } finally {
+      setBusyUserId(null);
+    }
+  };
+
+  const handleDeleteUser = async (studentId: string) => {
+    if (!confirm(isFa ? "این کاربر برای همیشه حذف می‌شود. مطمئن هستید؟" : "This user will be permanently deleted. Are you sure?")) return;
+    try {
+      setBusyUserId(studentId);
+      const res = await fetch('/api/admin/users', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: studentId })
+      });
+      const responseData = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast.error(responseData.message || (isFa ? "حذف کاربر با خطا مواجه شد" : "Failed to delete user"));
+        return;
+      }
+      toast.success(responseData.message || (isFa ? "کاربر حذف شد" : "User deleted"));
+      router.refresh();
+    } catch (e) {
+      toast.error(isFa ? 'خطا در ارتباط با سرور' : 'Server error');
+    } finally {
+      setBusyUserId(null);
+    }
+  };
+
+  const handleDeleteProject = async (projectId: string) => {
+    if (!confirm(isFa ? "این پروژه و تمام درخواست‌های مرتبط با آن برای همیشه حذف می‌شوند. مطمئن هستید؟" : "This project and all its applications will be permanently deleted. Are you sure?")) return;
+    try {
+      setBusyProjectId(projectId);
+      const res = await fetch('/api/admin/projects', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectId })
+      });
+      const responseData = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast.error(responseData.message || (isFa ? "حذف پروژه با خطا مواجه شد" : "Failed to delete project"));
+        return;
+      }
+      toast.success(responseData.message || (isFa ? "پروژه حذف شد" : "Project deleted"));
+      router.refresh();
+    } catch (e) {
+      toast.error(isFa ? 'خطا در ارتباط با سرور' : 'Server error');
+    } finally {
+      setBusyProjectId(null);
+    }
+  };
+
   if (!user) return null;
 
   return (
@@ -151,10 +223,10 @@ export function AdminDashboard({ user, data }: {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className="flex-1 max-w-6xl w-full"
+        className="flex-1 max-w-6xl w-full min-w-0"
       >
         <Tabs defaultValue="overview" className="w-full" dir={isFa ? 'rtl' : 'ltr'}>
-          <TabsList className="grid grid-cols-8 w-full md:w-auto md:inline-flex bg-slate-900/50 border border-slate-800 p-1 mb-8 overflow-x-auto">
+          <TabsList className="grid grid-cols-8 w-full md:w-auto md:inline-flex bg-slate-900/50 border border-slate-800 p-1 mb-8 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             <TabsTrigger value="overview" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
               <LayoutDashboard className="w-4 h-4 md:mx-2 mx-1 shrink-0" />
               <span className="hidden md:inline">{t("overview")}</span>
@@ -256,7 +328,7 @@ export function AdminDashboard({ user, data }: {
                 </CardHeader>
                 <CardContent>
                   <div className="rounded-md border border-slate-800 overflow-x-auto">
-                    <div className="min-w-[600px]">
+                    <div className="min-w-[700px]">
                       <div className="grid grid-cols-12 gap-4 p-4 border-b border-slate-800 bg-slate-900/50 text-sm font-medium text-slate-400">
                         <div className="col-span-4">{t("name")}</div>
                         <div className="col-span-3">{t("project")}</div>
@@ -287,7 +359,17 @@ export function AdminDashboard({ user, data }: {
                                 {t('active')}
                               </span>
                             </div>
-                            <div className="col-span-3 flex justify-end gap-2">
+                            <div className="col-span-3 flex justify-end gap-1 flex-wrap">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                disabled={busyUserId === student.id}
+                                className="h-8 text-slate-400 hover:text-cyan-400 hover:bg-cyan-400/10"
+                                onClick={() => handlePromoteToMentor(student.id)}
+                                title={isFa ? "ارتقا به منتور" : "Promote to mentor"}
+                              >
+                                <GraduationCap className="h-4 w-4" />
+                              </Button>
                               <Button
                                 variant="ghost"
                                 size="sm"
@@ -295,6 +377,16 @@ export function AdminDashboard({ user, data }: {
                                 onClick={() => handleResetPassword(student.id)}
                               >
                                 {isFa ? "ریست رمز" : "Reset Pass"}
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                disabled={busyUserId === student.id}
+                                className="h-8 text-slate-400 hover:text-red-400 hover:bg-red-400/10"
+                                onClick={() => handleDeleteUser(student.id)}
+                                title={isFa ? "حذف کاربر" : "Delete user"}
+                              >
+                                <Trash2 className="h-4 w-4" />
                               </Button>
                             </div>
                           </div>
@@ -334,18 +426,32 @@ export function AdminDashboard({ user, data }: {
                             <h4 className="font-semibold text-purple-400 truncate" dir="auto">
                               {isFa && p.titleFa ? p.titleFa : p.title}
                             </h4>
-                            <span className={`shrink-0 text-xs px-2 py-1 rounded ${
-                              p.status === 'FULL' || p.status === 'Full' ? 'bg-red-500/10 text-red-400' : 'bg-green-500/10 text-green-400'
-                            }`}>
-                              {p.status === 'FULL' || p.status === 'Full' ? t('full') : t('active')}
-                            </span>
+                            <div className="flex items-center gap-2 shrink-0">
+                              <span className={`text-xs px-2 py-1 rounded ${
+                                p.status === 'IN_PROGRESS' ? 'bg-blue-500/10 text-blue-400' :
+                                p.status === 'FULL' || p.status === 'Full' ? 'bg-red-500/10 text-red-400' : 'bg-green-500/10 text-green-400'
+                              }`}>
+                                {p.status === 'IN_PROGRESS' ? (isFa ? 'در حال انجام' : 'In Progress') :
+                                 p.status === 'FULL' || p.status === 'Full' ? t('full') : t('active')}
+                              </span>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                disabled={busyProjectId === p.id}
+                                className="h-7 w-7 text-slate-500 hover:text-red-400 hover:bg-red-400/10"
+                                onClick={() => handleDeleteProject(p.id)}
+                                title={isFa ? "حذف پروژه" : "Delete project"}
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
                           </div>
                           <div className="flex justify-between items-end mt-4">
                             <div className="text-sm text-slate-400 truncate max-w-[60%]">
                               {t("mentors")}: <span className="text-slate-300">{p.mentor?.name || '---'}</span>
                             </div>
                             <div className="text-sm font-medium shrink-0">
-                              {t("capacity")}: <span dir="ltr">{p.enrolledCount || 0}/{p.maxCapacity}</span>
+                              {t("requiredMembersShort")}: <span dir="ltr">{p.maxCapacity}</span>
                             </div>
                           </div>
                         </div>
@@ -481,9 +587,9 @@ export function AdminDashboard({ user, data }: {
                 </CardHeader>
                 <CardContent>
                   <div className="rounded-md border border-slate-800 overflow-x-auto">
-                    <div className="min-w-[600px]">
+                    <div className="min-w-[700px]">
                       <div className="grid grid-cols-12 gap-4 p-4 border-b border-slate-800 bg-slate-900/50 text-sm font-medium text-slate-400">
-                        <div className="col-span-3">{tCommon("profile")}</div>
+                        <div className="col-span-3">{isFa ? "تیم" : "Team"}</div>
                         <div className="col-span-3">{t("project")}</div>
                         <div className="col-span-2">{t("dateApplied")}</div>
                         <div className="col-span-2">{t("statusLabel")}</div>
@@ -494,8 +600,8 @@ export function AdminDashboard({ user, data }: {
                       ) : (
                         applications.map((app) => (
                           <div key={app.id} className="grid grid-cols-12 gap-4 p-4 items-center border-b border-slate-800/50 last:border-0 hover:bg-slate-900/30 transition-colors">
-                            <div className="col-span-3 text-sm font-medium truncate">
-                              {app.user.name || 'Unknown'}
+                            <div className="col-span-3 text-sm font-medium truncate" dir="auto">
+                              {app.team ? (isFa && app.team.nameFa ? app.team.nameFa : app.team.name) : (app.user.name || 'Unknown')}
                             </div>
                             <div className="col-span-3 text-sm text-slate-300 truncate" dir="auto">
                               {isFa && (app.project as any).titleFa ? (app.project as any).titleFa : app.project.title}
@@ -526,7 +632,13 @@ export function AdminDashboard({ user, data }: {
                                           headers: { 'Content-Type': 'application/json' },
                                           body: JSON.stringify({ applicationId: app.id, status: 'ACCEPTED' })
                                         });
-                                        if (res.ok) router.refresh();
+                                        const resData = await res.json().catch(() => ({}));
+                                        if (res.ok) {
+                                          toast.success(resData.message || (isFa ? "درخواست پذیرفته شد" : "Application accepted"));
+                                          router.refresh();
+                                        } else {
+                                          toast.error(resData.error || (isFa ? "عملیات با خطا مواجه شد" : "Action failed"));
+                                        }
                                       } catch (e) { console.error(e); }
                                     }}
                                   >

@@ -12,9 +12,13 @@ import { Project as PrismaProject, User } from "@prisma/client";
 
 import { useTranslations } from "next-intl";
 
-// Update the props interface to match what Prisma returns
+export type ProjectWithTeam = PrismaProject & {
+  mentor: User;
+  assignedTeam: { id: string; name: string; nameFa: string | null } | null;
+};
+
 interface ProjectsClientProps {
-  initialProjects: (PrismaProject & { mentor: User })[];
+  initialProjects: ProjectWithTeam[];
 }
 
 export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
@@ -22,7 +26,7 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string>("All");
   const [activeDifficulty, setActiveDifficulty] = useState<string>("All");
-  const [selectedProject, setSelectedProject] = useState<(PrismaProject & { mentor: User }) | null>(null);
+  const [selectedProject, setSelectedProject] = useState<ProjectWithTeam | null>(null);
 
   const filteredProjects = initialProjects.filter((project) => {
     const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||

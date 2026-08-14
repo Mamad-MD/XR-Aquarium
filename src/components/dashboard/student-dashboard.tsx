@@ -16,6 +16,7 @@ import { motion } from "framer-motion";
 import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
 import { format } from "date-fns";
+import { toast } from "sonner";
 import { ChangePasswordForm } from "./change-password-form";
 import { MyTeamCard, type MyTeamData } from "./my-team-card";
 
@@ -43,6 +44,22 @@ export function StudentDashboard({ user, data }: {
   const projectApp = acceptedApp || data.projectApplications?.[0];
   const selectedProject = projectApp?.project;
   const myTeam = data.myTeam || null;
+  const assignedProject = acceptedApp?.project
+    ? { id: String(acceptedApp.project.id), title: String(acceptedApp.project.title), titleFa: acceptedApp.project.titleFa ? String(acceptedApp.project.titleFa) : null }
+    : null;
+
+  const statusLabelMap: Record<string, string> = {
+    ACCEPTED: isFa ? 'پذیرفته‌شده' : 'Accepted',
+    APPLIED: t('applicationPending'),
+    UNDER_REVIEW: t('applicationPending'),
+    REJECTED: isFa ? 'رد شده' : 'Rejected',
+    WAITLISTED: isFa ? 'در لیست انتظار' : 'Waitlisted',
+  };
+
+  const handleSubmitUpdate = () => {
+    // TODO: این بخش موقتی است — بعداً باید به یک فرم/دیالوگ واقعی برای ثبت گزارش پیشرفت وصل شود
+    toast.success(isFa ? "این قابلیت به‌زودی فعال می‌شود" : "This feature is coming soon");
+  };
 
   return (
     <div dir={isFa ? 'rtl' : 'ltr'} className="flex flex-col md:flex-row min-h-screen bg-black text-white p-4 md:p-6 gap-6 pt-24 w-full">
@@ -76,11 +93,10 @@ export function StudentDashboard({ user, data }: {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className="flex-1 max-w-6xl w-full"
+        className="flex-1 max-w-6xl w-full min-w-0"
       >
         <Tabs defaultValue="overview" className="w-full" dir={isFa ? 'rtl' : 'ltr'}>
-          {/* تعداد ستون‌ها را به 6 تغییر دادیم تا تب تیم هم جا شود */}
-          <TabsList className="grid grid-cols-6 w-full md:w-auto md:inline-flex bg-slate-900/50 border border-slate-800 p-1 mb-8 overflow-x-auto">
+          <TabsList className="grid grid-cols-6 w-full md:w-auto md:inline-flex bg-slate-900/50 border border-slate-800 p-1 mb-8 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             <TabsTrigger value="overview" className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400">
               <LayoutDashboard className="w-4 h-4 md:mx-2 mx-1 shrink-0" />
               <span className="hidden md:inline">{t("overview")}</span>
@@ -101,7 +117,6 @@ export function StudentDashboard({ user, data }: {
               <FileText className="w-4 h-4 md:mx-2 mx-1 shrink-0" />
               <span className="hidden md:inline">{t("downloads")}</span>
             </TabsTrigger>
-            {/* اضافه شدن دکمه تنظیمات */}
             <TabsTrigger value="settings" className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400">
               <Settings className="w-4 h-4 md:mx-2 mx-1 shrink-0" />
               <span className="hidden md:inline">{tCommon("settings")}</span>
@@ -215,7 +230,7 @@ export function StudentDashboard({ user, data }: {
                 <Card className="glass-strong border-purple-500/30 overflow-hidden relative">
                   <div className="absolute top-0 end-0 p-32 bg-purple-500/10 blur-3xl -z-10 rounded-full"></div>
                   <CardHeader>
-                    <CardTitle className="text-2xl neon-purple" dir="auto">
+                    <CardTitle className="text-2xl font-bold gradient-text leading-snug" dir="auto">
                       {isFa && (selectedProject as any).titleFa ? String((selectedProject as any).titleFa) : String(selectedProject.title)}
                     </CardTitle>
                     <CardDescription className="text-slate-400 leading-relaxed" dir="auto">
@@ -238,18 +253,21 @@ export function StudentDashboard({ user, data }: {
                       </div>
                       <div className={`p-4 rounded-lg bg-slate-900/50 border border-slate-800 ${isFa ? 'text-right' : 'text-left'}`}>
                         <p className="text-sm text-slate-400 mb-1">{t('statusLabel')}</p>
-                        <p className="text-lg font-medium text-green-400">
-                          {projectApp.status === "ACCEPTED" ? t('activeTeamMember') : t('applicationPending')}
+                        <p className={`text-lg font-medium ${projectApp?.status === 'ACCEPTED' ? 'text-green-400' : projectApp?.status === 'REJECTED' ? 'text-red-400' : 'text-yellow-400'}`}>
+                          {statusLabelMap[projectApp?.status || ''] || projectApp?.status}
                         </p>
                       </div>
                     </div>
                   </CardContent>
-                  <CardFooter className="flex justify-between border-t border-slate-800/50 pt-6">
+                  <CardFooter className="flex flex-wrap justify-between gap-3 border-t border-slate-800/50 pt-6">
                     <Button variant="outline" asChild className="border-purple-500/30 hover:bg-purple-500/10 hover:text-purple-300">
-                      <Link href={`/projects/${selectedProject.id}`}>{t('viewProjectDetails')}</Link>
+                      <Link href="/projects">{t('viewProjectDetails')}</Link>
                     </Button>
-                    {projectApp.status === "ACCEPTED" && (
-                      <Button className="bg-purple-600 hover:bg-purple-700 text-white shadow-[0_0_15px_rgba(147,51,234,0.3)]">
+                    {projectApp?.status === "ACCEPTED" && (
+                      <Button
+                        onClick={handleSubmitUpdate}
+                        className="bg-purple-600 hover:bg-purple-700 text-white shadow-[0_0_15px_rgba(147,51,234,0.3)]"
+                      >
                         {t('submitUpdate')}
                       </Button>
                     )}
@@ -272,7 +290,7 @@ export function StudentDashboard({ user, data }: {
 
           <TabsContent value="team">
             <motion.div variants={containerVariants} initial="hidden" animate="visible">
-              <MyTeamCard team={myTeam} currentUserId={user.id || ""} />
+              <MyTeamCard team={myTeam} currentUserId={user.id || ""} assignedProject={assignedProject} />
             </motion.div>
           </TabsContent>
 

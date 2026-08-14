@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Users, Crown, Check, X, LogOut, UsersRound, Package } from "lucide-react";
+import { Users, Crown, Check, X, LogOut, UsersRound, Package, Boxes } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslations, useLocale } from "next-intl";
 
@@ -46,9 +46,10 @@ export interface MyTeamData {
 interface MyTeamCardProps {
   team: MyTeamData | null;
   currentUserId: string;
+  assignedProject?: { id: string; title: string; titleFa?: string | null } | null;
 }
 
-export function MyTeamCard({ team, currentUserId }: MyTeamCardProps) {
+export function MyTeamCard({ team, currentUserId, assignedProject }: MyTeamCardProps) {
   const t = useTranslations("Dashboard");
   const tTeams = useTranslations("Teams");
   const tEquip = useTranslations("Equipment");
@@ -174,6 +175,14 @@ export function MyTeamCard({ team, currentUserId }: MyTeamCardProps) {
         </div>
         {team.description && (
           <p className="text-slate-400 text-sm mt-3 leading-relaxed">{team.description}</p>
+        )}
+        {assignedProject && (
+          <div className="flex items-center gap-2 mt-3 text-sm bg-blue-500/5 border border-blue-500/20 rounded-lg p-3">
+            <Boxes className="w-4 h-4 text-blue-400 shrink-0" />
+            <span className="text-blue-400" dir="auto">
+              {tTeams("assignedProject")}: {isFa && assignedProject.titleFa ? assignedProject.titleFa : assignedProject.title}
+            </span>
+          </div>
         )}
         {isLeader && team.status === "PENDING" && (
           <p className="text-sm text-yellow-400 mt-3 bg-yellow-500/5 border border-yellow-500/20 rounded-lg p-3">

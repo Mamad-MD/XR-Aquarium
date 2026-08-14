@@ -3,8 +3,8 @@ import bcrypt from "bcryptjs";
 import { db as prisma } from "@/lib/db";
 
 // آرایه‌های مجاز برای تخصیص نقش‌ها (در محیط واقعی بهتر است از متغیرهای محیطی ENV خوانده شوند)
-const ADMIN_IDS = ["40333253", "12345678"]; // دومی یک نمونه تستی است
-const MENTOR_IDS = ["99999999"]; // جایگاه برای منتورها
+const ADMIN_IDS = ["40333253", "40333254","40666256"]; // دومی یک نمونه تستی است
+const MENTOR_IDS = ["40555255"]; // جایگاه برای منتورها
 
 export async function POST(req: Request) {
   try {
