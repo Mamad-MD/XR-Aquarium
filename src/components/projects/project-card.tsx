@@ -1,7 +1,8 @@
+// DESTINATION: src/components/projects/project-card.tsx (replace the whole file)
 "use client";
 
 import { motion } from "framer-motion";
-import { Users, Clock, ArrowRight, Layers, UsersRound } from "lucide-react";
+import { Users, Clock, ArrowRight, Layers, UsersRound, Send } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslations, useLocale } from "next-intl";
@@ -19,6 +20,8 @@ export function ProjectCard({ project, onViewDetails }: ProjectCardProps) {
 
   const categoryVariant = project.category.toLowerCase() ;
   const isAssigned = !!project.assignedTeam;
+  const mentorTelegram = (project as any).mentor?.telegramUsername as string | null | undefined;
+  const mentorName = (project as any).mentor as { name?: string | null; nameFa?: string | null } | undefined;
 
   const neonClass = {
     VR: "hover:neon-green",
@@ -109,6 +112,25 @@ export function ProjectCard({ project, onViewDetails }: ProjectCardProps) {
             )}
           </div>
         </div>
+
+        {mentorName?.name && (
+          <div className="mb-4 flex items-center justify-between gap-2">
+            <span className="text-xs text-zinc-400 truncate" dir="auto">
+              {isFa && mentorName.nameFa ? mentorName.nameFa : mentorName.name}
+            </span>
+            {mentorTelegram && (
+              <a
+                href={`https://t.me/${mentorTelegram}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="shrink-0 inline-flex items-center gap-1 text-xs px-2 py-1 rounded-md bg-[#229ED9]/10 text-[#4fb3e8] hover:bg-[#229ED9]/20 transition-colors"
+              >
+                <Send className="w-3 h-3" />
+              </a>
+            )}
+          </div>
+        )}
 
         <div className="mb-6">
           {isAssigned ? (

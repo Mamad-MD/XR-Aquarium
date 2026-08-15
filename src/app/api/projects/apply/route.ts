@@ -9,6 +9,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "برای این کار باید وارد حساب کاربری خود شوید" }, { status: 401 });
     }
 
+	const settings = await db.systemSettings.findUnique({ where: { id: "singleton" } });
+    if (settings && !settings.projectSelectionEnabled) {
+      return NextResponse.json(
+        { message: "امکان درخواست پروژه در حال حاضر توسط مدیر سیستم غیرفعال شده است" },
+        { status: 403 }
+      );
+    }
+
     const { projectId } = await req.json();
     if (!projectId) {
       return NextResponse.json({ message: "شناسه پروژه الزامی است" }, { status: 400 });

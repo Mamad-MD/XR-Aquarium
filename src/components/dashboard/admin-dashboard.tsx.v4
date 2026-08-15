@@ -9,10 +9,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
+import {
   LayoutDashboard, Users, Boxes, Bell, Settings,
-  Search, Plus, Activity, Mail, FileText, Check, X, UsersRound, Package, Trash2, GraduationCap
+  Search, Plus, Activity, Mail, FileText, Check, X, UsersRound, Package, Trash2, GraduationCap, Calendar, FolderOpen
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
@@ -20,10 +24,19 @@ import { useTranslations, useLocale } from "next-intl";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ChangePasswordForm } from "./change-password-form"; // ایمپورت فرم تغییر رمز
+import { ChangePasswordForm } from "./change-password-form";
 import { CreateProjectDialog } from "./create-project-dialog";
 import { AdminTeamsPanel, type AdminTeamData } from "./admin-teams-panel";
 import { AdminEquipmentPanel, type AdminEquipmentItem, type AdminEquipmentRequestItem } from "./admin-equipment-panel";
+import { AdminSchedulePanel, type AdminScheduleEvent } from "./admin-schedule-panel";
+import { AdminFilesPanel, type AdminResourceItem } from "./admin-files-panel";
+
+interface AdminUser {
+  id: string;
+  name: string | null;
+  email: string | null;
+  role: string;
+}
 
 export function AdminDashboard({ user, data }: {
   user: { name?: string | null, image?: string | null, id?: string | null },
@@ -40,13 +53,16 @@ export function AdminDashboard({ user, data }: {
       project: { title: string },
       team?: { name: string, nameFa: string | null } | null,
     }>,
-    students?: Array<any>,
+    users?: AdminUser[],
     projects?: Array<any>,
     mentors?: Array<{ id: string, name: string | null, nameFa: string | null }>,
     teams?: AdminTeamData[],
     equipmentInventory?: AdminEquipmentItem[],
     pendingEquipmentRequests?: AdminEquipmentRequestItem[],
     assignedEquipmentRequests?: AdminEquipmentRequestItem[],
+    scheduleEvents?: AdminScheduleEvent[],
+    generalResources?: AdminResourceItem[],
+    settings?: { studentRegistrationEnabled: boolean, projectSelectionEnabled: boolean, maintenanceMode: boolean },
   }
 }) {
   const t = useTranslations("Dashboard");
@@ -57,13 +73,16 @@ export function AdminDashboard({ user, data }: {
 
   const announcements = data?.announcements || [];
   const applications = data?.applications || [];
-  const students = data?.students || [];
+  const users = data?.users || [];
   const projects = data?.projects || [];
   const mentors = data?.mentors || [];
   const teams = data?.teams || [];
   const equipmentInventory = data?.equipmentInventory || [];
   const pendingEquipmentRequests = data?.pendingEquipmentRequests || [];
   const assignedEquipmentRequests = data?.assignedEquipmentRequests || [];
+  const scheduleEvents = data?.scheduleEvents || [];
+  const generalResources = data?.generalResources || [];
+  const settings = data?.settings || { studentRegistrationEnabled: true, projectSelectionEnabled: true, maintenanceMode: false };
 
   const pendingTeamsCount = teams.filter((tm) => tm.status === "PENDING").length;
 
@@ -72,10 +91,17 @@ export function AdminDashboard({ user, data }: {
   const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
   const [busyUserId, setBusyUserId] = useState<string | null>(null);
   const [busyProjectId, setBusyProjectId] = useState<string | null>(null);
+  const [isSavingSettings, setIsSavingSettings] = useState(false);
 
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+  };
+
+  const roleLabel: Record<string, { label: string; className: string }> = {
+    ADMIN: { label: isFa ? "مدیر سیستم" : "Admin", className: "bg-purple-500/10 text-purple-400" },
+    MENTOR: { label: isFa ? "منتور" : "Mentor", className: "bg-cyan-500/10 text-cyan-400" },
+    PARTICIPANT: { label: isFa ? "دانشجو" : "Participant", className: "bg-green-500/10 text-green-400" },
   };
 
   const handlePostAnnouncement = async (e: React.FormEvent) => {
@@ -189,6 +215,50 @@ export function AdminDashboard({ user, data }: {
     }
   };
 
+  const handleChangeMentor = async (projectId: string, mentorId: string) => {
+    try {
+      setBusyProjectId(projectId);
+      const res = await fetch('/api/admin/projects', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectId, mentorId })
+      });
+      const responseData = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast.error(responseData.message || (isFa ? "تغییر منتور با خطا مواجه شد" : "Failed to change mentor"));
+        return;
+      }
+      toast.success(responseData.message || (isFa ? "منتور پروژه تغییر کرد" : "Mentor updated"));
+      router.refresh();
+    } catch (e) {
+      toast.error(isFa ? 'خطا در ارتباط با سرور' : 'Server error');
+    } finally {
+      setBusyProjectId(null);
+    }
+  };
+
+  const handleSettingChange = async (key: keyof typeof settings, value: boolean) => {
+    try {
+      setIsSavingSettings(true);
+      const res = await fetch('/api/admin/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ [key]: value })
+      });
+      const responseData = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast.error(responseData.message || t("actionError"));
+        return;
+      }
+      toast.success(isFa ? "تنظیمات ذخیره شد" : "Settings saved");
+      router.refresh();
+    } catch (e) {
+      toast.error(t("unexpectedError"));
+    } finally {
+      setIsSavingSettings(false);
+    }
+  };
+
   if (!user) return null;
 
   return (
@@ -226,7 +296,7 @@ export function AdminDashboard({ user, data }: {
         className="flex-1 max-w-6xl w-full min-w-0"
       >
         <Tabs defaultValue="overview" className="w-full" dir={isFa ? 'rtl' : 'ltr'}>
-          <TabsList className="grid grid-cols-8 w-full md:w-auto md:inline-flex bg-slate-900/50 border border-slate-800 p-1 mb-8 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <TabsList className="grid grid-cols-10 w-full md:w-auto md:inline-flex bg-slate-900/50 border border-slate-800 p-1 mb-8 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             <TabsTrigger value="overview" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
               <LayoutDashboard className="w-4 h-4 md:mx-2 mx-1 shrink-0" />
               <span className="hidden md:inline">{t("overview")}</span>
@@ -249,6 +319,14 @@ export function AdminDashboard({ user, data }: {
             <TabsTrigger value="equipment" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
               <Package className="w-4 h-4 md:mx-2 mx-1 shrink-0" />
               <span className="hidden md:inline">{t("equipmentTab")}</span>
+            </TabsTrigger>
+            <TabsTrigger value="schedule" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
+              <Calendar className="w-4 h-4 md:mx-2 mx-1 shrink-0" />
+              <span className="hidden md:inline">{t("scheduleTab")}</span>
+            </TabsTrigger>
+            <TabsTrigger value="files" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
+              <FolderOpen className="w-4 h-4 md:mx-2 mx-1 shrink-0" />
+              <span className="hidden md:inline">{t("filesTab")}</span>
             </TabsTrigger>
             <TabsTrigger value="announcements" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
               <Bell className="w-4 h-4 md:mx-2 mx-1 shrink-0" />
@@ -312,7 +390,7 @@ export function AdminDashboard({ user, data }: {
             </motion.div>
           </TabsContent>
 
-          {/* تب مدیریت دانشجویان و ریست رمز عبور */}
+          {/* تب مدیریت کاربران (دانشجو/منتور/ادمین) */}
           <TabsContent value="students">
             <motion.div variants={containerVariants} initial="hidden" animate="visible">
               <Card className="glass border-slate-800">
@@ -331,28 +409,30 @@ export function AdminDashboard({ user, data }: {
                     <div className="min-w-[700px]">
                       <div className="grid grid-cols-12 gap-4 p-4 border-b border-slate-800 bg-slate-900/50 text-sm font-medium text-slate-400">
                         <div className="col-span-4">{t("name")}</div>
-                        <div className="col-span-3">{t("project")}</div>
+                        <div className="col-span-3">{isFa ? "نقش" : "Role"}</div>
                         <div className="col-span-2">{t("statusLabel")}</div>
                         <div className="col-span-3 text-end">{t("actions")}</div>
                       </div>
-                      {students.length === 0 ? (
-                        <div className="p-8 text-center text-slate-500">دانشجویی یافت نشد</div>
+                      {users.length === 0 ? (
+                        <div className="p-8 text-center text-slate-500">کاربری یافت نشد</div>
                       ) : (
-                        students.map((student) => (
-                          <div key={student.id} className="grid grid-cols-12 gap-4 p-4 items-center border-b border-slate-800/50 last:border-0 hover:bg-slate-900/30 transition-colors">
+                        users.map((u) => (
+                          <div key={u.id} className="grid grid-cols-12 gap-4 p-4 items-center border-b border-slate-800/50 last:border-0 hover:bg-slate-900/30 transition-colors">
                             <div className="col-span-4 flex items-center gap-3">
                               <Avatar className="h-8 w-8 shrink-0">
                                 <AvatarFallback className="bg-slate-800 text-xs text-purple-400">
-                                  {student.name ? student.name.charAt(0) : "S"}
+                                  {u.name ? u.name.charAt(0) : "?"}
                                 </AvatarFallback>
                               </Avatar>
                               <div className="overflow-hidden">
-                                <p className="text-sm font-medium truncate">{student.name}</p>
-                                <p className="text-xs text-slate-500 truncate" dir="ltr">{student.email?.split('@')[0]}</p>
+                                <p className="text-sm font-medium truncate">{u.name}</p>
+                                <p className="text-xs text-slate-500 truncate" dir="ltr">{u.email?.split('@')[0]}</p>
                               </div>
                             </div>
-                            <div className="col-span-3 text-sm text-slate-300" dir="auto">
-                              دانشجو
+                            <div className="col-span-3">
+                              <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${roleLabel[u.role]?.className || 'bg-slate-700/30 text-slate-300'}`}>
+                                {roleLabel[u.role]?.label || u.role}
+                              </span>
                             </div>
                             <div className="col-span-2">
                               <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-500/10 text-green-400">
@@ -360,34 +440,38 @@ export function AdminDashboard({ user, data }: {
                               </span>
                             </div>
                             <div className="col-span-3 flex justify-end gap-1 flex-wrap">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                disabled={busyUserId === student.id}
-                                className="h-8 text-slate-400 hover:text-cyan-400 hover:bg-cyan-400/10"
-                                onClick={() => handlePromoteToMentor(student.id)}
-                                title={isFa ? "ارتقا به منتور" : "Promote to mentor"}
-                              >
-                                <GraduationCap className="h-4 w-4" />
-                              </Button>
+                              {u.role === "PARTICIPANT" && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  disabled={busyUserId === u.id}
+                                  className="h-8 text-slate-400 hover:text-cyan-400 hover:bg-cyan-400/10"
+                                  onClick={() => handlePromoteToMentor(u.id)}
+                                  title={isFa ? "ارتقا به منتور" : "Promote to mentor"}
+                                >
+                                  <GraduationCap className="h-4 w-4" />
+                                </Button>
+                              )}
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 className="h-8 text-slate-400 hover:text-red-400 hover:bg-red-400/10"
-                                onClick={() => handleResetPassword(student.id)}
+                                onClick={() => handleResetPassword(u.id)}
                               >
                                 {isFa ? "ریست رمز" : "Reset Pass"}
                               </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                disabled={busyUserId === student.id}
-                                className="h-8 text-slate-400 hover:text-red-400 hover:bg-red-400/10"
-                                onClick={() => handleDeleteUser(student.id)}
-                                title={isFa ? "حذف کاربر" : "Delete user"}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
+                              {u.id !== user.id && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  disabled={busyUserId === u.id}
+                                  className="h-8 text-slate-400 hover:text-red-400 hover:bg-red-400/10"
+                                  onClick={() => handleDeleteUser(u.id)}
+                                  title={isFa ? "حذف کاربر" : "Delete user"}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              )}
                             </div>
                           </div>
                         ))
@@ -446,9 +530,23 @@ export function AdminDashboard({ user, data }: {
                               </Button>
                             </div>
                           </div>
-                          <div className="flex justify-between items-end mt-4">
-                            <div className="text-sm text-slate-400 truncate max-w-[60%]">
-                              {t("mentors")}: <span className="text-slate-300">{p.mentor?.name || '---'}</span>
+                          <div className="flex justify-between items-end mt-4 gap-3 flex-wrap">
+                            <div className="text-sm text-slate-400 flex items-center gap-2">
+                              <span>{t("mentors")}:</span>
+                              <Select
+                                value={p.mentorId}
+                                onValueChange={(v) => handleChangeMentor(p.id, v)}
+                                disabled={busyProjectId === p.id}
+                              >
+                                <SelectTrigger className="h-8 w-40 bg-slate-900/50 border-slate-800 text-slate-300 text-xs">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {mentors.map((m) => (
+                                    <SelectItem key={m.id} value={m.id}>{m.name || m.nameFa || m.id}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
                             </div>
                             <div className="text-sm font-medium shrink-0">
                               {t("requiredMembersShort")}: <span dir="ltr">{p.maxCapacity}</span>
@@ -478,6 +576,20 @@ export function AdminDashboard({ user, data }: {
                 pendingRequests={pendingEquipmentRequests}
                 assignedRequests={assignedEquipmentRequests}
               />
+            </motion.div>
+          </TabsContent>
+
+          {/* تب برنامه زمان‌بندی */}
+          <TabsContent value="schedule">
+            <motion.div variants={containerVariants} initial="hidden" animate="visible">
+              <AdminSchedulePanel events={scheduleEvents} />
+            </motion.div>
+          </TabsContent>
+
+          {/* تب فایل‌های عمومی */}
+          <TabsContent value="files">
+            <motion.div variants={containerVariants} initial="hidden" animate="visible">
+              <AdminFilesPanel resources={generalResources} currentUserId={user.id || ""} />
             </motion.div>
           </TabsContent>
 
@@ -691,7 +803,7 @@ export function AdminDashboard({ user, data }: {
                 </CardContent>
               </Card>
 
-              {/* فرم تنظیمات سیستم */}
+              {/* فرم تنظیمات سیستم — حالا واقعاً کار می‌کند */}
               <Card className="glass border-slate-800 h-fit">
                 <CardHeader>
                   <CardTitle>{t("systemConfig")}</CardTitle>
@@ -703,7 +815,11 @@ export function AdminDashboard({ user, data }: {
                       <Label className="text-base font-medium">{t("studentReg")}</Label>
                       <p className="text-sm text-slate-400">{t("studentRegDesc")}</p>
                     </div>
-                    <Switch defaultChecked />
+                    <Switch
+                      checked={settings.studentRegistrationEnabled}
+                      disabled={isSavingSettings}
+                      onCheckedChange={(v) => handleSettingChange('studentRegistrationEnabled', v)}
+                    />
                   </div>
                   <div className="h-px bg-slate-800 w-full" />
                   <div className="flex items-center justify-between py-2">
@@ -711,7 +827,11 @@ export function AdminDashboard({ user, data }: {
                       <Label className="text-base font-medium">{t("projectSel")}</Label>
                       <p className="text-sm text-slate-400">{t("projectSelDesc")}</p>
                     </div>
-                    <Switch defaultChecked />
+                    <Switch
+                      checked={settings.projectSelectionEnabled}
+                      disabled={isSavingSettings}
+                      onCheckedChange={(v) => handleSettingChange('projectSelectionEnabled', v)}
+                    />
                   </div>
                   <div className="h-px bg-slate-800 w-full" />
                   <div className="flex items-center justify-between py-2">
@@ -719,8 +839,13 @@ export function AdminDashboard({ user, data }: {
                       <Label className="text-base font-medium">{t("maintenance")}</Label>
                       <p className="text-sm text-slate-400">{t("maintenanceDesc")}</p>
                     </div>
-                    <Switch />
+                    <Switch
+                      checked={settings.maintenanceMode}
+                      disabled={isSavingSettings}
+                      onCheckedChange={(v) => handleSettingChange('maintenanceMode', v)}
+                    />
                   </div>
+                  <p className="text-xs text-slate-500 mt-2">{t("maintenanceModeNote")}</p>
                 </CardContent>
               </Card>
 

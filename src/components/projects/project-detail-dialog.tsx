@@ -1,3 +1,4 @@
+// DESTINATION: src/components/projects/project-detail-dialog.tsx (replace the whole file)
 "use client"
 
 import { useState, useEffect } from "react";
@@ -11,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, Clock, Users, ArrowRight, UsersRound } from "lucide-react";
+import { CheckCircle, Clock, Users, ArrowRight, UsersRound, Send, Calendar, CircleDot } from "lucide-react";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "next/navigation";
@@ -44,6 +45,11 @@ export function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailD
   if (!project) return null;
 
   const isAssigned = !!project.assignedTeam;
+  const mentor = (project as any).mentor as { name?: string | null; nameFa?: string | null; telegramUsername?: string | null } | undefined;
+  const availabilityDays = (project as any).availabilityDays as string | null | undefined;
+  const availabilityHours = (project as any).availabilityHours as string | null | undefined;
+  const hasAvailability = !!(availabilityDays || availabilityHours);
+  const steps = ((project as any).steps || []) as Array<{ id: string; title: string; titleFa?: string | null; deadline?: string | Date | null; status: string }>;
 
   const handleSelect = async () => {
     if (status === "unauthenticated" || !session) {
@@ -211,8 +217,55 @@ export function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailD
                     <Clock className="w-4 h-4" /> {project.duration}
                   </span>
                 </div>
+
+                {mentor?.name && (
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-400">منتور:</span>
+                    <span className="text-gray-200" dir="auto">{mentor.nameFa || mentor.name}</span>
+                  </div>
+                )}
+
+                {mentor?.telegramUsername && (
+                  <Button asChild size="sm" className="bg-[#229ED9] hover:bg-[#1c8ac2] text-white w-fit self-end">
+                    <a href={`https://t.me/${mentor.telegramUsername}`} target="_blank" rel="noopener noreferrer">
+                      <Send className="w-4 h-4 me-2" /> ارتباط با منتور در تلگرام
+                    </a>
+                  </Button>
+                )}
               </div>
             </div>
+
+            {hasAvailability && (
+              <div>
+                <h4 className="text-lg font-semibold text-cyan-400 mb-3 flex items-center gap-2">
+                  <Calendar className="w-5 h-5" /> زمان در دسترس بودن منتور
+                </h4>
+                <div className="bg-white/5 border border-white/10 rounded-lg p-4 flex flex-col gap-1 text-sm text-gray-300">
+                  {availabilityDays && <p>روزها: {availabilityDays}</p>}
+                  {availabilityHours && <p>ساعات: {availabilityHours}</p>}
+                </div>
+              </div>
+            )}
+
+            {steps.length > 0 && (
+              <div>
+                <h4 className="text-lg font-semibold text-cyan-400 mb-3 flex items-center gap-2">
+                  <CircleDot className="w-5 h-5" /> استپ‌های پروژه
+                </h4>
+                <ul className="flex flex-col gap-2">
+                  {steps.map((s) => (
+                    <li key={s.id} className="flex items-center justify-between gap-2 bg-white/5 border border-white/10 rounded-lg p-3 text-sm">
+                      <span className="text-gray-200" dir="auto">{s.titleFa || s.title}</span>
+                      {s.deadline && (
+                        <span className="text-xs text-gray-400 flex items-center gap-1" dir="ltr">
+                          <Clock className="w-3 h-3" /> {new Date(s.deadline).toLocaleDateString()}
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             <div>
               <h4 className="text-lg font-semibold text-cyan-400 mb-3">{t('techStack')}</h4>

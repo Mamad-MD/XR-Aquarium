@@ -20,21 +20,46 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setIsSubmitting(true);
 
-    // تبدیل شماره دانشجویی به فرمت ایمیل برای تطابق با دیتابیس
-    const emailPayload = studentId.includes("@") ? studentId : `${studentId}@xrlab.ir`;
 
-    const res = await signIn("credentials", { email: emailPayload, password, redirect: false });
+    try {
+      // تبدیل شماره دانشجویی به فرمت ایمیل برای تطابق با دیتابیس
+      const emailPayload = studentId.includes("@") ? studentId : `${studentId}@xrlab.ir`;
 
-    if (res?.error) {
-      setError("اطلاعات وارد شده اشتباه است. لطفاً دوباره تلاش کنید.");
-    } else {
-      toast.success("با موفقیت وارد شدید!");
-      router.push("/dashboard");
+      // قبل از تلاش برای ورود، وضعیت مسدود بودن حساب را جداگانه چک می‌کنیم؛
+      // چون Auth.js v5 وقتی redirect:false باشد کد خطای سفارشی را برنمی‌گرداند.
+      const statusRes = await fetch("/api/auth/check-status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: emailPayload }),
+      });
+      const statusData = await statusRes.json().catch(() => ({ banned: false }));
+
+      if (statusData?.banned) {
+        setError("دسترسی شما محدود شده است. لطفاً به پشتیبانی دوره پیام دهید.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      const res = await signIn("credentials", { email: emailPayload, password, redirect: false });
+
+      if (res?.error) {
+        setError("اطلاعات وارد شده اشتباه است. لطفاً دوباره تلاش کنید.");
+      } else {
+        toast.success("با موفقیت وارد شدید!");
+        router.push("/dashboard");
+      }
+    } catch (err) {
+      setError("خطایی غیرمنتظره رخ داد. اتصال اینترنت خود را بررسی کنید.");
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -113,9 +138,12 @@ export default function LoginPage() {
 
               <Button
                 type="submit"
+                disabled={isSubmitting}
                 className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 text-white border-0 neon-cyan mt-4 text-lg"
+
               >
-                ورود
+
+                {isSubmitting ? "در حال بررسی..." : "ورود"}
               </Button>
             </form>
           </CardContent>

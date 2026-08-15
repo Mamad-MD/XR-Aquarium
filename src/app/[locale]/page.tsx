@@ -16,7 +16,6 @@ export default async function Home() {
       role: {
         in: [
           "MENTOR",
-          "EXECUTIVE",
           "Technical Lead, Mentor & XR Core Team Member",
           "Deputy Event Secretary & XR Core Team Member",
           "Event Secretary & XR Core Team Member"

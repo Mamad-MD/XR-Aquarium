@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
 
 export function Footer() {
   const t = useTranslations('Footer');
@@ -12,9 +13,9 @@ export function Footer() {
         </div>
 
         <div className="flex gap-4">
-          <a href="#" className="hover:text-white transition-colors">{t('about')}</a>
-          <a href="#" className="hover:text-white transition-colors">{t('contact')}</a>
-          <a href="#" className="hover:text-white transition-colors">{t('privacy')}</a>
+          <Link href="/about" className="hover:text-white transition-colors">{t('about')}</Link>
+          <Link href="/contact" className="hover:text-white transition-colors">{t('contact')}</Link>
+          <Link href="/privacy" className="hover:text-white transition-colors">{t('privacy')}</Link>
         </div>
       </div>
     </footer>

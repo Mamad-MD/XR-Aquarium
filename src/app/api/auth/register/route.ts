@@ -8,6 +8,13 @@ const MENTOR_IDS = ["40555255"]; // جایگاه برای منتورها
 
 export async function POST(req: Request) {
   try {
+	const settings = await prisma.systemSettings.findUnique({ where: { id: "singleton" } });
+    if (settings && !settings.studentRegistrationEnabled) {
+      return NextResponse.json(
+        { error: "ثبت‌نام دانشجویان جدید در حال حاضر توسط مدیر سیستم غیرفعال شده است." },
+        { status: 403 }
+      );
+    }
     const { name, email, password } = await req.json();
 
     if (!name || !email || !password) {

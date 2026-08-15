@@ -1,0 +1,331 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User model for NextAuth and application
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  nameFa        String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          String    @default("PARTICIPANT")
+  roleFa        String?
+  isVisible     Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // NextAuth relations
+  accounts      Account[]
+  sessions      Session[]
+
+  // Application relations
+  projectApplications ProjectApplication[]
+  mentoredProjects    Project[]            @relation("ProjectMentor")
+  uploadedResources   Resource[]           @relation("UploadedResources")
+  announcements       Announcement[]       @relation("AnnouncementAuthor")
+  notifications       Notification[]
+  projectUpdates      ProjectUpdate[]      @relation("ProjectUpdateAuthor")
+
+  // Team relations
+  ledTeams          Team[]            @relation("TeamLeader")
+  teamMemberships   TeamMember[]      @relation("TeamMemberships")
+  teamJoinRequests  TeamJoinRequest[] @relation("TeamJoinRequests")
+
+  // Equipment relations
+  equipmentRequests EquipmentRequest[] @relation("EquipmentRequestedBy")
+}
+
+// NextAuth standard models
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// App specific models
+model Project {
+  id           String   @id @default(cuid())
+  title        String
+  titleFa      String?
+  description  String
+  category     String
+  difficulty   String
+  // تعداد دقیق افراد موردنیاز برای این پروژه (باید با تعداد اعضای تیم درخواست‌دهنده برابر باشد)
+  maxCapacity  Int
+  thumbnailUrl String?
+  duration     String
+  // Status (OPEN, FULL, IN_PROGRESS, COMPLETED)
+  status       String   @default("OPEN")
+  techStack    String   // JSON or comma separated string
+  prerequisites String?
+  objectives   String?
+
+  mentorId     String
+  mentor       User     @relation("ProjectMentor", fields: [mentorId], references: [id])
+
+  applications ProjectApplication[]
+  resources    Resource[]
+  tasks        ProjectTask[]
+  updates      ProjectUpdate[]
+}
+
+model ProjectApplication {
+  id         String   @id @default(cuid())
+  userId     String   // کاربری که درخواست را ثبت کرده (سرپرست تیم)
+  projectId  String
+  teamId     String?  // تیمی که برای این پروژه درخواست داده است
+  // Status (NOT_APPLIED, APPLIED, UNDER_REVIEW, ACCEPTED, REJECTED, WAITLISTED)
+  status     String   @default("APPLIED")
+  appliedAt  DateTime @default(now())
+  reviewedAt DateTime?
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  team       Team?    @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, projectId])
+}
+
+// پیشرفت پروژه: هر آیتم یک وظیفه است که منتور می‌سازد، سرپرست تیم انجام‌شده علامت می‌زند و منتور تایید می‌کند
+model ProjectTask {
+  id          String    @id @default(cuid())
+  projectId   String
+  title       String
+  description String?
+  // Status: PENDING (در انتظار انجام)، DONE (تیم انجام داد، منتظر تایید منتور)، APPROVED (منتور تایید کرد)
+  status      String    @default("PENDING")
+  createdAt   DateTime  @default(now())
+  completedAt DateTime?
+  approvedAt  DateTime?
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+// گزارش‌های پیشرفت که سرپرست تیم برای منتور ثبت می‌کند
+model ProjectUpdate {
+  id        String   @id @default(cuid())
+  projectId String
+  content   String
+  createdAt DateTime @default(now())
+
+  authorId String
+  author   User   @relation("ProjectUpdateAuthor", fields: [authorId], references: [id])
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+// تنظیمات سراسری سیستم (یک ردیف ثابت)
+model SystemSettings {
+  id                         String   @id @default("singleton")
+  studentRegistrationEnabled Boolean  @default(true)
+  projectSelectionEnabled    Boolean  @default(true)
+  maintenanceMode            Boolean  @default(false)
+  updatedAt                  DateTime @updatedAt
+}
+
+// --- Teams feature ---
+
+model Team {
+  id          String   @id @default(cuid())
+  name        String
+  nameFa      String?
+  description String?
+  // Status (PENDING, APPROVED, REJECTED)
+  status      String   @default("PENDING")
+  reviewedAt  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  leaderId String
+  leader   User   @relation("TeamLeader", fields: [leaderId], references: [id])
+
+  members             TeamMember[]
+  joinRequests        TeamJoinRequest[]
+  projectApplications ProjectApplication[]
+  equipmentRequests   EquipmentRequest[]
+}
+
+model TeamMember {
+  id       String   @id @default(cuid())
+  teamId   String
+  userId   String
+  joinedAt DateTime @default(now())
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user User @relation("TeamMemberships", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, teamId])
+}
+
+model TeamJoinRequest {
+  id         String    @id @default(cuid())
+  teamId     String
+  userId     String
+  // Status (PENDING, ACCEPTED, REJECTED)
+  status     String    @default("PENDING")
+  message    String?
+  createdAt  DateTime  @default(now())
+  reviewedAt DateTime?
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user User @relation("TeamJoinRequests", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, teamId])
+}
+
+// --- Equipment feature ---
+
+model Equipment {
+  id                String   @id @default(cuid())
+  name              String
+  nameFa            String?
+  description       String?
+  totalQuantity     Int
+  availableQuantity Int
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  requests EquipmentRequest[]
+}
+
+model EquipmentRequest {
+  id          String    @id @default(cuid())
+  equipmentId String
+  teamId      String
+  quantity    Int       @default(1)
+  // Status (PENDING, APPROVED, REJECTED, RETURNED)
+  status      String    @default("PENDING")
+  requestedAt DateTime  @default(now())
+  reviewedAt  DateTime?
+  returnedAt  DateTime?
+
+  requestedById String
+
+  equipment     Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  team          Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  requestedBy   User      @relation("EquipmentRequestedBy", fields: [requestedById], references: [id])
+}
+
+model Course {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  category    String
+  createdAt   DateTime @default(now())
+
+  lessons     Lesson[]
+}
+
+model Lesson {
+  id         String   @id @default(cuid())
+  courseId   String
+  title      String
+  content    String
+  videoUrl   String?
+  order      Int
+  tags       String?
+  // Level (BEGINNER, INTERMEDIATE, ADVANCED)
+  level      String   @default("BEGINNER")
+
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  resources  Resource[]
+}
+
+model Resource {
+  id           String   @id @default(cuid())
+  title        String
+  description  String?
+  fileType     String
+  fileSize     Int
+  url          String
+  uploadedById String
+  projectId    String?
+  lessonId     String?
+  createdAt    DateTime @default(now())
+
+  uploadedBy   User     @relation("UploadedResources", fields: [uploadedById], references: [id])
+  project      Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  lesson       Lesson?  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+}
+
+model Announcement {
+  id         String   @id @default(cuid())
+  title      String
+  titleFa    String?
+  content    String
+  contentFa  String?
+  // Priority (LOW, MEDIUM, HIGH, URGENT)
+  priority   String   @default("MEDIUM")
+  authorId   String
+  // Audience (EVERYONE, PARTICIPANTS, MENTORS, EXECUTIVES)
+  audience   String   @default("EVERYONE")
+  expiresAt  DateTime?
+  createdAt  DateTime @default(now())
+
+  author     User     @relation("AnnouncementAuthor", fields: [authorId], references: [id])
+}
+
+model ScheduleEvent {
+  id          String   @id @default(cuid())
+  title       String
+  titleFa     String?
+  // Type (WORKSHOP, DEADLINE, PRESENTATION, MEETING, EVENT)
+  type        String
+  date        DateTime
+  location    String?
+  locationFa  String?
+  description String?
+  descriptionFa String?
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  content   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
