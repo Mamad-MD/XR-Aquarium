@@ -128,7 +128,7 @@ export function StudentDashboard({ user, data }: {
       }
       toast.success(resData.message);
       router.refresh();
-    } catch (e) {
+    } catch (_e) {
       toast.error(t("unexpectedError"));
     } finally {
       setBusyTaskId(null);
@@ -261,7 +261,7 @@ export function StudentDashboard({ user, data }: {
                 </h3>
                 <ScrollArea className="h-[400px] rounded-xl border border-slate-800 bg-slate-950/50 p-4" dir={isFa ? 'rtl' : 'ltr'}>
                   <div className="flex flex-col gap-4">
-                    {announcements.map((announcement: any) => (
+                    {announcements.map((announcement: { id: string; title: string; titleFa?: string; content: string; contentFa?: string; priority: string; createdAt: string }) => (
                       <motion.div
                         key={announcement.id}
                         variants={itemVariants}
@@ -306,10 +306,10 @@ export function StudentDashboard({ user, data }: {
                     <div className="absolute top-0 end-0 p-32 bg-purple-500/10 blur-3xl -z-10 rounded-full"></div>
                     <CardHeader>
                       <CardTitle className="text-2xl font-bold gradient-text leading-snug" dir="auto">
-                        {isFa && (selectedProject as any).titleFa ? String((selectedProject as any).titleFa) : String(selectedProject.title)}
+                        {isFa && (selectedProject as Record<string, unknown>).titleFa ? String((selectedProject as Record<string, unknown>).titleFa) : String(selectedProject.title)}
                       </CardTitle>
                       <CardDescription className="text-slate-400 leading-relaxed" dir="auto">
-                        {isFa && (selectedProject as any).descriptionFa ? String((selectedProject as any).descriptionFa) : String(selectedProject.description)}
+                        {isFa && (selectedProject as Record<string, unknown>).descriptionFa ? String((selectedProject as Record<string, unknown>).descriptionFa) : String(selectedProject.description)}
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="flex flex-col gap-5">

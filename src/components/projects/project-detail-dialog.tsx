@@ -6,7 +6,6 @@ import { useSession } from "next-auth/react";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -45,11 +44,11 @@ export function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailD
   if (!project) return null;
 
   const isAssigned = !!project.assignedTeam;
-  const mentor = (project as any).mentor as { name?: string | null; nameFa?: string | null; telegramUsername?: string | null } | undefined;
-  const availabilityDays = (project as any).availabilityDays as string | null | undefined;
-  const availabilityHours = (project as any).availabilityHours as string | null | undefined;
+  const mentor = project.mentor as { name?: string | null; nameFa?: string | null; telegramUsername?: string | null } | undefined;
+  const availabilityDays = project.availabilityDays as string | null | undefined;
+  const availabilityHours = project.availabilityHours as string | null | undefined;
   const hasAvailability = !!(availabilityDays || availabilityHours);
-  const steps = ((project as any).steps || []) as Array<{ id: string; title: string; titleFa?: string | null; deadline?: string | Date | null; status: string }>;
+  const steps = ((project as Record<string, unknown>).steps || []) as Array<{ id: string; title: string; titleFa?: string | null; deadline?: string | Date | null; status: string }>;
 
   const handleSelect = async () => {
     if (status === "unauthenticated" || !session) {
@@ -159,7 +158,7 @@ export function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailD
       <DialogContent className="max-w-full sm:max-w-[700px] bg-gray-950/90 border-white/10 backdrop-blur-xl overflow-hidden">
         <DialogHeader>
           <div className="flex items-center justify-between mb-2">
-            <Badge variant={(categoryColorMap[project.category]  || "default") as any}>
+            <Badge variant={(categoryColorMap[project.category]  || "default") as "default" | "vr" | "ar" | "mr" | "xr" | "metaverse"}>
               {project.category}
             </Badge>
             <Badge variant={

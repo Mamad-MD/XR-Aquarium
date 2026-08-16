@@ -4,39 +4,6 @@ import { motion } from "framer-motion";
 import { Calendar, Code, TestTube, Trophy, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-const timelineItems = [
-  {
-    week: "Week 1-2",
-    title: "Orientation & Team Formation",
-    description: "Get introduced to the lab environment, meet mentors, and form multidisciplinary teams based on project interests.",
-    icon: Users,
-  },
-  {
-    week: "Week 3-4",
-    title: "Core Training & Workshops",
-    description: "Intensive deep dives into Unity/Unreal, spatial design patterns, and platform-specific XR SDKs.",
-    icon: Code,
-  },
-  {
-    week: "Week 5-6",
-    title: "Project Development",
-    description: "Hands-on building phase. Architect and implement the core mechanics of your XR experience.",
-    icon: Calendar,
-  },
-  {
-    week: "Week 7-8",
-    title: "Testing & Iteration",
-    description: "User testing, performance optimization on target hardware, and refining the user experience.",
-    icon: TestTube,
-  },
-  {
-    week: "Week 8-9",
-    title: "Final Presentations & Demo Day",
-    description: "Showcase your polished XR application to industry partners, peers, and sponsors.",
-    icon: Trophy,
-  },
-];
-
 export function AboutSection() {
   const t = useTranslations('About');
 

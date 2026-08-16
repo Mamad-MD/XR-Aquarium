@@ -31,7 +31,7 @@ function formatFileSize(bytes: number) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-export function AdminFilesPanel({ resources, currentUserId }: AdminFilesPanelProps) {
+export function AdminFilesPanel({ resources, currentUserId: _currentUserId }: AdminFilesPanelProps) {
   const t = useTranslations("Dashboard");
   const tFiles = useTranslations("Files");
   const router = useRouter();
@@ -61,7 +61,7 @@ export function AdminFilesPanel({ resources, currentUserId }: AdminFilesPanelPro
       setTitle("");
       setFile(null);
       router.refresh();
-    } catch (e) {
+    } catch (_e) {
       toast.error(t("unexpectedError"));
     } finally {
       setIsUploading(false);
@@ -83,7 +83,7 @@ export function AdminFilesPanel({ resources, currentUserId }: AdminFilesPanelPro
       }
       toast.success(data.message);
       router.refresh();
-    } catch (e) {
+    } catch (_e) {
       toast.error(t("unexpectedError"));
     } finally {
       setIsSubmitting(false);

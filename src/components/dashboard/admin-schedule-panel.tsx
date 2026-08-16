@@ -95,7 +95,7 @@ export function AdminSchedulePanel({ events }: AdminSchedulePanelProps) {
       toast.success(data.message || t("scheduleSaved"));
       resetForm();
       router.refresh();
-    } catch (e) {
+    } catch (_e) {
       toast.error(t("unexpectedError"));
     } finally {
       setIsSubmitting(false);
@@ -118,7 +118,7 @@ export function AdminSchedulePanel({ events }: AdminSchedulePanelProps) {
       }
       toast.success(data.message);
       router.refresh();
-    } catch (e) {
+    } catch (_e) {
       toast.error(t("unexpectedError"));
     } finally {
       setIsSubmitting(false);

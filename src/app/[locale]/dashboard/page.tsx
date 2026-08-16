@@ -302,9 +302,9 @@ export default async function DashboardPage() {
 
   const acceptedProjectId = projectApplications.find((a) => a.status === "ACCEPTED")?.project?.id as string | undefined;
 
-  let projectTasks: any[] = [];
-  let projectUpdates: any[] = [];
-  let projectResources: any[] = [];
+  let projectTasks: { id: string; title: string; description: string | null; status: string }[] = [];
+  let projectUpdates: { id: string; content: string; createdAt: string; author: { name: string | null; nameFa: string | null } }[] = [];
+  let projectResources: { id: string; title: string; url: string; fileSize: number }[] = [];
 
   if (acceptedProjectId) {
     const [tasksRaw, updatesRaw, resourcesRaw] = await Promise.all([

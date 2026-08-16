@@ -42,7 +42,7 @@ export function SubmitUpdateDialog({ isOpen, onClose, projectId }: SubmitUpdateD
       setContent("");
       router.refresh();
       onClose();
-    } catch (error) {
+    } catch (_error) {
       toast.error(t("unexpectedError"));
     } finally {
       setIsSubmitting(false);

@@ -28,9 +28,9 @@ export async function DELETE(req: NextRequest) {
 
     try {
       await db.user.delete({ where: { id: userId } });
-    } catch (dbError: any) {
+    } catch (dbError: unknown) {
       // خطای کلید خارجی: یعنی این کاربر جایی به‌عنوان منتور/سرپرست تیم و... رفرنس شده است
-      if (dbError?.code === "P2003" || dbError?.code === "P2014") {
+      if (dbError instanceof Object && "code" in dbError && (dbError.code === "P2003" || dbError.code === "P2014")) {
         return NextResponse.json(
           {
             message:

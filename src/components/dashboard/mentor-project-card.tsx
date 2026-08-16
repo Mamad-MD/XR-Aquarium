@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
-  Plus, Check, RotateCcw, Trash2, Upload, FileText, Download,
+  Plus, Check, RotateCcw, Trash2, Upload, FileText,
   UsersRound, ListChecks, MessageSquareText,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -106,7 +106,7 @@ export function MentorProjectCard({ project, currentUserId }: MentorProjectCardP
       setTaskTitle("");
       setTaskDesc("");
       router.refresh();
-    } catch (e) {
+    } catch (_e) {
       toast.error(t("unexpectedError"));
     } finally {
       setIsSubmitting(false);
@@ -128,7 +128,7 @@ export function MentorProjectCard({ project, currentUserId }: MentorProjectCardP
       }
       toast.success(data.message);
       router.refresh();
-    } catch (e) {
+    } catch (_e) {
       toast.error(t("unexpectedError"));
     } finally {
       setIsSubmitting(false);
@@ -150,7 +150,7 @@ export function MentorProjectCard({ project, currentUserId }: MentorProjectCardP
       }
       toast.success(data.message);
       router.refresh();
-    } catch (e) {
+    } catch (_e) {
       toast.error(t("unexpectedError"));
     } finally {
       setIsSubmitting(false);
@@ -179,7 +179,7 @@ export function MentorProjectCard({ project, currentUserId }: MentorProjectCardP
       setUploadTitle("");
       setUploadFile(null);
       router.refresh();
-    } catch (e) {
+    } catch (_e) {
       toast.error(t("unexpectedError"));
     } finally {
       setIsUploading(false);
@@ -201,7 +201,7 @@ export function MentorProjectCard({ project, currentUserId }: MentorProjectCardP
       }
       toast.success(data.message);
       router.refresh();
-    } catch (e) {
+    } catch (_e) {
       toast.error(t("unexpectedError"));
     } finally {
       setIsSubmitting(false);

@@ -9,7 +9,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -54,8 +53,8 @@ export function AdminDashboard({ user, data }: {
       team?: { name: string, nameFa: string | null } | null,
     }>,
     users?: AdminUser[],
-    students?: any[],
-    projects?: Array<any>,
+    students?: Array<{ id: string; name: string | null; email: string | null; role: string; createdAt: Date; updatedAt: Date }>,
+    projects?: Array<{ id: string; title: string; titleFa: string | null; status: string; mentorId: string; maxCapacity: number; mentor: { name: string | null; nameFa: string | null } | null }>,
     mentors?: Array<{ id: string, name: string | null, nameFa: string | null }>,
     teams?: AdminTeamData[],
     equipmentInventory?: AdminEquipmentItem[],
@@ -120,7 +119,7 @@ export function AdminDashboard({ user, data }: {
         toast.success(isFa ? "اطلاعیه با موفقیت ثبت شد." : "Announcement posted successfully.");
         router.refresh();
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error(isFa ? "خطا در ارتباط با سرور." : "Error posting announcement.");
     } finally {
       setIsSubmitting(false);
@@ -141,7 +140,7 @@ export function AdminDashboard({ user, data }: {
         } else {
           toast.error(responseData.error);
         }
-      } catch (e) {
+      } catch (_e) {
         toast.error(isFa ? 'خطا در ارتباط با سرور' : 'Server error');
       }
     }
@@ -163,7 +162,7 @@ export function AdminDashboard({ user, data }: {
       }
       toast.success(responseData.message || (isFa ? "کاربر به منتور ارتقا یافت" : "User promoted to mentor"));
       router.refresh();
-    } catch (e) {
+    } catch (_e) {
       toast.error(isFa ? 'خطا در ارتباط با سرور' : 'Server error');
     } finally {
       setBusyUserId(null);
@@ -186,7 +185,7 @@ export function AdminDashboard({ user, data }: {
       }
       toast.success(responseData.message || (isFa ? "کاربر حذف شد" : "User deleted"));
       router.refresh();
-    } catch (e) {
+    } catch (_e) {
       toast.error(isFa ? 'خطا در ارتباط با سرور' : 'Server error');
     } finally {
       setBusyUserId(null);
@@ -209,7 +208,7 @@ export function AdminDashboard({ user, data }: {
       }
       toast.success(responseData.message || (isFa ? "پروژه حذف شد" : "Project deleted"));
       router.refresh();
-    } catch (e) {
+    } catch (_e) {
       toast.error(isFa ? 'خطا در ارتباط با سرور' : 'Server error');
     } finally {
       setBusyProjectId(null);
@@ -231,7 +230,7 @@ export function AdminDashboard({ user, data }: {
       }
       toast.success(responseData.message || (isFa ? "منتور پروژه تغییر کرد" : "Mentor updated"));
       router.refresh();
-    } catch (e) {
+    } catch (_e) {
       toast.error(isFa ? 'خطا در ارتباط با سرور' : 'Server error');
     } finally {
       setBusyProjectId(null);
@@ -253,7 +252,7 @@ export function AdminDashboard({ user, data }: {
       }
       toast.success(isFa ? "تنظیمات ذخیره شد" : "Settings saved");
       router.refresh();
-    } catch (e) {
+    } catch (_e) {
       toast.error(t("unexpectedError"));
     } finally {
       setIsSavingSettings(false);
@@ -664,7 +663,7 @@ export function AdminDashboard({ user, data }: {
                 <h3 className="font-medium text-slate-300">{t("recentBroadcasts")}</h3>
                 <ScrollArea className="h-[500px]" dir={isFa ? 'rtl' : 'ltr'}>
                   <div className="flex flex-col gap-4 pe-4">
-                    {announcements.map((a: any) => (
+                    {announcements.map((a: { id: string; title: string; titleFa?: string; content: string; contentFa?: string; priority: string; createdAt: string }) => (
                       <div key={a.id} className={`p-4 rounded-lg border ${
                         a.priority === 'URGENT' || a.priority === 'HIGH' ? 'bg-red-500/5 border-red-500/20' : 'bg-slate-900/40 border-slate-800'
                       }`}>
@@ -717,7 +716,7 @@ export function AdminDashboard({ user, data }: {
                               {app.team ? (isFa && app.team.nameFa ? app.team.nameFa : app.team.name) : (app.user.name || 'Unknown')}
                             </div>
                             <div className="col-span-3 text-sm text-slate-300 truncate" dir="auto">
-                              {isFa && (app.project as any).titleFa ? (app.project as any).titleFa : app.project.title}
+                              {isFa && (app.project as Record<string, unknown>).titleFa ? String((app.project as Record<string, unknown>).titleFa) : app.project.title}
                             </div>
                             <div className="col-span-2 text-xs text-slate-400" dir="ltr">
                               {app.appliedAt ? format(new Date(app.appliedAt), 'yyyy/MM/dd') : ''}

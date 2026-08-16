@@ -1,6 +1,7 @@
 // DESTINATION: src/components/projects/project-card.tsx (replace the whole file)
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Users, Clock, ArrowRight, Layers, UsersRound, Send } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -20,8 +21,8 @@ export function ProjectCard({ project, onViewDetails }: ProjectCardProps) {
 
   const categoryVariant = project.category.toLowerCase() ;
   const isAssigned = !!project.assignedTeam;
-  const mentorTelegram = (project as any).mentor?.telegramUsername as string | null | undefined;
-  const mentorName = (project as any).mentor as { name?: string | null; nameFa?: string | null } | undefined;
+  const mentorTelegram = project.mentor?.telegramUsername as string | null | undefined;
+  const mentorName = project.mentor as { name?: string | null; nameFa?: string | null } | undefined;
 
   const neonClass = {
     VR: "hover:neon-green",
@@ -62,16 +63,17 @@ export function ProjectCard({ project, onViewDetails }: ProjectCardProps) {
     >
       <div className="relative h-48 w-full bg-zinc-900 border-b border-white/10 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10" />
-        <img 
-          src={project.thumbnailUrl || ""} 
+        <Image
+          src={project.thumbnailUrl || ""}
           alt={project.title}
-          className="w-full h-full object-cover opacity-60"
+          fill
+          className="object-cover opacity-60"
         />
         <div className="absolute top-4 end-4 z-20 flex gap-2">
           <div className={`w-3 h-3 rounded-full ${statusColor} shadow-lg shadow-black`} title={project.status} />
         </div>
         <div className="absolute top-4 start-4 z-20">
-          <Badge variant={categoryVariant as any}>{project.category}</Badge>
+          <Badge variant={categoryVariant as "default" | "vr" | "ar" | "mr" | "xr" | "metaverse"}>{project.category}</Badge>
         </div>
         <div className="absolute bottom-4 start-4 end-4 z-20">
           <h3 className="text-lg font-bold text-white leading-tight">{project.title}</h3>

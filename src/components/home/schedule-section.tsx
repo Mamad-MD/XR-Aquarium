@@ -131,18 +131,18 @@ export function ScheduleSection({ scheduleItems }: { scheduleItems: ScheduleEven
                         {/* Body: Details */}
                         <div className={`flex-grow flex flex-col ${isEven && locale === 'ltr' ? 'md:items-end text-right' : ''} ${!isEven && locale === 'fa' ? 'md:items-end text-right' : ''}`}>
                           <div className={`flex flex-wrap items-center gap-3 mb-3 ${isEven && locale === 'ltr' ? 'justify-end' : ''} ${!isEven && locale === 'fa' ? 'justify-end' : ''}`}>
-                            <h3 className="text-2xl font-bold text-white group-hover:text-cyan-300 transition-colors">{locale === 'fa' && (item as any).titleFa ? (item as any).titleFa : item.title}</h3>
+                            <h3 className="text-2xl font-bold text-white group-hover:text-cyan-300 transition-colors">{locale === 'fa' && item.titleFa ? item.titleFa : item.title}</h3>
                             <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${config.bg} ${config.color} border ${config.border}`}>
-                              {locale === 'fa' ? t(item.type.toLowerCase() as any) : item.type.charAt(0).toUpperCase() + item.type.slice(1).toLowerCase()}
+                              {locale === 'fa' ? t(item.type.toLowerCase() as Parameters<typeof t>[0]) : item.type.charAt(0).toUpperCase() + item.type.slice(1).toLowerCase()}
                             </span>
                           </div>
                           <p className="text-gray-400 text-base leading-relaxed">
-                            {locale === 'fa' && (item as any).descriptionFa ? (item as any).descriptionFa : item.description}
+                            {locale === 'fa' && item.descriptionFa ? item.descriptionFa : item.description}
                           </p>
                           {item.location && (
                             <div className={`mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-black/20 border border-white/5 text-cyan-400 text-sm font-medium w-max ${isEven && locale === 'ltr' ? 'ml-auto' : ''} ${!isEven && locale === 'fa' ? 'mr-auto' : ''}`}>
                               <span>📍</span>
-                              {locale === 'fa' && (item as any).locationFa ? (item as any).locationFa : item.location}
+                              {locale === 'fa' && item.locationFa ? item.locationFa : item.location}
                             </div>
                           )}
                         </div>
