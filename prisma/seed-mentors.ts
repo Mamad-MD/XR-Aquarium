@@ -5,11 +5,11 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('Start seeding...')
 
-  // Get all users with MENTOR or EXECUTIVE role
+  // Get all users with MENTOR role
   const existingMentors = await prisma.user.findMany({
     where: {
       role: {
-        in: ['MENTOR', 'EXECUTIVE']
+        in: ['MENTOR']
       }
     }
   })

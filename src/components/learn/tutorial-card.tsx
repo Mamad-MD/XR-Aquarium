@@ -1,9 +1,9 @@
 import * as React from "react"
-import { PlayCircle, Download } from "lucide-react"
+import Image from "next/image"
+import { PlayCircle } from "lucide-react"
 
 import {
   Card,
-  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
@@ -30,10 +30,11 @@ export function TutorialCard({
     <Card className="overflow-hidden hover:shadow-[0_0_15px_rgba(0,255,255,0.2)] transition-shadow">
       <div className="aspect-video w-full bg-secondary/50 relative group">
         {thumbnailUrl ? (
-          <img
+          <Image
             src={thumbnailUrl}
             alt={title}
-            className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity"
+            fill
+            className="object-cover opacity-70 group-hover:opacity-100 transition-opacity"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-black/40">

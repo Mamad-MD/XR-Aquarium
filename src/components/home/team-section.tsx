@@ -1,8 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Link as LinkIcon } from "lucide-react";
-import Image from "next/image";
 import { User } from "@prisma/client";
 
 import { useTranslations, useLocale } from "next-intl";
@@ -83,13 +81,13 @@ export function TeamSection({ team }: { team: User[] }) {
               </div>
 
               <h3 className="text-xl font-bold text-white mb-1 group-hover:text-cyan-300 transition-colors">
-                {locale === 'fa' && (member as any).nameFa ? (member as any).nameFa : member.name}
+                {locale === 'fa' && member.nameFa ? member.nameFa : member.name}
               </h3>
 
               <div className="h-px w-12 bg-gradient-to-r from-transparent via-purple-500 to-transparent my-3 opacity-50" />
 
               <p className="text-cyan-400 text-sm font-medium mb-1">
-                {locale === 'fa' && (member as any).roleFa ? (member as any).roleFa : member.role}
+                {locale === 'fa' && member.roleFa ? member.roleFa : member.role}
               </p>
 
               <div className="flex gap-4 mt-auto">

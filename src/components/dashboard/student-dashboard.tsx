@@ -1,31 +1,76 @@
 "use client"
 
+import { useState } from "react";
 import {
   Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   LayoutDashboard, Boxes, Calendar, FileText, Download,
-  Bell, Clock, AlertCircle, Settings, UsersRound
+  Bell, Clock, AlertCircle, Settings, UsersRound, ListChecks, Check, MessageSquareText
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
 import { format } from "date-fns";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import { ChangePasswordForm } from "./change-password-form";
 import { MyTeamCard, type MyTeamData } from "./my-team-card";
+import { SubmitUpdateDialog } from "./submit-update-dialog";
+
+interface TaskItem {
+  id: string;
+  title: string;
+  description: string | null;
+  status: string;
+}
+
+interface UpdateItem {
+  id: string;
+  content: string;
+  createdAt: string;
+  author: { name: string | null; nameFa: string | null };
+}
+
+interface ResourceItem {
+  id: string;
+  title: string;
+  url: string;
+  fileSize: number;
+}
+
+function formatFileSize(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
 
 export function StudentDashboard({ user, data }: {
- user: { name?: string | null, email?: string | null, image?: string | null, id?: string | null }, data: { announcements?: Array<{ id: string, title: string, content: string, priority: string, createdAt: string }>, projectApplications?: Array<{ status: string, project: Record<string, unknown> }>, myTeam?: MyTeamData | null } }) {
+ user: { name?: string | null, email?: string | null, image?: string | null, id?: string | null },
+ data: {
+   announcements?: Array<{ id: string, title: string, content: string, priority: string, createdAt: string }>,
+   projectApplications?: Array<{ status: string, project: Record<string, unknown> }>,
+   myTeam?: MyTeamData | null,
+   isTeamLeader?: boolean,
+   projectTasks?: TaskItem[],
+   projectUpdates?: UpdateItem[],
+   projectResources?: ResourceItem[],
+   generalResources?: ResourceItem[],
+ } }) {
   const t = useTranslations("Dashboard");
   const tCommon = useTranslations("Common");
   const locale = useLocale();
   const isFa = locale === 'fa';
+  const router = useRouter();
+
+  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
+  const [busyTaskId, setBusyTaskId] = useState<string | null>(null);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -44,6 +89,12 @@ export function StudentDashboard({ user, data }: {
   const projectApp = acceptedApp || data.projectApplications?.[0];
   const selectedProject = projectApp?.project;
   const myTeam = data.myTeam || null;
+  const isTeamLeader = data.isTeamLeader || false;
+  const projectTasks = data.projectTasks || [];
+  const projectUpdates = data.projectUpdates || [];
+  const projectResources = data.projectResources || [];
+  const generalResources = data.generalResources || [];
+
   const assignedProject = acceptedApp?.project
     ? { id: String(acceptedApp.project.id), title: String(acceptedApp.project.title), titleFa: acceptedApp.project.titleFa ? String(acceptedApp.project.titleFa) : null }
     : null;
@@ -56,9 +107,32 @@ export function StudentDashboard({ user, data }: {
     WAITLISTED: isFa ? 'در لیست انتظار' : 'Waitlisted',
   };
 
-  const handleSubmitUpdate = () => {
-    // TODO: این بخش موقتی است — بعداً باید به یک فرم/دیالوگ واقعی برای ثبت گزارش پیشرفت وصل شود
-    toast.success(isFa ? "این قابلیت به‌زودی فعال می‌شود" : "This feature is coming soon");
+  const taskStatusBadge: Record<string, { label: string; className: string }> = {
+    PENDING: { label: isFa ? "در انتظار انجام" : "Pending", className: "bg-slate-500/10 text-slate-400" },
+    DONE: { label: isFa ? "در انتظار تایید منتور" : "Awaiting mentor approval", className: "bg-yellow-500/10 text-yellow-400" },
+    APPROVED: { label: isFa ? "تایید شده" : "Approved", className: "bg-green-500/10 text-green-400" },
+  };
+
+  const handleCompleteTask = async (taskId: string) => {
+    try {
+      setBusyTaskId(taskId);
+      const response = await fetch("/api/team/tasks/complete", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ taskId }),
+      });
+      const resData = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        toast.error(resData.message || t("actionError"));
+        return;
+      }
+      toast.success(resData.message);
+      router.refresh();
+    } catch (_e) {
+      toast.error(t("unexpectedError"));
+    } finally {
+      setBusyTaskId(null);
+    }
   };
 
   return (
@@ -67,7 +141,7 @@ export function StudentDashboard({ user, data }: {
       <motion.aside
         initial={{ x: -50, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
-        className="w-full md:w-64 glass rounded-xl p-6 flex flex-col gap-8 h-fit md:sticky md:top-24"
+        className="w-full md:w-64 glass rounded-xl p-6 flex flex-col gap-8 h-fit sticky top-24"
       >
         <div className="flex flex-col items-center text-center gap-4">
           <div className="relative">
@@ -187,7 +261,7 @@ export function StudentDashboard({ user, data }: {
                 </h3>
                 <ScrollArea className="h-[400px] rounded-xl border border-slate-800 bg-slate-950/50 p-4" dir={isFa ? 'rtl' : 'ltr'}>
                   <div className="flex flex-col gap-4">
-                    {announcements.map((announcement: any) => (
+                    {announcements.map((announcement: { id: string; title: string; titleFa?: string; content: string; contentFa?: string; priority: string; createdAt: string }) => (
                       <motion.div
                         key={announcement.id}
                         variants={itemVariants}
@@ -225,54 +299,163 @@ export function StudentDashboard({ user, data }: {
           </TabsContent>
 
           <TabsContent value="project">
-            <motion.div variants={containerVariants} initial="hidden" animate="visible">
+            <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-6">
               {selectedProject ? (
-                <Card className="glass-strong border-purple-500/30 overflow-hidden relative">
-                  <div className="absolute top-0 end-0 p-32 bg-purple-500/10 blur-3xl -z-10 rounded-full"></div>
-                  <CardHeader>
-                    <CardTitle className="text-2xl font-bold gradient-text leading-snug" dir="auto">
-                      {isFa && (selectedProject as any).titleFa ? String((selectedProject as any).titleFa) : String(selectedProject.title)}
-                    </CardTitle>
-                    <CardDescription className="text-slate-400 leading-relaxed" dir="auto">
-                      {isFa && (selectedProject as any).descriptionFa ? String((selectedProject as any).descriptionFa) : String(selectedProject.description)}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="flex flex-col gap-5">
-                    <div>
-                      <div className="flex justify-between text-sm mb-3">
-                        <span className="text-slate-400">{t("projectProgress")}</span>
-                        <span className="text-purple-400 font-bold" dir="ltr">0%</span>
+                <>
+                  <Card className="glass-strong border-purple-500/30 overflow-hidden relative">
+                    <div className="absolute top-0 end-0 p-32 bg-purple-500/10 blur-3xl -z-10 rounded-full"></div>
+                    <CardHeader>
+                      <CardTitle className="text-2xl font-bold gradient-text leading-snug" dir="auto">
+                        {isFa && (selectedProject as Record<string, unknown>).titleFa ? String((selectedProject as Record<string, unknown>).titleFa) : String(selectedProject.title)}
+                      </CardTitle>
+                      <CardDescription className="text-slate-400 leading-relaxed" dir="auto">
+                        {isFa && (selectedProject as Record<string, unknown>).descriptionFa ? String((selectedProject as Record<string, unknown>).descriptionFa) : String(selectedProject.description)}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex flex-col gap-5">
+                      <div>
+                        <div className="flex justify-between text-sm mb-3">
+                          <span className="text-slate-400">{t("projectProgress")}</span>
+                          <span className="text-purple-400 font-bold" dir="ltr">
+                            {projectTasks.length > 0
+                              ? `${Math.round((projectTasks.filter(tsk => tsk.status === 'APPROVED').length / projectTasks.length) * 100)}%`
+                              : '0%'}
+                          </span>
+                        </div>
+                        <Progress
+                          value={projectTasks.length > 0 ? (projectTasks.filter(tsk => tsk.status === 'APPROVED').length / projectTasks.length) * 100 : 0}
+                          className="h-2 bg-slate-800"
+                          dir={isFa ? 'rtl' : 'ltr'}
+                        />
                       </div>
-                      <Progress value={0} className="h-2 bg-slate-800" dir={isFa ? 'rtl' : 'ltr'} />
-                    </div>
 
-                    <div className="grid grid-cols-2 gap-4 mt-2">
-                      <div className={`p-4 rounded-lg bg-slate-900/50 border border-slate-800 ${isFa ? 'text-right' : 'text-left'}`}>
-                        <p className="text-sm text-slate-400 mb-1">{t('category')}</p>
-                        <p className="text-lg font-medium" dir="ltr">{String(selectedProject.category)}</p>
+                      <div className="grid grid-cols-2 gap-4 mt-2">
+                        <div className={`p-4 rounded-lg bg-slate-900/50 border border-slate-800 ${isFa ? 'text-right' : 'text-left'}`}>
+                          <p className="text-sm text-slate-400 mb-1">{t('category')}</p>
+                          <p className="text-lg font-medium" dir="ltr">{String(selectedProject.category)}</p>
+                        </div>
+                        <div className={`p-4 rounded-lg bg-slate-900/50 border border-slate-800 ${isFa ? 'text-right' : 'text-left'}`}>
+                          <p className="text-sm text-slate-400 mb-1">{t('statusLabel')}</p>
+                          <p className={`text-lg font-medium ${projectApp?.status === 'ACCEPTED' ? 'text-green-400' : projectApp?.status === 'REJECTED' ? 'text-red-400' : 'text-yellow-400'}`}>
+                            {statusLabelMap[projectApp?.status || ''] || projectApp?.status}
+                          </p>
+                        </div>
                       </div>
-                      <div className={`p-4 rounded-lg bg-slate-900/50 border border-slate-800 ${isFa ? 'text-right' : 'text-left'}`}>
-                        <p className="text-sm text-slate-400 mb-1">{t('statusLabel')}</p>
-                        <p className={`text-lg font-medium ${projectApp?.status === 'ACCEPTED' ? 'text-green-400' : projectApp?.status === 'REJECTED' ? 'text-red-400' : 'text-yellow-400'}`}>
-                          {statusLabelMap[projectApp?.status || ''] || projectApp?.status}
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="flex flex-wrap justify-between gap-3 border-t border-slate-800/50 pt-6">
-                    <Button variant="outline" asChild className="border-purple-500/30 hover:bg-purple-500/10 hover:text-purple-300">
-                      <Link href="/projects">{t('viewProjectDetails')}</Link>
-                    </Button>
-                    {projectApp?.status === "ACCEPTED" && (
-                      <Button
-                        onClick={handleSubmitUpdate}
-                        className="bg-purple-600 hover:bg-purple-700 text-white shadow-[0_0_15px_rgba(147,51,234,0.3)]"
-                      >
-                        {t('submitUpdate')}
+                    </CardContent>
+                    <CardFooter className="flex flex-wrap justify-between gap-3 border-t border-slate-800/50 pt-6">
+                      <Button variant="outline" asChild className="border-purple-500/30 hover:bg-purple-500/10 hover:text-purple-300">
+                        <Link href="/projects">{t('viewProjectDetails')}</Link>
                       </Button>
-                    )}
-                  </CardFooter>
-                </Card>
+                      {projectApp?.status === "ACCEPTED" && isTeamLeader && (
+                        <Button
+                          onClick={() => setIsUpdateDialogOpen(true)}
+                          className="bg-purple-600 hover:bg-purple-700 text-white shadow-[0_0_15px_rgba(147,51,234,0.3)]"
+                        >
+                          {t('submitUpdate')}
+                        </Button>
+                      )}
+                    </CardFooter>
+                  </Card>
+
+                  {projectApp?.status === "ACCEPTED" && (
+                    <>
+                      {/* Timeline / Tasks */}
+                      <Card className="glass border-slate-800">
+                        <CardHeader>
+                          <CardTitle className="text-lg flex items-center gap-2">
+                            <ListChecks className="w-5 h-5 text-purple-400" /> {t("projectTimeline")}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          {projectTasks.length === 0 ? (
+                            <p className="text-sm text-slate-500">{t("noTasksYet")}</p>
+                          ) : (
+                            <div className="flex flex-col gap-2">
+                              {projectTasks.map((task) => (
+                                <div key={task.id} className="flex items-start justify-between gap-3 bg-slate-900/50 border border-slate-800 rounded-lg p-3">
+                                  <div className="min-w-0">
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                      <p className="text-sm font-medium text-white" dir="auto">{task.title}</p>
+                                      <Badge className={taskStatusBadge[task.status]?.className}>
+                                        {taskStatusBadge[task.status]?.label}
+                                      </Badge>
+                                    </div>
+                                    {task.description && (
+                                      <p className="text-xs text-slate-500 mt-1" dir="auto">{task.description}</p>
+                                    )}
+                                  </div>
+                                  {task.status === "PENDING" && isTeamLeader && (
+                                    <Button
+                                      size="sm"
+                                      disabled={busyTaskId === task.id}
+                                      onClick={() => handleCompleteTask(task.id)}
+                                      className="bg-green-600 hover:bg-green-700 text-white shrink-0"
+                                    >
+                                      <Check className="w-3.5 h-3.5 me-1" /> {t("markDone")}
+                                    </Button>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+
+                      {/* Project files */}
+                      {projectResources.length > 0 && (
+                        <Card className="glass border-slate-800">
+                          <CardHeader>
+                            <CardTitle className="text-lg flex items-center gap-2">
+                              <FileText className="w-5 h-5 text-cyan-400" /> {t("projectFilesTab")}
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent className="flex flex-col gap-2">
+                            {projectResources.map((r) => (
+                              <div key={r.id} className="flex items-center justify-between gap-3 bg-slate-900/50 border border-slate-800 rounded-lg p-3">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <FileText className="w-4 h-4 text-cyan-400 shrink-0" />
+                                  <span className="text-sm text-slate-200 truncate" dir="auto">{r.title}</span>
+                                  <span className="text-xs text-slate-500 font-sans shrink-0" dir="ltr">({formatFileSize(r.fileSize)})</span>
+                                </div>
+                                <Button asChild size="icon" variant="ghost" className="text-slate-400 hover:text-cyan-400 shrink-0">
+                                  <a href={r.url} download target="_blank" rel="noopener noreferrer"><Download className="w-4 h-4" /></a>
+                                </Button>
+                              </div>
+                            ))}
+                          </CardContent>
+                        </Card>
+                      )}
+
+                      {/* Updates feed */}
+                      <Card className="glass border-slate-800">
+                        <CardHeader>
+                          <CardTitle className="text-lg flex items-center gap-2">
+                            <MessageSquareText className="w-5 h-5 text-purple-400" /> {t("updatesHistory")}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex flex-col gap-2">
+                          {projectUpdates.length === 0 ? (
+                            <p className="text-sm text-slate-500">{t("noUpdatesYet")}</p>
+                          ) : (
+                            projectUpdates.map((u) => (
+                              <div key={u.id} className="bg-slate-900/50 border border-slate-800 rounded-lg p-3">
+                                <div className="flex items-center justify-between mb-1">
+                                  <span className="text-xs font-medium text-cyan-400" dir="auto">
+                                    {isFa && u.author.nameFa ? u.author.nameFa : u.author.name}
+                                  </span>
+                                  <span className="text-xs text-slate-500 font-sans" dir="ltr">
+                                    {format(new Date(u.createdAt), "yyyy/MM/dd HH:mm")}
+                                  </span>
+                                </div>
+                                <p className="text-sm text-slate-300 whitespace-pre-wrap" dir="auto">{u.content}</p>
+                              </div>
+                            ))
+                          )}
+                        </CardContent>
+                      </Card>
+                    </>
+                  )}
+                </>
               ) : (
                 <div className="text-center py-20 glass rounded-xl border-dashed border-2 border-slate-800">
                   <Boxes className="w-16 h-16 text-slate-600 mx-auto mb-4" />
@@ -332,31 +515,33 @@ export function StudentDashboard({ user, data }: {
 
           <TabsContent value="downloads">
             <motion.div variants={containerVariants} initial="hidden" animate="visible">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[
-                  { name: isFa ? "سرفصل‌های دوره نسخه ۱.۲" : "Cohort Syllabus v1.2", size: "2.4 MB", type: "PDF" },
-                  { name: isFa ? "قالب پایه پروژه" : "Starter Project Template", size: "15 MB", type: "ZIP" },
-                  { name: isFa ? "راهنمای طراحی XR" : "XR Design Guidelines", size: "8.1 MB", type: "PDF" },
-                  { name: isFa ? "پکیج یکپارچه‌سازی یونیتی" : "Unity Integration Package", size: "45 MB", type: "UNITYPACKAGE" }
-                ].map((file, i) => (
-                  <Card key={i} className="glass border-slate-800 hover:border-cyan-500/30 transition-colors group">
-                    <CardContent className="p-4 flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-lg bg-slate-900 flex items-center justify-center text-cyan-400 group-hover:text-cyan-300 group-hover:bg-cyan-500/10 transition-colors shrink-0">
-                          <FileText className="w-6 h-6" />
+              {generalResources.length === 0 ? (
+                <div className="text-center py-20 glass rounded-xl border-dashed border-2 border-slate-800">
+                  <FileText className="w-16 h-16 text-slate-600 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold">{t("noGeneralFiles")}</h3>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {generalResources.map((file) => (
+                    <Card key={file.id} className="glass border-slate-800 hover:border-cyan-500/30 transition-colors group">
+                      <CardContent className="p-4 flex items-center justify-between">
+                        <div className="flex items-center gap-4 min-w-0">
+                          <div className="w-12 h-12 rounded-lg bg-slate-900 flex items-center justify-center text-cyan-400 group-hover:text-cyan-300 group-hover:bg-cyan-500/10 transition-colors shrink-0">
+                            <FileText className="w-6 h-6" />
+                          </div>
+                          <div className={`min-w-0 ${isFa ? "text-right" : "text-left"}`}>
+                            <p className="font-medium text-base text-slate-200 mb-1 truncate" dir="auto">{file.title}</p>
+                            <p className="text-xs text-slate-500 font-sans" dir="ltr">{formatFileSize(file.fileSize)}</p>
+                          </div>
                         </div>
-                        <div className={isFa ? "text-right" : "text-left"}>
-                          <p className="font-medium text-base text-slate-200 mb-1" dir="auto">{file.name}</p>
-                          <p className="text-xs text-slate-500 font-sans" dir="ltr">{file.type} • {file.size}</p>
-                        </div>
-                      </div>
-                      <Button size="icon" variant="ghost" className="text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10">
-                        <Download className="w-5 h-5" />
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                        <Button asChild size="icon" variant="ghost" className="text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 shrink-0">
+                          <a href={file.url} download target="_blank" rel="noopener noreferrer"><Download className="w-5 h-5" /></a>
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </motion.div>
           </TabsContent>
 
@@ -378,6 +563,14 @@ export function StudentDashboard({ user, data }: {
           </TabsContent>
         </Tabs>
       </motion.main>
+
+      {assignedProject && (
+        <SubmitUpdateDialog
+          isOpen={isUpdateDialogOpen}
+          onClose={() => setIsUpdateDialogOpen(false)}
+          projectId={assignedProject.id}
+        />
+      )}
     </div>
   );
 }

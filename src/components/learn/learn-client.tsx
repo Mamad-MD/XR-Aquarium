@@ -6,9 +6,25 @@ import { DownloadCard } from "@/components/learn/download-card"
 import { Course, Lesson, Resource, User } from "@prisma/client"
 import { useLocale } from "next-intl";
 
+interface ExtendedLesson extends Lesson {
+  titleFa?: string | null;
+  contentFa?: string | null;
+}
+
+interface ExtendedCourse extends Course {
+  titleFa?: string | null;
+  lessons: ExtendedLesson[];
+}
+
+interface ExtendedResource extends Resource {
+  titleFa?: string | null;
+  descriptionFa?: string | null;
+  uploadedBy: User;
+}
+
 interface LearnClientProps {
-  courses: (Course & { lessons: Lesson[] })[];
-  resources: (Resource & { uploadedBy: User })[];
+  courses: ExtendedCourse[];
+  resources: ExtendedResource[];
 }
 
 export function LearnClient({ courses, resources }: LearnClientProps) {
@@ -42,14 +58,14 @@ export function LearnClient({ courses, resources }: LearnClientProps) {
           {courses.map(course => (
             <div key={course.id} className="mb-8">
               <h2 className="text-2xl font-semibold mb-4 text-cyan-400">
-                {isFa && (course as any).titleFa ? (course as any).titleFa : course.title}
+                {isFa && course.titleFa ? course.titleFa : course.title}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {course.lessons.map(lesson => (
                   <TutorialCard
                     key={lesson.id}
-                    title={isFa && (lesson as any).titleFa ? (lesson as any).titleFa : lesson.title}
-                    description={isFa && (lesson as any).contentFa ? (lesson as any).contentFa : lesson.content}
+                    title={isFa && lesson.titleFa ? lesson.titleFa : lesson.title}
+                    description={isFa && lesson.contentFa ? lesson.contentFa : lesson.content}
                     duration="30 min"
                     difficulty={lesson.level}
                   />
@@ -87,8 +103,8 @@ export function LearnClient({ courses, resources }: LearnClientProps) {
             {resources.map(resource => (
               <DownloadCard
                 key={resource.id}
-                title={isFa && (resource as any).titleFa ? (resource as any).titleFa : resource.title}
-                description={isFa && (resource as any).descriptionFa ? (resource as any).descriptionFa : (resource.description || "")}
+                title={isFa && resource.titleFa ? resource.titleFa : resource.title}
+                description={isFa && resource.descriptionFa ? resource.descriptionFa : (resource.description || "")}
                 fileSize={`${resource.fileSize} MB`}
                 fileType={resource.fileType}
                 version="1.0.0"

@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 
-export async function POST(_req: NextRequest) {
+export async function POST() {
   try {
     const session = await auth();
     if (!session?.user) {

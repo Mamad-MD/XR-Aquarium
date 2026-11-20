@@ -21,7 +21,7 @@ export default function RegisterPage() {
   const [studentId, setStudentId] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState<UserRole>("student");
+  const [role] = useState<UserRole>("student");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
@@ -68,7 +68,7 @@ export default function RegisterPage() {
         toast.success("حساب کاربری با موفقیت ساخته شد!");
         router.push("/dashboard");
       }
-    } catch (err) {
+    } catch (_err) {
       setError("یک خطای غیرمنتظره رخ داد.");
     }
   };

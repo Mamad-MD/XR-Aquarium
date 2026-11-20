@@ -1,8 +1,15 @@
 // DESTINATION: src/auth.ts (replace the whole file)
-import NextAuth from "next-auth";
+import NextAuth, { CredentialsSignin } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
+
+
+// خطای اختصاصی برای کاربر مسدود‌شده — کد "banned" توی query string صفحه لاگین
+// به‌صورت ?error=banned ظاهر می‌شود تا بتوان پیام اختصاصی نشان داد
+class BannedUserError extends CredentialsSignin {
+  code = "banned";
+}
 
 export const {
   handlers: { GET, POST },
@@ -33,13 +40,14 @@ export const {
 
         if (!passwordMatch) return null;
 
-        // کاربر مسدود شده حق ورود ندارد
+        // کاربر مسدود شده حق ورود ندارد — خطای اختصاصی throw می‌شود
+        // تا صفحه لاگین بتواند پیام «دسترسی شما محدود شده» را نشان دهد
         if (user.isBanned) {
-          console.log("تلاش برای ورود کاربر مسدود شده:", user.email);
-          return null;
+          console.log("try for enter by role:", user.email);
+          throw new BannedUserError();
         }
 
-        console.log("کاربر لاگین کرد. نقش در دیتابیس:", user.role);
+        console.log("user loged in with role of", user.role);
 
         return {
           id: user.id,
@@ -54,14 +62,14 @@ export const {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.role = (user as any).role;
+        token.role = (user as unknown as Record<string, unknown>).role;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user && token) {
         session.user.id = token.id as string;
-        (session.user as any).role = token.role as string;
+        (session.user as unknown as Record<string, unknown>).role = token.role as string;
       }
       return session;
     },

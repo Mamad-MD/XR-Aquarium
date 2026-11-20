@@ -88,6 +88,52 @@ export async function POST(req: NextRequest) {
   }
 }
 
+// تغییر منتور یک پروژه
+export async function PATCH(req: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session?.user || session.user.role !== "ADMIN") {
+      return NextResponse.json(
+        { message: "شما دسترسی این عملیات را ندارید" },
+        { status: 403 }
+      );
+    }
+
+    const { projectId, mentorId } = await req.json();
+    if (!projectId || !mentorId) {
+      return NextResponse.json(
+        { message: "شناسه پروژه و منتور الزامی است" },
+        { status: 400 }
+      );
+    }
+
+    const mentor = await db.user.findUnique({ where: { id: mentorId } });
+    if (!mentor || mentor.role !== "MENTOR") {
+      return NextResponse.json(
+        { message: "کاربر انتخاب‌شده منتور معتبر نیست" },
+        { status: 400 }
+      );
+    }
+
+    const project = await db.project.update({
+      where: { id: projectId },
+      data: { mentorId },
+      include: { mentor: true },
+    });
+
+    return NextResponse.json(
+      { message: "منتور پروژه با موفقیت تغییر کرد", project },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("[ADMIN_PROJECT_MENTOR_UPDATE]", error);
+    return NextResponse.json(
+      { message: "خطایی در سرور رخ داد، لطفاً دوباره تلاش کنید" },
+      { status: 500 }
+    );
+  }
+}
+
 export async function DELETE(req: NextRequest) {
   try {
     const session = await auth();
